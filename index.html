@@ -1,282 +1,216 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - BANGLA FF PANEL</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <title>BANGLA FF - Admin Panel</title>
+  
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- CSS File -->
   <link rel="stylesheet" href="style.css">
-  <style>
-    .custom-select {
-      background: rgba(6,7,12,.85); border: 1px solid rgba(255,255,255,.1);
-      color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 13px; outline: none; width: 100%;
-    }
-  </style>
 </head>
 <body>
-  <div class="ambient ambient-left"></div>
-  <div class="ambient ambient-right"></div>
+
+  <!-- Mouse Glow Effect -->
   <div class="mouse-glow"></div>
 
+  <!-- LOGIN SCREEN -->
   <div id="login-screen" class="login-wrapper">
     <div class="login-card">
-      <div class="lock-icon"><i class='bx bxs-lock-alt'></i></div>
-      <h2>Admin Panel</h2>
-      <p>Sign in with your admin Google account</p>
-      <button class="google-login-btn" onclick="loginWithGoogle()">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
-        Sign in with Google
+      <div class="brand-logo">
+        <i class="fa-solid fa-crown"></i>
+      </div>
+      <h2>BANGLA FF ADMIN</h2>
+      <p>অ্যাডমিন প্যানেলে প্রবেশ করতে গুগল দিয়ে লগইন করুন</p>
+      <button id="google-login-btn" class="btn-google">
+        <i class="fa-brands fa-google"></i> Sign in with Google
       </button>
-      <p id="login-error" class="error-msg"></p>
     </div>
   </div>
 
-  <div id="dashboard-screen" style="display:none;">
-    <header class="top-nav">
-      <div class="nav-left"><i class='bx bxs-crown'></i><span>BANGLA FF ADMIN</span></div>
-      <div class="nav-center">
-        <button class="top-tab active" data-tab="general" onclick="switchTab('general')"><i class='bx bx-slider-alt'></i> General</button>
-        <button class="top-tab" data-tab="cards" onclick="switchTab('cards')"><i class='bx bx-grid-alt'></i> Home Cards</button>
-        <button class="top-tab" data-tab="free-panel" onclick="switchTab('free-panel')"><i class='bx bx-laptop'></i> Free Panel</button>
-        <button class="top-tab" data-tab="free-bypass" onclick="switchTab('free-bypass')"><i class='bx bx-shield'></i> Bypass</button>
-        <button class="top-tab" data-tab="emulator" onclick="switchTab('emulator')"><i class='bx bx-desktop'></i> Emulator</button>
-        <button class="top-tab" data-tab="free-fire-apk" onclick="switchTab('free-fire-apk')"><i class='bx bx-mobile'></i> APK</button>
-        <button class="top-tab" data-tab="mobile-panel" onclick="switchTab('mobile-panel')"><i class='bx bx-mobile-alt'></i> Mobile</button>
-        <button class="top-tab" data-tab="buy-panel" onclick="switchTab('buy-panel')"><i class='bx bx-shopping-bag'></i> Buy Panel</button>
-        <button class="top-tab super-only" id="tab-admins-btn" onclick="switchTab('admins')"><i class='bx bxs-user-badge'></i> Admins</button>
+  <!-- MAIN ADMIN DASHBOARD -->
+  <div id="admin-dashboard" class="dashboard-wrapper" style="display: none;">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <i class="fa-solid fa-crown cyan-icon"></i>
+        <span>BANGLA FF ADMIN</span>
       </div>
-      <div class="nav-right">
-        <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/" target="_blank" class="visit-site-btn"><i class='bx bx-globe'></i> Visit Site</a>
-        <div class="user-chip"><span id="user-email">—</span><span id="user-role-badge" class="role-tag">—</span></div>
-        <button class="save-btn" onclick="saveData()"><i class='bx bx-save'></i> Save</button>
-        <button class="logout-btn" onclick="logout()"><i class='bx bx-log-out'></i></button>
+
+      <nav class="sidebar-menu">
+        <button class="nav-tab active" data-tab="tab-general">
+          <i class="fa-solid fa-gear"></i> General
+        </button>
+        <button class="nav-tab" data-tab="tab-home-cards">
+          <i class="fa-solid fa-border-all"></i> Home Cards
+        </button>
+        <button class="nav-tab" data-tab="tab-products">
+          <i class="fa-solid fa-list-check"></i> Manage Panels
+        </button>
+        <button class="nav-tab" data-tab="tab-admins">
+          <i class="fa-solid fa-users-gear"></i> Admins
+        </button>
+      </nav>
+
+      <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/" target="_blank" class="visit-site-btn">
+        <i class="fa-solid fa-globe"></i> Visit Main Site
+      </a>
+
+      <div class="user-profile">
+        <img id="user-photo" src="https://via.placeholder.com/40" alt="Admin">
+        <div class="user-details">
+          <span id="user-email">admin@gmail.com</span>
+          <span id="role-badge" class="badge-super"><i class="fa-solid fa-shield-halved"></i> Super Admin</span>
+        </div>
       </div>
-    </header>
 
-    <main class="content-area">
-      <!-- GENERAL -->
-      <section id="tab-general" class="tab-pane active">
-        <h2>⚙️ General Settings</h2>
-        <div class="card">
-          <div class="field"><label>Website Logo URL</label><input type="text" id="gen-logo" placeholder="https://i.ibb.co/.../logo.png"></div>
-          <div class="field"><label>Discord Support Link (Invite)</label><input type="text" id="gen-discord" placeholder="https://discord.gg/..."></div>
-          <div class="field"><label>Diamond Top-Up Link</label><input type="text" id="gen-topup" placeholder="https://..."></div>
+      <button id="logout-btn" class="btn-logout">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </aside>
+
+    <!-- MAIN CONTENT CONTENT -->
+    <main class="main-content">
+      
+      <!-- TAB 1: GENERAL SETTINGS -->
+      <section id="tab-general" class="tab-content active">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-gear cyan-icon"></i> General Settings</h2>
+          <button onclick="saveGeneralSettings()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+        </div>
+
+        <div class="card-box">
+          <div class="form-group">
+            <label><i class="fa-solid fa-image"></i> Website Logo URL</label>
+            <input type="url" id="setting-logo" placeholder="https://i.ibb.co/.../logo.png">
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-brands fa-discord"></i> Discord Support Link (Invite)</label>
+            <input type="url" id="setting-discord" placeholder="https://discord.gg/9VGgu48bY">
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-gem"></i> Diamond Top-Up Link</label>
+            <input type="url" id="setting-topup" placeholder="https://rijuedit.github.io/...">
+          </div>
         </div>
       </section>
 
-      <!-- HOME CARDS -->
-      <section id="tab-cards" class="tab-pane">
-        <h2>🎴 Homepage Cards Editor</h2>
-        <div class="card" id="home-cards-editor"></div>
-      </section>
+      <!-- TAB 2: HOMEPAGE CARDS EDITOR -->
+      <section id="tab-home-cards" class="tab-content">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-border-all cyan-icon"></i> Homepage Cards Editor</h2>
+          <button onclick="saveHomeCards()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Save Cards</button>
+        </div>
 
-      <!-- FREE PANEL -->
-      <section id="tab-free-panel" class="tab-pane">
-        <h2>💻 Free Panel</h2>
-        <div class="card">
-          <div class="perm-row"><span>🎬 Show YouTube Video</span><label class="switch"><input type="checkbox" id="fp-showVideo" checked><span class="slider"></span></label></div>
-          <div class="field"><label>YouTube Embed Link</label><input type="text" id="fp-video"></div>
-          <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fp-showSkip" checked><span class="slider"></span></label></div>
-          <div class="field"><label>How To Skip Link</label><input type="text" id="fp-skip"></div>
-          <div class="field"><label>RAR Password</label><input type="text" id="fp-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
-          <div id="fp-dl-container"></div>
-          <button class="btn-add" onclick="openDlModal('fp')"><i class='bx bx-plus'></i> Add Download Button</button>
+        <div id="home-cards-container" class="cards-editor-grid">
+          <!-- Dynamic Home Cards Editors will load here -->
         </div>
       </section>
 
-      <!-- FREE BYPASS -->
-      <section id="tab-free-bypass" class="tab-pane">
-        <h2>🛡️ Free Bypass</h2>
-        <div class="card">
-          <div class="perm-row"><span>🎬 Show YouTube Video</span><label class="switch"><input type="checkbox" id="fb-showVideo" checked><span class="slider"></span></label></div>
-          <div class="field"><label>YouTube Embed Link</label><input type="text" id="fb-video"></div>
-          <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fb-showSkip" checked><span class="slider"></span></label></div>
-          <div class="field"><label>How To Skip Link</label><input type="text" id="fb-skip"></div>
-          <div class="field"><label>RAR Password</label><input type="text" id="fb-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
-          <div id="fb-dl-container"></div>
-          <button class="btn-add" onclick="openDlModal('fb')"><i class='bx bx-plus'></i> Add Download Button</button>
+      <!-- TAB 3: MANAGE PRODUCTS & PANELS -->
+      <section id="tab-products" class="tab-content">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-layer-group cyan-icon"></i> All Panel Packages</h2>
+          <button onclick="openProductModal()" class="btn-add"><i class="fa-solid fa-plus"></i> Add New Package</button>
+        </div>
+
+        <div id="product-list" class="products-grid">
+          <!-- Products loaded dynamically -->
         </div>
       </section>
 
-      <!-- EMULATOR -->
-      <section id="tab-emulator" class="tab-pane">
-        <h2>🖥️ Emulator</h2>
-        <div class="card">
-          <div class="perm-row"><span>🎬 Show YouTube Video</span><label class="switch"><input type="checkbox" id="emu-showVideo" checked><span class="slider"></span></label></div>
-          <div class="field"><label>YouTube Embed Link</label><input type="text" id="emu-video"></div>
-          <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="emu-showSkip" checked><span class="slider"></span></label></div>
-          <div class="field"><label>How To Skip Link</label><input type="text" id="emu-skip"></div>
-          <div class="field"><label>RAR Password</label><input type="text" id="emu-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
-          <div id="emu-dl-container"></div>
-          <button class="btn-add" onclick="openDlModal('emu')"><i class='bx bx-plus'></i> Add Download Button</button>
+      <!-- TAB 4: ADMIN USERS -->
+      <section id="tab-admins" class="tab-content">
+        <div class="section-header">
+          <h2><i class="fa-solid fa-users-gear cyan-icon"></i> Sub-Admins Management</h2>
+        </div>
+        <div class="card-box">
+          <p class="info-text">Super Admin (<code>mdrijowan359@gmail.com</code>) এর অধীনে অন্যান্য এডমিন ইমেইল যুক্ত করতে পারবেন।</p>
+          <div class="add-admin-row">
+            <input type="email" id="new-admin-email" placeholder="নতুন এডমিনের ইমেইল দিন (e.g. subadmin@gmail.com)">
+            <button onclick="addAdminEmail()" class="btn-add">Add Admin</button>
+          </div>
+          <ul id="admin-email-list" class="admin-list">
+            <!-- Dynamic sub admin list -->
+          </ul>
         </div>
       </section>
 
-      <!-- APK -->
-      <section id="tab-free-fire-apk" class="tab-pane">
-        <h2>📱 Free Fire APK</h2>
-        <div class="card">
-          <div class="perm-row"><span>🎬 Show YouTube Video</span><label class="switch"><input type="checkbox" id="apk-showVideo" checked><span class="slider"></span></label></div>
-          <div class="field"><label>YouTube Embed Link</label><input type="text" id="apk-video"></div>
-          <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="apk-showSkip" checked><span class="slider"></span></label></div>
-          <div class="field"><label>How To Skip Link</label><input type="text" id="apk-skip"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
-          <div id="apk-dl-container"></div>
-          <button class="btn-add" onclick="openDlModal('apk')"><i class='bx bx-plus'></i> Add Download Button</button>
-        </div>
-      </section>
-
-      <!-- MOBILE PANEL -->
-      <section id="tab-mobile-panel" class="tab-pane">
-        <h2>📱 Mobile Panel</h2>
-        <div class="card" style="margin-bottom:20px;">
-          <h3 style="font-size:15px;color:#a78bfa;margin:0 0 12px;">📝 Page Header & Webhook</h3>
-          <div class="field"><label>Message Text</label><input type="text" id="mp-message" placeholder="Mobile panel কিনতে Ticket এ যোগাযোগ করুন"></div>
-          <div class="field"><label>TICKET Button Link</label><input type="text" id="mp-ticketLink" placeholder="https://discord.gg/..."></div>
-          <div class="field"><label>📱 Mobile Discord Webhook (Mobile Orders)</label><input type="text" id="mp-webhook" placeholder="https://discord.com/api/webhooks/..."></div>
-        </div>
-        <div class="card">
-          <h3 style="font-size:15px;color:#a78bfa;margin:0 0 12px;">📦 Mobile Packages</h3>
-          <div id="mp-list"></div>
-          <button class="btn-add" onclick="openMpModal()"><i class='bx bx-plus'></i> Add Mobile Package</button>
-        </div>
-      </section>
-
-      <!-- BUY PANEL -->
-      <section id="tab-buy-panel" class="tab-pane">
-        <h2>🛒 Buy Panel List (PC)</h2>
-        <div class="card" style="margin-bottom:20px;">
-          <h3 style="font-size:15px;color:#a78bfa;margin:0 0 12px;">🔘 PC Webhook & Button</h3>
-          <div class="field"><label>Button Name</label><input type="text" id="buy-btn-text" value="BUY NOW"></div>
-          <div class="field"><label>Button Link</label><input type="text" id="buy-btn-link" placeholder="https://discord.gg/..."></div>
-          <div class="field"><label>💻 PC Discord Webhook (PC Orders)</label><input type="text" id="buy-webhook" placeholder="https://discord.com/api/webhooks/..."></div>
-        </div>
-        <div class="card">
-          <h3 style="font-size:15px;color:#a78bfa;margin:0 0 12px;">📦 PC Packages</h3>
-          <div id="buy-list"></div>
-          <button class="btn-add" onclick="openBuyModal()"><i class='bx bx-plus'></i> Add PC Package</button>
-        </div>
-      </section>
-
-      <!-- ADMINS -->
-      <section id="tab-admins" class="tab-pane">
-        <h2>👑 Admin Management</h2>
-        <div class="admin-actions">
-          <button class="btn-super" onclick="openAddAdminModal('super')"><i class='bx bx-plus'></i> Add Super Admin</button>
-          <button class="btn-normal" onclick="openAddAdminModal('normal')"><i class='bx bx-plus'></i> Add Normal Admin</button>
-        </div>
-        <h3 class="list-title">👑 Super Admins</h3>
-        <div id="super-list" class="admin-list"></div>
-        <h3 class="list-title">🔧 Normal Admins</h3>
-        <div id="normal-list" class="admin-list"></div>
-      </section>
     </main>
   </div>
 
-  <!-- DL Modal -->
-  <div id="modal-dl-button" class="modal-overlay" style="display:none;">
+  <!-- MODAL: ADD / EDIT PRODUCT PACKAGE -->
+  <div id="product-modal" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 id="dl-modal-title">📥 Download Button</h3>
-        <button class="modal-close" onclick="closeModal('modal-dl-button')"><i class='bx bx-x'></i></button>
+        <h3 id="modal-title">প্যানেল প্যাকেজ যুক্ত করুন</h3>
+        <span onclick="closeProductModal()" class="close-modal">&times;</span>
       </div>
-      <div class="modal-body">
-        <div class="field"><label>Button Title</label><input type="text" id="dl-title"></div>
-        <div class="field"><label>Badge</label><input type="text" id="dl-badge" value="LIVE"></div>
-        <div class="field"><label>Download URL</label><input type="text" id="dl-url"></div>
-        <input type="hidden" id="dl-type" value="fp">
-        <input type="hidden" id="dl-edit-index" value="-1">
-      </div>
-      <div class="modal-footer">
-        <button class="btn-confirm green" onclick="saveDlButton()">Save</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Buy PC Package Modal -->
-  <div id="modal-buy-package" class="modal-overlay" style="display:none;">
-    <div class="modal-box" style="max-width:480px;">
-      <div class="modal-header">
-        <h3 id="buy-modal-title">🛒 PC Package</h3>
-        <button class="modal-close" onclick="closeModal('modal-buy-package')"><i class='bx bx-x'></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="field"><label>Package Name</label><input type="text" id="buy-name" placeholder="BR MODE PANEL"></div>
-        <div style="display:flex;gap:12px;margin-bottom:16px;">
-          <div class="field" style="flex:1;margin-bottom:0;"><label>Buy Price (Admin)</label><div style="position:relative;"><span>৳</span><input type="number" id="buy-buy-price" style="padding-left:28px;"></div></div>
-          <div class="field" style="flex:1;margin-bottom:0;"><label>Sell Price (User)</label><div style="position:relative;"><span>৳</span><input type="number" id="buy-sell-price" style="padding-left:28px;"></div></div>
-        </div>
-        <div class="field">
-          <label>Duration</label>
-          <div style="display:flex;gap:8px;">
-            <input type="number" id="buy-duration-num" placeholder="30" style="width:70px;">
-            <select id="buy-duration-type" class="custom-select" style="flex:1;">
-              <option value="HOUR">Hour</option><option value="DAY" selected>Day</option><option value="MONTH">Month</option><option value="YEAR">Year</option><option value="LIFETIME">Lifetime</option>
-            </select>
-          </div>
-        </div>
-        <div class="field"><label>Features</label><input type="text" id="buy-features"></div>
-        <input type="hidden" id="buy-edit-index" value="-1">
-      </div>
-      <div class="modal-footer"><button class="btn-confirm green" onclick="saveBuyPackage()">Save</button></div>
-    </div>
-  </div>
+      <form id="product-form">
+        <input type="hidden" id="prod-id">
 
-  <!-- Mobile Package Modal (With Category Android/iOS) -->
-  <div id="modal-mp-package" class="modal-overlay" style="display:none;">
-    <div class="modal-box" style="max-width:480px;">
-      <div class="modal-header">
-        <h3 id="mp-modal-title">📱 Mobile Package</h3>
-        <button class="modal-close" onclick="closeModal('modal-mp-package')"><i class='bx bx-x'></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="field">
-          <label>Category (OS)</label>
-          <select id="mp-pkg-category" class="custom-select">
-            <option value="ANDROID">Android</option>
-            <option value="IOS">iOS (iPhone)</option>
+        <div class="form-group">
+          <label>প্যানেলের নাম (Title)</label>
+          <input type="text" id="prod-title" placeholder="e.g. BR MODS [ DUSTU AIMKILL ]" required>
+        </div>
+
+        <div class="form-group">
+          <label>আইকন বা লোগো (Emoji or Image URL)</label>
+          <input type="text" id="prod-icon" placeholder="👑 বা https://i.imgur.com/icon.png">
+        </div>
+
+        <div class="form-group">
+          <label>ক্যাটাগরি সিলেক্ট করুন</label>
+          <select id="prod-category" required>
+            <option value="buy">Buy Panel (Paid)</option>
+            <option value="mobile">Mobile Panel (Android/iOS)</option>
+            <option value="free">Free Panel</option>
+            <option value="bypass">Bypass</option>
+            <option value="emulator">Emulator</option>
+            <option value="apk">Free Fire APK</option>
           </select>
         </div>
-        <div class="field"><label>Package Name</label><input type="text" id="mp-pkg-name" placeholder="MOBILE VIP"></div>
-        <div style="display:flex;gap:12px;margin-bottom:16px;">
-          <div class="field" style="flex:1;margin-bottom:0;"><label>Buy Price (Admin)</label><div style="position:relative;"><span>৳</span><input type="number" id="mp-pkg-buy-price" style="padding-left:28px;"></div></div>
-          <div class="field" style="flex:1;margin-bottom:0;"><label>Sell Price (User)</label><div style="position:relative;"><span>৳</span><input type="number" id="mp-pkg-sell-price" style="padding-left:28px;"></div></div>
-        </div>
-        <div class="field">
-          <label>Duration</label>
-          <div style="display:flex;gap:8px;">
-            <input type="number" id="mp-pkg-duration-num" placeholder="30" style="width:70px;">
-            <select id="mp-pkg-duration-type" class="custom-select" style="flex:1;">
-              <option value="HOUR">Hour</option><option value="DAY" selected>Day</option><option value="MONTH">Month</option><option value="YEAR">Year</option><option value="LIFETIME">Lifetime</option>
-            </select>
+
+        <!-- Dynamic Duration & Multi-Price Section -->
+        <div class="form-group">
+          <label>মেয়াদ এবং প্রাইস অপশন (Duration & Prices)</label>
+          <div id="price-duration-rows" class="price-rows-container">
+            <!-- Rows dynamically added -->
           </div>
+          <button type="button" onclick="addPriceDurationRow()" class="btn-secondary">
+            <i class="fa-solid fa-plus"></i> আরও মেয়াদের দাম যোগ করুন (1 Hour, 7 Day, 30 Day, etc.)
+          </button>
         </div>
-        <div class="field"><label>Features</label><input type="text" id="mp-pkg-features"></div>
-        <input type="hidden" id="mp-pkg-edit-index" value="-1">
-      </div>
-      <div class="modal-footer"><button class="btn-confirm green" onclick="saveMpPackage()">Save</button></div>
+
+        <div class="form-group checkbox-field">
+          <label><input type="checkbox" id="prod-visible" checked> ওয়েবসাইটে লাইভ দেখাবে (Visible)</label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn-save">সেভ করুন</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div id="modal-add-admin" class="modal-overlay" style="display:none;"><div class="modal-box"><div class="modal-body"><input type="email" id="add-admin-email" placeholder="example@gmail.com"><input type="hidden" id="add-admin-role"></div><div class="modal-footer"><button class="btn-confirm green" onclick="confirmAddAdmin()">Add</button></div></div></div>
-  <div id="modal-permissions" class="modal-overlay" style="display:none;"><div class="modal-box perm-modal"><div class="modal-body"><input type="hidden" id="perm-email-key">
-    <div class="perm-row"><span>General</span><label class="switch"><input type="checkbox" id="perm-general"><span class="slider"></span></label></div>
-    <div class="perm-row"><span>Home Cards</span><label class="switch"><input type="checkbox" id="perm-cards"><span class="slider"></span></label></div>
-    <div class="perm-row"><span>Free Panel</span><label class="switch"><input type="checkbox" id="perm-free-panel"><span class="slider"></span></label></div>
-    <div class="perm-row"><span>Bypass</span><label class="switch"><input type="checkbox" id="perm-free-bypass"><span class="slider"></span></label></div>
-    <div class="perm-row"><span>Emulator</span><label class="switch"><input type="checkbox" id="perm-emulator"><span class="slider"></span></label></div>
-    <div class="perm-row"><span>APK</span><label class="switch"><input type="checkbox" id="perm-free-fire-apk"><span class="slider"></span></label></div>
-    <div class="perm-row"><span>Mobile Panel</span><label class="switch"><input type="checkbox" id="perm-mobile-panel"><span class="slider"></span></label></div>
-    <div class="perm-row"><span>Buy Panel</span><label class="switch"><input type="checkbox" id="perm-buy-panel"><span class="slider"></span></label></div>
-  </div><div class="modal-footer"><button class="btn-confirm green" onclick="savePermissions()">Save</button></div></div></div>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+  <!-- Script File -->
   <script src="script.js"></script>
 </body>
 </html>
