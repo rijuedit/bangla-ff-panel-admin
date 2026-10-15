@@ -1,1 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Panel - BANGLA FF PANEL</title>
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+  <!-- Glow Backgrounds -->
+  <div class="ambient ambient-left"></div>
+  <div class="ambient ambient-right"></div>
+  <div class="mouse-glow"></div>
+
+  <!-- LOGIN SECTION -->
+  <div id="login-screen" class="login-wrapper">
+    <div class="login-box">
+      <div class="login-header">
+        <i class='bx bxs-shield-quarter'></i>
+        <h2>ADMIN LOGIN</h2>
+        <p>BANGLA FF PANEL CONTROL CENTER</p>
+      </div>
+      <form id="login-form">
+        <div class="input-group">
+          <label><i class='bx bx-lock-alt'></i> Password</label>
+          <input type="password" id="admin-pass" placeholder="Enter admin password..." required>
+        </div>
+        <button type="submit" class="login-btn">Access Dashboard <i class='bx bx-right-arrow-alt'></i></button>
+        <p id="login-error" class="error-msg"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD SECTION (Hidden by default) -->
+  <div id="dashboard-screen" class="dashboard-wrapper" style="display: none;">
+    
+    <!-- Sidebar / Navigation Tabs -->
+    <aside class="sidebar">
+      <div class="admin-brand">
+        <i class='bx bxs-cog'></i>
+        <span>ADMIN PANEL</span>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-tab active" onclick="switchTab('general')"><i class='bx bx-slider-alt'></i> General Settings</button>
+        <button class="nav-tab" onclick="switchTab('free-panel')"><i class='bx bx-laptop'></i> Free Panel</button>
+        <button class="nav-tab" onclick="switchTab('free-bypass')"><i class='bx bx-shield'></i> Free Bypass</button>
+        <button class="nav-tab" onclick="switchTab('emulator')"><i class='bx bx-desktop'></i> Emulator</button>
+        <button class="nav-tab" onclick="switchTab('free-fire-apk')"><i class='bx bx-mobile-alt'></i> Free Fire APK</button>
+        <button class="nav-tab" onclick="switchTab('buy-panel')"><i class='bx bx-shopping-bag'></i> Buy Panel List</button>
+      </nav>
+      <button class="logout-btn" onclick="logout()"><i class='bx bx-log-out'></i> Logout</button>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="status-indicator"><span class="dot"></span> SYSTEM LIVE</div>
+        <button class="save-all-btn" onclick="saveData()"><i class='bx bx-save'></i> Save Changes</button>
+      </header>
+
+      <!-- TAB 1: General Settings -->
+      <section id="tab-general" class="tab-content active">
+        <h2>General Settings</h2>
+        <div class="form-card">
+          <div class="input-group">
+            <label>Discord Support Link</label>
+            <input type="text" id="gen-discord" placeholder="https://discord.gg/...">
+          </div>
+          <div class="input-group">
+            <label>Diamond Top-Up Link</label>
+            <input type="text" id="gen-topup" placeholder="https://...">
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Free Panel -->
+      <section id="tab-free-panel" class="tab-content">
+        <h2>Free Panel Settings</h2>
+        <div class="form-card">
+          <div class="input-group">
+            <label>YouTube Video Embed Link / ID</label>
+            <input type="text" id="fp-video" placeholder="https://www.youtube.com/embed/...">
+          </div>
+          <div class="input-group">
+            <label>How To Skip Link</label>
+            <input type="text" id="fp-skip" placeholder="https://...">
+          </div>
+          <div class="input-group">
+            <label>RAR Password</label>
+            <input type="text" id="fp-pass" value="1">
+          </div>
+          <div class="input-group">
+            <label>Internal Loader Download Link</label>
+            <input type="text" id="fp-dl1" placeholder="Download Link 1">
+          </div>
+          <div class="input-group">
+            <label>External Loader Download Link</label>
+            <input type="text" id="fp-dl2" placeholder="Download Link 2">
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Free Bypass -->
+      <section id="tab-free-bypass" class="tab-content">
+        <h2>Free Bypass Settings</h2>
+        <div class="form-card">
+          <div class="input-group">
+            <label>YouTube Video Embed Link / ID</label>
+            <input type="text" id="fb-video">
+          </div>
+          <div class="input-group">
+            <label>How To Skip Link</label>
+            <input type="text" id="fb-skip">
+          </div>
+          <div class="input-group">
+            <label>RAR Password</label>
+            <input type="text" id="fb-pass" value="1">
+          </div>
+          <div class="input-group">
+            <label>Emulator Bypass Link</label>
+            <input type="text" id="fb-dl1">
+          </div>
+          <div class="input-group">
+            <label>Proxy Disconnect Link</label>
+            <input type="text" id="fb-dl2">
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: Emulator -->
+      <section id="tab-emulator" class="tab-content">
+        <h2>Emulator Settings</h2>
+        <div class="form-card">
+          <div class="input-group">
+            <label>YouTube Video Embed Link / ID</label>
+            <input type="text" id="emu-video">
+          </div>
+          <div class="input-group">
+            <label>How To Skip Link</label>
+            <input type="text" id="emu-skip">
+          </div>
+          <div class="input-group">
+            <label>RAR Password</label>
+            <input type="text" id="emu-pass" value="1">
+          </div>
+          <div class="input-group">
+            <label>MSI Emulator Link</label>
+            <input type="text" id="emu-dl1">
+          </div>
+          <div class="input-group">
+            <label>Bluestacks Emulator Link</label>
+            <input type="text" id="emu-dl2">
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: Free Fire APK -->
+      <section id="tab-free-fire-apk" class="tab-content">
+        <h2>Free Fire APK Settings</h2>
+        <div class="form-card">
+          <div class="input-group">
+            <label>YouTube Video Embed Link / ID</label>
+            <input type="text" id="apk-video">
+          </div>
+          <div class="input-group">
+            <label>How To Skip Link</label>
+            <input type="text" id="apk-skip">
+          </div>
+          <div class="input-group">
+            <label>Free Fire Normal OB55 Link</label>
+            <input type="text" id="apk-dl1">
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: Buy Panel List -->
+      <section id="tab-buy-panel" class="tab-content">
+        <h2>Buy Panel Packages Manager</h2>
+        <div class="form-card">
+          <p class="section-desc">Manage packages shown on BUY PANEL page</p>
+          <div id="buy-packages-list">
+            <!-- Dynamic items will load here -->
+          </div>
+          <button class="add-pkg-btn" onclick="addPackage()"><i class='bx bx-plus'></i> Add New Package</button>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
