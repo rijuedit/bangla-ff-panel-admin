@@ -23,6 +23,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-grad
 .nav-left{display:flex;align-items:center;gap:8px;font-weight:900;font-size:15px;color:#a78bfa;white-space:nowrap}
 .nav-left i{font-size:22px}
 
+/* BIGGER TOP MENU */
 .nav-center{display:flex;gap:8px;flex-wrap:wrap;flex:1;justify-content:center}
 .top-tab{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:all .25s ease;white-space:nowrap}
 .top-tab i{font-size:18px}
@@ -30,6 +31,30 @@ body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-grad
 .top-tab.active{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;border-color:transparent;box-shadow:0 4px 15px rgba(139,92,246,.4)}
 
 .nav-right{display:flex;align-items:center;gap:10px}
+
+/* VISIT SITE BUTTON */
+.visit-site-btn{
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+.visit-site-btn:hover{
+  background: rgba(0, 242, 254, 0.15);
+  border-color: #00f2fe;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+}
+
 .user-chip{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .user-chip #user-email{font-size:11px;color:#cbd5e1;max-width:150px;overflow:hidden;text-overflow:ellipsis}
 .role-tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px}
