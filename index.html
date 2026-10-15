@@ -1,216 +1,154 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BANGLA FF - Admin Panel</title>
+  <title>BANGLA FF ADMIN</title>
   
-  <!-- Google Fonts & FontAwesome -->
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
-  <!-- CSS File -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Mouse Glow Effect -->
-  <div class="mouse-glow"></div>
-
   <!-- LOGIN SCREEN -->
   <div id="login-screen" class="login-wrapper">
     <div class="login-card">
-      <div class="brand-logo">
-        <i class="fa-solid fa-crown"></i>
-      </div>
+      <i class="fa-solid fa-crown cyan-text" style="font-size: 40px; margin-bottom: 15px;"></i>
       <h2>BANGLA FF ADMIN</h2>
-      <p>অ্যাডমিন প্যানেলে প্রবেশ করতে গুগল দিয়ে লগইন করুন</p>
+      <p style="color: #8b97ad; margin-bottom: 25px; font-size: 14px;">Please sign in to continue</p>
       <button id="google-login-btn" class="btn-google">
         <i class="fa-brands fa-google"></i> Sign in with Google
       </button>
     </div>
   </div>
 
-  <!-- MAIN ADMIN DASHBOARD -->
-  <div id="admin-dashboard" class="dashboard-wrapper" style="display: none;">
+  <!-- ADMIN DASHBOARD -->
+  <div id="admin-dashboard" class="dashboard-layout" style="display: none;">
     
     <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sidebar-brand">
-        <i class="fa-solid fa-crown cyan-icon"></i>
+      <div class="sidebar-header">
+        <i class="fa-solid fa-crown cyan-text"></i>
         <span>BANGLA FF ADMIN</span>
       </div>
 
-      <nav class="sidebar-menu">
-        <button class="nav-tab active" data-tab="tab-general">
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="tab-general">
           <i class="fa-solid fa-gear"></i> General
         </button>
-        <button class="nav-tab" data-tab="tab-home-cards">
+        <button class="nav-item" data-tab="tab-home-cards">
           <i class="fa-solid fa-border-all"></i> Home Cards
         </button>
-        <button class="nav-tab" data-tab="tab-products">
+        <button class="nav-item" data-tab="tab-panels">
           <i class="fa-solid fa-list-check"></i> Manage Panels
         </button>
-        <button class="nav-tab" data-tab="tab-admins">
+        <button class="nav-item" data-tab="tab-admins">
           <i class="fa-solid fa-users-gear"></i> Admins
         </button>
       </nav>
 
-      <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/" target="_blank" class="visit-site-btn">
-        <i class="fa-solid fa-globe"></i> Visit Main Site
-      </a>
-
-      <div class="user-profile">
-        <img id="user-photo" src="https://via.placeholder.com/40" alt="Admin">
-        <div class="user-details">
-          <span id="user-email">admin@gmail.com</span>
-          <span id="role-badge" class="badge-super"><i class="fa-solid fa-shield-halved"></i> Super Admin</span>
+      <div class="sidebar-footer">
+        <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/" target="_blank" class="btn-visit">
+          <i class="fa-solid fa-globe"></i> Visit Main Site
+        </a>
+        
+        <div class="user-profile">
+          <div class="avatar" id="user-avatar-text">R</div>
+          <div class="user-info">
+            <div class="user-email" id="user-email">admin@gmail.com</div>
+            <div class="user-role"><i class="fa-solid fa-shield-halved"></i> Super Admin</div>
+          </div>
         </div>
-      </div>
 
-      <button id="logout-btn" class="btn-logout">
-        <i class="fa-solid fa-right-from-bracket"></i> Logout
-      </button>
+        <button id="logout-btn" class="btn-logout">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
     </aside>
 
-    <!-- MAIN CONTENT CONTENT -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
       
-      <!-- TAB 1: GENERAL SETTINGS -->
-      <section id="tab-general" class="tab-content active">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-gear cyan-icon"></i> General Settings</h2>
-          <button onclick="saveGeneralSettings()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+      <!-- TAB: GENERAL SETTINGS -->
+      <section id="tab-general" class="tab-pane active">
+        <div class="page-header">
+          <h2><i class="fa-solid fa-gear cyan-text"></i> General Settings</h2>
+          <button class="btn-primary" onclick="saveGeneralSettings()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Changes
+          </button>
         </div>
 
-        <div class="card-box">
+        <div class="card">
           <div class="form-group">
-            <label><i class="fa-solid fa-image"></i> Website Logo URL</label>
+            <label><i class="fa-regular fa-image"></i> Website Logo URL</label>
             <input type="url" id="setting-logo" placeholder="https://i.ibb.co/.../logo.png">
           </div>
-
           <div class="form-group">
             <label><i class="fa-brands fa-discord"></i> Discord Support Link (Invite)</label>
-            <input type="url" id="setting-discord" placeholder="https://discord.gg/9VGgu48bY">
+            <input type="url" id="setting-discord" placeholder="https://discord.gg/...">
           </div>
-
           <div class="form-group">
-            <label><i class="fa-solid fa-gem"></i> Diamond Top-Up Link</label>
+            <label><i class="fa-regular fa-gem"></i> Diamond Top-Up Link</label>
             <input type="url" id="setting-topup" placeholder="https://rijuedit.github.io/...">
           </div>
         </div>
       </section>
 
-      <!-- TAB 2: HOMEPAGE CARDS EDITOR -->
-      <section id="tab-home-cards" class="tab-content">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-border-all cyan-icon"></i> Homepage Cards Editor</h2>
-          <button onclick="saveHomeCards()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Save Cards</button>
+      <!-- TAB: HOME CARDS -->
+      <section id="tab-home-cards" class="tab-pane">
+        <div class="page-header">
+          <h2><i class="fa-solid fa-border-all cyan-text"></i> Homepage Cards Editor</h2>
+          <button class="btn-primary" onclick="saveHomeCards()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Cards
+          </button>
         </div>
-
-        <div id="home-cards-container" class="cards-editor-grid">
-          <!-- Dynamic Home Cards Editors will load here -->
-        </div>
-      </section>
-
-      <!-- TAB 3: MANAGE PRODUCTS & PANELS -->
-      <section id="tab-products" class="tab-content">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-layer-group cyan-icon"></i> All Panel Packages</h2>
-          <button onclick="openProductModal()" class="btn-add"><i class="fa-solid fa-plus"></i> Add New Package</button>
-        </div>
-
-        <div id="product-list" class="products-grid">
-          <!-- Products loaded dynamically -->
+        <div id="home-cards-container" class="cards-grid">
+          <!-- Populated by JS -->
         </div>
       </section>
 
-      <!-- TAB 4: ADMIN USERS -->
-      <section id="tab-admins" class="tab-content">
-        <div class="section-header">
-          <h2><i class="fa-solid fa-users-gear cyan-icon"></i> Sub-Admins Management</h2>
+      <!-- TAB: MANAGE PANELS (PRODUCTS) -->
+      <section id="tab-panels" class="tab-pane">
+        <div class="page-header">
+          <h2><i class="fa-solid fa-list-check cyan-text"></i> Manage Panels</h2>
+          <button class="btn-primary" onclick="openProductModal()">
+            <i class="fa-solid fa-plus"></i> Add New Panel
+          </button>
         </div>
-        <div class="card-box">
-          <p class="info-text">Super Admin (<code>mdrijowan359@gmail.com</code>) এর অধীনে অন্যান্য এডমিন ইমেইল যুক্ত করতে পারবেন।</p>
-          <div class="add-admin-row">
-            <input type="email" id="new-admin-email" placeholder="নতুন এডমিনের ইমেইল দিন (e.g. subadmin@gmail.com)">
-            <button onclick="addAdminEmail()" class="btn-add">Add Admin</button>
+        <div id="product-list" class="panels-list">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- TAB: ADMINS -->
+      <section id="tab-admins" class="tab-pane">
+        <div class="page-header">
+          <h2><i class="fa-solid fa-users-gear cyan-text"></i> Admins</h2>
+        </div>
+        <div class="card">
+          <p style="color: #8b97ad; margin-bottom: 15px;">Super Admin (mdrijowan359@gmail.com) can add other admins.</p>
+          <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="email" id="new-admin-email" placeholder="New admin email...">
+            <button class="btn-primary" onclick="addAdminEmail()">Add Admin</button>
           </div>
-          <ul id="admin-email-list" class="admin-list">
-            <!-- Dynamic sub admin list -->
-          </ul>
+          <ul id="admin-email-list" class="admin-list"></ul>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- MODAL: ADD / EDIT PRODUCT PACKAGE -->
-  <div id="product-modal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 id="modal-title">প্যানেল প্যাকেজ যুক্ত করুন</h3>
-        <span onclick="closeProductModal()" class="close-modal">&times;</span>
-      </div>
-
-      <form id="product-form">
-        <input type="hidden" id="prod-id">
-
-        <div class="form-group">
-          <label>প্যানেলের নাম (Title)</label>
-          <input type="text" id="prod-title" placeholder="e.g. BR MODS [ DUSTU AIMKILL ]" required>
-        </div>
-
-        <div class="form-group">
-          <label>আইকন বা লোগো (Emoji or Image URL)</label>
-          <input type="text" id="prod-icon" placeholder="👑 বা https://i.imgur.com/icon.png">
-        </div>
-
-        <div class="form-group">
-          <label>ক্যাটাগরি সিলেক্ট করুন</label>
-          <select id="prod-category" required>
-            <option value="buy">Buy Panel (Paid)</option>
-            <option value="mobile">Mobile Panel (Android/iOS)</option>
-            <option value="free">Free Panel</option>
-            <option value="bypass">Bypass</option>
-            <option value="emulator">Emulator</option>
-            <option value="apk">Free Fire APK</option>
-          </select>
-        </div>
-
-        <!-- Dynamic Duration & Multi-Price Section -->
-        <div class="form-group">
-          <label>মেয়াদ এবং প্রাইস অপশন (Duration & Prices)</label>
-          <div id="price-duration-rows" class="price-rows-container">
-            <!-- Rows dynamically added -->
-          </div>
-          <button type="button" onclick="addPriceDurationRow()" class="btn-secondary">
-            <i class="fa-solid fa-plus"></i> আরও মেয়াদের দাম যোগ করুন (1 Hour, 7 Day, 30 Day, etc.)
-          </button>
-        </div>
-
-        <div class="form-group checkbox-field">
-          <label><input type="checkbox" id="prod-visible" checked> ওয়েবসাইটে লাইভ দেখাবে (Visible)</label>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn-save">সেভ করুন</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-  <!-- Script File -->
+  
   <script src="script.js"></script>
 </body>
 </html>
