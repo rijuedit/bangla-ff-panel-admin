@@ -1,215 +1,58 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BANGLA FF ADMIN</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BANGLA FF - Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-  <!-- LOGIN -->
-  <div id="login-screen" class="login-wrap">
-    <div class="login-box">
-      <i class="fa-solid fa-crown logo-i"></i>
-      <h1>BANGLA FF ADMIN</h1>
-      <p>Sign in with Google to continue</p>
-      <button id="google-login-btn" class="btn-google">
-        <i class="fa-brands fa-google"></i> Sign in with Google
-      </button>
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="overlay">
+        <div class="login-box">
+            <img src="https://i.ibb.co/m568x8Y/logo.png" alt="Logo" class="login-logo">
+            <h2>Admin Login</h2>
+            <button id="google-login-btn"><i class="fab fa-google"></i> Sign in with Google</button>
+        </div>
     </div>
-  </div>
 
-  <!-- DASHBOARD -->
-  <div id="admin-dashboard" class="layout" style="display:none;">
+    <div class="admin-container" id="admin-main" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://i.ibb.co/m568x8Y/logo.png" alt="Logo">
+                <span>Admin Panel</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-section="general"><i class="fas fa-cog"></i> General</button>
+                <button class="nav-btn" data-section="home-cards"><i class="fas fa-th-large"></i> Home Cards</button>
+                <button class="nav-btn" data-section="free-panel"><i class="fas fa-gift"></i> Free Panel</button>
+                <button class="nav-btn" data-section="bypass"><i class="fas fa-bolt"></i> Bypass</button>
+                <button class="nav-btn" data-section="emulator"><i class="fas fa-desktop"></i> Emulator</button>
+                <button class="nav-btn" data-section="apk"><i class="fab fa-android"></i> APK</button>
+                <button class="nav-btn" data-section="mobile"><i class="fas fa-mobile-alt"></i> Mobile Panel</button>
+                <button class="nav-btn" data-section="buy"><i class="fas fa-shopping-cart"></i> Buy Panel</button>
+                <button class="nav-btn" data-section="admins"><i class="fas fa-user-shield"></i> Admins</button>
+                <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </nav>
+        </aside>
 
-    <!-- SIDEBAR (আপনার আসল মেনু) -->
-    <aside class="sidebar">
-      <div class="side-brand">
-        <i class="fa-solid fa-crown"></i>
-        <span>BANGLA FF ADMIN</span>
-      </div>
+        <!-- Main Content -->
+        <main class="content">
+            <header class="top-bar">
+                <h2 id="section-title">General Settings</h2>
+                <div class="user-info">
+                    <span id="admin-email"></span>
+                </div>
+            </header>
 
-      <nav class="side-nav">
-        <button class="nav-btn active" data-tab="general"><i class="fa-solid fa-gear"></i> General</button>
-        <button class="nav-btn" data-tab="home-cards"><i class="fa-solid fa-border-all"></i> Home Cards</button>
-        <button class="nav-btn" data-tab="free"><i class="fa-solid fa-gift"></i> Free Panel</button>
-        <button class="nav-btn" data-tab="bypass"><i class="fa-solid fa-shield-halved"></i> Bypass</button>
-        <button class="nav-btn" data-tab="emulator"><i class="fa-solid fa-desktop"></i> Emulator</button>
-        <button class="nav-btn" data-tab="apk"><i class="fa-solid fa-mobile-screen"></i> APK</button>
-        <button class="nav-btn" data-tab="mobile"><i class="fa-solid fa-tablet-screen-button"></i> Mobile</button>
-        <button class="nav-btn" data-tab="buy"><i class="fa-solid fa-cart-shopping"></i> Buy Panel</button>
-        <button class="nav-btn" data-tab="admins"><i class="fa-solid fa-users-gear"></i> Admins</button>
-      </nav>
-
-      <div class="side-bottom">
-        <a class="btn-visit" href="https://rijuedit.github.io/BANGLA-FF-PANEL/" target="_blank">
-          <i class="fa-solid fa-globe"></i> Visit Main Site
-        </a>
-        <div class="user-box">
-          <div class="avatar" id="avatar-letter">M</div>
-          <div>
-            <div class="u-mail" id="user-email">mdrijowan359@gmail.com</div>
-            <div class="u-role" id="user-role"><i class="fa-solid fa-shield-halved"></i> Super Admin</div>
-          </div>
-        </div>
-        <button id="logout-btn" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="content">
-
-      <!-- GENERAL -->
-      <section id="tab-general" class="tab active">
-        <div class="head">
-          <h2><i class="fa-solid fa-gear"></i> General Settings</h2>
-          <button class="btn-save" onclick="saveGeneral()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
-        </div>
-        <div class="card">
-          <div class="fg">
-            <label><i class="fa-regular fa-image"></i> Website Logo URL</label>
-            <input type="url" id="set-logo" placeholder="https://i.ibb.co/.../logo.png">
-          </div>
-          <div class="fg">
-            <label><i class="fa-brands fa-discord"></i> Discord Support Link (Invite)</label>
-            <input type="url" id="set-discord" placeholder="https://discord.gg/...">
-          </div>
-          <div class="fg">
-            <label><i class="fa-regular fa-gem"></i> Diamond Top-Up Link</label>
-            <input type="url" id="set-topup" placeholder="https://rijuedit.github.io/...">
-          </div>
-        </div>
-      </section>
-
-      <!-- HOME CARDS -->
-      <section id="tab-home-cards" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-border-all"></i> Homepage Cards Editor</h2>
-          <button class="btn-save" onclick="saveHomeCards()"><i class="fa-solid fa-floppy-disk"></i> Save Cards</button>
-        </div>
-        <div id="home-cards-box" class="stack"></div>
-      </section>
-
-      <!-- FREE / BYPASS / EMULATOR / APK / MOBILE / BUY — same UI -->
-      <section id="tab-free" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-gift"></i> Free Panel</h2>
-          <button class="btn-save" onclick="openItemModal('free')"><i class="fa-solid fa-plus"></i> Add Item</button>
-        </div>
-        <div id="list-free" class="stack"></div>
-      </section>
-
-      <section id="tab-bypass" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-shield-halved"></i> Bypass</h2>
-          <button class="btn-save" onclick="openItemModal('bypass')"><i class="fa-solid fa-plus"></i> Add Item</button>
-        </div>
-        <div id="list-bypass" class="stack"></div>
-      </section>
-
-      <section id="tab-emulator" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-desktop"></i> Emulator</h2>
-          <button class="btn-save" onclick="openItemModal('emulator')"><i class="fa-solid fa-plus"></i> Add Item</button>
-        </div>
-        <div id="list-emulator" class="stack"></div>
-      </section>
-
-      <section id="tab-apk" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-mobile-screen"></i> APK</h2>
-          <button class="btn-save" onclick="openItemModal('apk')"><i class="fa-solid fa-plus"></i> Add Item</button>
-        </div>
-        <div id="list-apk" class="stack"></div>
-      </section>
-
-      <section id="tab-mobile" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-tablet-screen-button"></i> Mobile Panel</h2>
-          <button class="btn-save" onclick="openItemModal('mobile')"><i class="fa-solid fa-plus"></i> Add Item</button>
-        </div>
-        <div id="list-mobile" class="stack"></div>
-      </section>
-
-      <section id="tab-buy" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-cart-shopping"></i> Buy Panel</h2>
-          <button class="btn-save" onclick="openItemModal('buy')"><i class="fa-solid fa-plus"></i> Add Package</button>
-        </div>
-        <div id="list-buy" class="stack"></div>
-      </section>
-
-      <!-- ADMINS -->
-      <section id="tab-admins" class="tab">
-        <div class="head">
-          <h2><i class="fa-solid fa-users-gear"></i> Admins</h2>
-        </div>
-        <div class="card">
-          <p class="hint">শুধু Super Admin নতুন এডমিন যোগ করতে পারবে।</p>
-          <div class="row-add">
-            <input type="email" id="new-admin" placeholder="subadmin@gmail.com">
-            <button class="btn-save" onclick="addAdmin()">Add Admin</button>
-          </div>
-          <ul id="admin-list" class="admin-ul"></ul>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- MODAL: Add/Edit Panel Item -->
-  <div id="item-modal" class="modal">
-    <div class="modal-box">
-      <div class="modal-top">
-        <h3 id="modal-title">Add Item</h3>
-        <button class="x" onclick="closeItemModal()">&times;</button>
-      </div>
-      <form id="item-form">
-        <input type="hidden" id="item-id">
-        <input type="hidden" id="item-cat">
-
-        <div class="fg">
-          <label>Title</label>
-          <input type="text" id="item-title" required placeholder="BR MODS [ GLOBAL ]">
-        </div>
-        <div class="fg">
-          <label>Subtitle / Version</label>
-          <input type="text" id="item-sub" placeholder="WORKING • SAFE">
-        </div>
-        <div class="fg">
-          <label>Icon (emoji or image URL)</label>
-          <input type="text" id="item-icon" placeholder="👑 or https://...png">
-        </div>
-        <div class="fg">
-          <label>Download / Link (optional)</label>
-          <input type="url" id="item-link" placeholder="https://...">
-        </div>
-
-        <!-- Price rows (Buy Panel / Mobile) -->
-        <div id="price-block" style="display:none;">
-          <label class="lbl">Duration & Prices (Sell = user দেখবে, Buy = শুধু admin)</label>
-          <div id="price-rows"></div>
-          <button type="button" class="btn-ghost" onclick="addPriceRow()">+ Add Duration (1 Hour / 7 Day / 30 Day / Lifetime)</button>
-        </div>
-
-        <div class="fg check">
-          <label><input type="checkbox" id="item-visible" checked> Show on website</label>
-        </div>
-
-        <button type="submit" class="btn-save full">Save</button>
-      </form>
+            <div id="dynamic-content" class="section-container">
+                <!-- Content will be injected by script.js -->
+            </div>
+        </main>
     </div>
-  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
