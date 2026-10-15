@@ -1,3 +1,6 @@
+// =========================================
+// FIREBASE CONFIG
+// =========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
   authDomain: "bangla-ff-admin.firebaseapp.com",
@@ -17,7 +20,7 @@ let currentUser = null, userRole = "normal", userPerms = {};
 let packages = [];
 let fpDownloads = [], fbDownloads = [], emuDownloads = [], apkDownloads = [];
 
-// Default homepage cards
+// Default Homepage Cards
 let homeCards = [
   { key: "freePanel", icon: "💻", title: "FREE PANEL", subtitle: "NEW PC PANEL UPDATED OB55", featured: true, visible: true },
   { key: "freeBypass", icon: "💻", title: "FREE BYPASS", subtitle: "PREMIUM • FAST • RELIABLE", featured: false, visible: true },
@@ -32,6 +35,7 @@ document.addEventListener('mousemove', e => {
   if (g) { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; }
 });
 
+// ===== AUTH =====
 function loginWithGoogle() {
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
     .then(r => checkAdmin(r.user))
@@ -53,7 +57,7 @@ function checkAdmin(user) {
 }
 
 function allPerms() {
-  return { general:1, cards:1, 'free-panel':1, 'free-bypass':1, emulator:1, 'free-fire-apk':1, 'mobile-panel':1, 'buy-panel':1 };
+  return { general: 1, cards: 1, 'free-panel': 1, 'free-bypass': 1, emulator: 1, 'free-fire-apk': 1, 'mobile-panel': 1, 'buy-panel': 1 };
 }
 
 function grantAccess(user, role, perms) {
@@ -61,9 +65,11 @@ function grantAccess(user, role, perms) {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard-screen').style.display = 'block';
   document.getElementById('user-email').innerText = user.email;
+
   const b = document.getElementById('user-role-badge');
   b.innerText = role === 'super' ? '👑 Super Admin' : '🔧 Normal Admin';
   b.className = 'role-tag ' + role;
+
   document.getElementById('tab-admins-btn').style.display = role === 'super' ? 'flex' : 'none';
   applyTabPermissions();
   loadData();
@@ -71,9 +77,9 @@ function grantAccess(user, role, perms) {
 }
 
 function applyTabPermissions() {
-  ['general','cards','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'].forEach(t => {
+  ['general', 'cards', 'free-panel', 'free-bypass', 'emulator', 'free-fire-apk', 'mobile-panel', 'buy-panel'].forEach(t => {
     const btn = document.querySelector(`.top-tab[data-tab="${t}"]`);
-    if (btn) btn.style.display = (userRole === 'super' || userPerms[t] || userPerms[t.replace('-', '')]) ? 'flex' : 'none';
+    if (btn) btn.style.display = (userRole === 'super' || userPerms[t]) ? 'flex' : 'none';
   });
 }
 
@@ -100,6 +106,7 @@ function getVal(id) { return document.getElementById(id)?.value || ''; }
 function setChk(id, v) { const e = document.getElementById(id); if (e) e.checked = v !== false; }
 function getChk(id) { return document.getElementById(id)?.checked !== false; }
 
+// ===== LOAD DATA =====
 function loadData() {
   db.ref('panel_data').on('value', snap => {
     const d = snap.val() || {};
@@ -213,6 +220,97 @@ function addDl(type) {
   renderDl(type);
 }
 
+// ===== BUY PACKAGES POPUP SYSTEM =====
+function renderPackages() {
+  const box = document.getElementById('buy-list');
+  if (!box) return;
+  box.innerHTML = '';
+
+  packages.forEach((p, i) => {
+    const priceText = p.priceText || (p.price ? `৳${p.price}` : '');
+    const durationText = p.durationText || '';
+    const displayPrice = p.displayPrice || (durationText ? `${priceText} / ${durationText}` : priceText);
+
+    box.innerHTML += `
+      <div class="pkg-row" style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:800;color:#fff;font-size:14px;margin-bottom:4px;">${p.name || 'Untitled Package'}</div>
+          <div style="font-size:12px;color:#00f2fe;font-weight:700;margin-bottom:2px;">${displayPrice}</div>
+          <div style="font-size:11px;color:#94a3b8;">${p.desc || ''}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-perm" onclick="openBuyModal(${i})" title="Edit"><i class='bx bx-edit'></i></button>
+          <button class="btn-del" onclick="packages.splice(${i},1);renderPackages();"><i class='bx bx-trash'></i></button>
+        </div>
+      </div>`;
+  });
+}
+
+function openBuyModal(editIndex = -1) {
+  document.getElementById('buy-edit-index').value = editIndex;
+  document.getElementById('buy-modal-title').innerText = editIndex >= 0 ? '✏️ Edit Package' : '🛒 Add New Package';
+
+  if (editIndex >= 0 && packages[editIndex]) {
+    const p = packages[editIndex];
+    document.getElementById('buy-name').value = p.name || '';
+    document.getElementById('buy-price').value = p.price || '';
+    document.getElementById('buy-duration-num').value = p.durationNum || '30';
+    document.getElementById('buy-duration-type').value = p.durationType || 'DAY';
+    document.getElementById('buy-features').value = p.desc || '';
+  } else {
+    document.getElementById('buy-name').value = '';
+    document.getElementById('buy-price').value = '';
+    document.getElementById('buy-duration-num').value = '30';
+    document.getElementById('buy-duration-type').value = 'DAY';
+    document.getElementById('buy-features').value = '';
+  }
+
+  document.getElementById('modal-buy-package').style.display = 'flex';
+}
+
+function saveBuyPackage() {
+  const name = document.getElementById('buy-name').value.trim();
+  const price = document.getElementById('buy-price').value.trim();
+  const durationNum = document.getElementById('buy-duration-num').value.trim();
+  const durationType = document.getElementById('buy-duration-type').value;
+  const features = document.getElementById('buy-features').value.trim();
+  const editIndex = parseInt(document.getElementById('buy-edit-index').value);
+
+  if (!name) return alert('Package Name লিখুন!');
+  if (!price) return alert('Price লিখুন!');
+
+  let durationText = '';
+  if (durationType === 'LIFETIME') {
+    durationText = 'LIFETIME';
+  } else if (durationNum) {
+    durationText = `${durationNum} ${durationType}`;
+  }
+
+  const priceText = `৳${price}`;
+  const fullPriceDisplay = durationText ? `${priceText} / ${durationText}` : priceText;
+
+  const pkg = {
+    name: name,
+    price: price,
+    priceText: priceText,
+    durationNum: durationNum,
+    durationType: durationType,
+    durationText: durationText,
+    desc: features,
+    displayPrice: fullPriceDisplay
+  };
+
+  if (editIndex >= 0) {
+    packages[editIndex] = pkg;
+  } else {
+    packages.push(pkg);
+  }
+
+  renderPackages();
+  closeModal('modal-buy-package');
+}
+
+// ===== SAVE ALL DATA =====
 function saveData() {
   const data = {
     general: {
@@ -251,21 +349,7 @@ function saveData() {
   db.ref('panel_data').update(data).then(() => alert('✅ Saved Successfully!'));
 }
 
-function renderPackages() {
-  const box = document.getElementById('buy-list');
-  if (!box) return;
-  box.innerHTML = '';
-  packages.forEach((p, i) => {
-    box.innerHTML += `<div class="pkg-row">
-      <input value="${p.name || ''}" onchange="packages[${i}].name=this.value" placeholder="Name">
-      <input value="${p.price || ''}" onchange="packages[${i}].price=this.value" placeholder="Price">
-      <input value="${p.desc || ''}" onchange="packages[${i}].desc=this.value" placeholder="Features">
-      <button class="btn-del" onclick="packages.splice(${i},1);renderPackages()"><i class='bx bx-trash'></i></button>
-    </div>`;
-  });
-}
-function addPackage() { packages.push({ name: 'NEW PANEL', price: '৳0', desc: '' }); renderPackages(); }
-
+// ===== ADMIN MANAGEMENT =====
 function loadAdmins() {
   db.ref('admins').on('value', snap => {
     const admins = snap.val() || {};
@@ -295,33 +379,37 @@ function openAddAdminModal(role) {
   document.getElementById('add-admin-email').value = '';
   document.getElementById('modal-add-admin').style.display = 'flex';
 }
+
 function confirmAddAdmin() {
   const email = document.getElementById('add-admin-email').value.trim();
   const role = document.getElementById('add-admin-role').value;
-  if (!email || !email.includes('@')) return alert('Valid email!');
+  if (!email || !email.includes('@')) return alert('Valid email required!');
   const key = email.replace(/\./g, '_');
-  const perms = role === 'super' ? allPerms() : { general:0, cards:1, 'free-panel':1, 'free-bypass':1, emulator:1, 'free-fire-apk':1, 'mobile-panel':1, 'buy-panel':1 };
-  db.ref('admins/' + key).set({ email, role, permissions: perms }).then(() => { closeModal('modal-add-admin'); alert('✅ Added!'); });
+  const perms = role === 'super' ? allPerms() : { general: 0, cards: 1, 'free-panel': 1, 'free-bypass': 1, emulator: 1, 'free-fire-apk': 1, 'mobile-panel': 1, 'buy-panel': 1 };
+  db.ref('admins/' + key).set({ email, role, permissions: perms }).then(() => { closeModal('modal-add-admin'); alert('✅ Admin Added!'); });
 }
+
 function openPermModal(key, email) {
   document.getElementById('perm-email-key').value = key;
   document.getElementById('perm-email-label').innerText = email;
   db.ref('admins/' + key + '/permissions').once('value').then(s => {
     const p = s.val() || {};
-    ['general','cards','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'].forEach(k => {
+    ['general', 'cards', 'free-panel', 'free-bypass', 'emulator', 'free-fire-apk', 'mobile-panel', 'buy-panel'].forEach(k => {
       const el = document.getElementById('perm-' + k); if (el) el.checked = !!p[k];
     });
     document.getElementById('modal-permissions').style.display = 'flex';
   });
 }
+
 function savePermissions() {
   const key = document.getElementById('perm-email-key').value;
   const perms = {};
-  ['general','cards','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'].forEach(k => {
+  ['general', 'cards', 'free-panel', 'free-bypass', 'emulator', 'free-fire-apk', 'mobile-panel', 'buy-panel'].forEach(k => {
     perms[k] = document.getElementById('perm-' + k)?.checked || false;
   });
   db.ref('admins/' + key + '/permissions').set(perms).then(() => { closeModal('modal-permissions'); alert('✅ Saved!'); });
 }
-function removeAdmin(key) { if (confirm('Remove?')) db.ref('admins/' + key).remove(); }
+
+function removeAdmin(key) { if (confirm('Remove this admin?')) db.ref('admins/' + key).remove(); }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; }));
