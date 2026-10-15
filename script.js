@@ -37,16 +37,23 @@ function loginWithGoogle() {
 
 function checkAdmin(user) {
   const key = user.email.replace(/\./g, '_');
-  db.ref('admins').once('value').then(snap => {
-    if (!snap.exists()) {
-      // First user = Super Admin
-      db.ref('admins/' + key).set({ email: user.email, role: 'super', permissions: allPermsTrue() });
-      grantAccess(user, 'super', allPermsTrue());
-      return;
+  
+  // 100% Guaranteed Access for Owner
+  if (user.email === "mdrijowan359@gmail.com") {
+    db.ref('admins/' + key).set({ email: user.email, role: 'super', permissions: allPermsTrue() });
+    grantAccess(user, 'super', allPermsTrue());
+    return;
+  }
+
+  // Check for other admins in Database
+  db.ref('admins/' + key).once('value').then(snap => {
+    const data = snap.val();
+    if (data) {
+      grantAccess(user, data.role, data.permissions || {});
+    } else {
+      alert('Access Denied!');
+      auth.signOut();
     }
-    const data = snap.val()[key];
-    if (data) grantAccess(user, data.role, data.permissions || {});
-    else { alert('Access Denied!'); auth.signOut(); }
   });
 }
 
@@ -67,7 +74,6 @@ function grantAccess(user, role, perms) {
   badge.innerText = role === 'super' ? '👑 Super Admin' : '🔧 Normal Admin';
   badge.className = 'role-tag ' + role;
 
-  // Show/hide tabs based on role + permissions
   document.getElementById('tab-admins-btn').style.display = role === 'super' ? 'flex' : 'none';
   applyTabPermissions();
 
@@ -180,7 +186,6 @@ function loadAdmins() {
   });
 }
 
-// ===== CUSTOM MODALS =====
 function openAddAdminModal(role) {
   document.getElementById('add-admin-role').value = role;
   document.getElementById('modal-add-title').innerText = role === 'super' ? '👑 Add Super Admin' : '🔧 Add Normal Admin';
@@ -237,7 +242,6 @@ function removeAdmin(key) {
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; });
 });
