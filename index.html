@@ -98,9 +98,10 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fp-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="fp-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="fp-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons (Title + Badge + Link)</label>
+          
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
           <div id="fp-dl-container"></div>
-          <button class="btn-add" onclick="addDl('fp')"><i class='bx bx-plus'></i> Add Download Button</button>
+          <button class="btn-add" onclick="openDlModal('fp')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
       </section>
 
@@ -113,9 +114,10 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fb-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="fb-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="fb-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
+          
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
           <div id="fb-dl-container"></div>
-          <button class="btn-add" onclick="addDl('fb')"><i class='bx bx-plus'></i> Add Download Button</button>
+          <button class="btn-add" onclick="openDlModal('fb')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
       </section>
 
@@ -128,9 +130,10 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="emu-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="emu-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="emu-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
+          
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
           <div id="emu-dl-container"></div>
-          <button class="btn-add" onclick="addDl('emu')"><i class='bx bx-plus'></i> Add Download Button</button>
+          <button class="btn-add" onclick="openDlModal('emu')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
       </section>
 
@@ -142,9 +145,10 @@
           <div class="field"><label>YouTube Embed Link</label><input type="text" id="apk-video"></div>
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="apk-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="apk-skip"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
+          
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
           <div id="apk-dl-container"></div>
-          <button class="btn-add" onclick="addDl('apk')"><i class='bx bx-plus'></i> Add Download Button</button>
+          <button class="btn-add" onclick="openDlModal('apk')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
       </section>
 
@@ -238,12 +242,10 @@
         <button class="modal-close" onclick="closeModal('modal-buy-package')"><i class='bx bx-x'></i></button>
       </div>
       <div class="modal-body">
-        
         <div class="field">
           <label>Package Name</label>
           <input type="text" id="buy-name" placeholder="e.g. BR MODE PANEL">
         </div>
-
         <div style="display:flex; gap:12px; margin-bottom:16px;">
           <div class="field" style="flex:1; margin-bottom:0;">
             <label>Price (৳)</label>
@@ -252,7 +254,6 @@
               <input type="number" id="buy-price" placeholder="500" style="padding-left:28px;" min="0">
             </div>
           </div>
-
           <div class="field" style="flex:1; margin-bottom:0;">
             <label>Duration</label>
             <div style="display:flex; gap:8px;">
@@ -266,17 +267,45 @@
             </div>
           </div>
         </div>
-
         <div class="field">
           <label>Features</label>
           <input type="text" id="buy-features" placeholder="Aimbot AI • Anti-Ban • Auto Update">
         </div>
-
         <input type="hidden" id="buy-edit-index" value="-1">
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeModal('modal-buy-package')">Cancel</button>
         <button class="btn-confirm green" onclick="saveBuyPackage()"><i class='bx bx-check'></i> Save Package</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: DOWNLOAD BUTTON POPUP (NEW) -->
+  <div id="modal-dl-button" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-header">
+        <h3 id="dl-modal-title">📥 Add Download Button</h3>
+        <button class="modal-close" onclick="closeModal('modal-dl-button')"><i class='bx bx-x'></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Button Title</label>
+          <input type="text" id="dl-title" placeholder="e.g. FREE FIRE NORMAL OB55">
+        </div>
+        <div class="field">
+          <label>Badge Text (e.g. LIVE / V4.6 / OB55)</label>
+          <input type="text" id="dl-badge" placeholder="LIVE" value="LIVE">
+        </div>
+        <div class="field">
+          <label>Download Link (URL)</label>
+          <input type="text" id="dl-url" placeholder="https://www.mediafire.com/file/...">
+        </div>
+        <input type="hidden" id="dl-type" value="fp">
+        <input type="hidden" id="dl-edit-index" value="-1">
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modal-dl-button')">Cancel</button>
+        <button class="btn-confirm green" onclick="saveDlButton()"><i class='bx bx-check'></i> Save Button</button>
       </div>
     </div>
   </div>
