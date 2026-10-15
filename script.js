@@ -21,6 +21,12 @@ let userRole = "normal";
 let userPerms = {};
 let packages = [];
 
+// Dynamic Download Lists
+let fpDownloads = [];
+let fbDownloads = [];
+let emuDownloads = [];
+let apkDownloads = [];
+
 // Mouse glow
 document.addEventListener('mousemove', e => {
   const g = document.querySelector('.mouse-glow');
@@ -38,7 +44,6 @@ function loginWithGoogle() {
 function checkAdmin(user) {
   const key = user.email.replace(/\./g, '_');
 
-  // ALWAYS GRANT SUPER ADMIN TO OWNER
   if (user.email === "mdrijowan359@gmail.com") {
     db.ref('admins/' + key).set({ email: user.email, role: 'super', permissions: allPermsTrue() });
     grantAccess(user, 'super', allPermsTrue());
@@ -69,7 +74,6 @@ function grantAccess(user, role, perms) {
   badge.innerText = role === 'super' ? '👑 Super Admin' : '🔧 Normal Admin';
   badge.className = 'role-tag ' + role;
 
-  // Show/hide tabs based on role + permissions
   document.getElementById('tab-admins-btn').style.display = role === 'super' ? 'flex' : 'none';
   applyTabPermissions();
 
@@ -82,11 +86,7 @@ function applyTabPermissions() {
   tabs.forEach(t => {
     const btn = document.querySelector(`.top-tab[data-tab="${t}"]`);
     if (!btn) return;
-    if (userRole === 'super' || userPerms[t]) {
-      btn.style.display = 'flex';
-    } else {
-      btn.style.display = 'none';
-    }
+    btn.style.display = (userRole === 'super' || userPerms[t]) ? 'flex' : 'none';
   });
 }
 
@@ -100,7 +100,6 @@ auth.onAuthStateChanged(user => {
 
 function logout() { auth.signOut(); }
 
-// ===== TABS =====
 function switchTab(name) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.top-tab').forEach(t => t.classList.remove('active'));
@@ -109,16 +108,40 @@ function switchTab(name) {
   btn.classList.add('active');
 }
 
-// ===== DATA LOAD / SAVE =====
+// ===== LOAD & RENDER DOWNLOAD BOXES =====
 function loadData() {
   db.ref('panel_data').on('value', snap => {
     const d = snap.val() || {};
     setVal('gen-discord', d.general?.discord);
     setVal('gen-topup', d.general?.topup);
-    setVal('fp-video', d.freePanel?.video); setVal('fp-skip', d.freePanel?.skip); setVal('fp-pass', d.freePanel?.pass); setVal('fp-dl1', d.freePanel?.dl1); setVal('fp-dl2', d.freePanel?.dl2);
-    setVal('fb-video', d.freeBypass?.video); setVal('fb-skip', d.freeBypass?.skip); setVal('fb-pass', d.freeBypass?.pass); setVal('fb-dl1', d.freeBypass?.dl1); setVal('fb-dl2', d.freeBypass?.dl2);
-    setVal('emu-video', d.emulator?.video); setVal('emu-skip', d.emulator?.skip); setVal('emu-pass', d.emulator?.pass); setVal('emu-dl1', d.emulator?.dl1); setVal('emu-dl2', d.emulator?.dl2);
-    setVal('apk-video', d.apk?.video); setVal('apk-skip', d.apk?.skip); setVal('apk-dl1', d.apk?.dl1);
+
+    // Free Panel
+    setVal('fp-video', d.freePanel?.video);
+    setVal('fp-skip', d.freePanel?.skip);
+    setVal('fp-pass', d.freePanel?.pass);
+    fpDownloads = d.freePanel?.downloads || [];
+    renderDlBox('fp-dl-container', fpDownloads);
+
+    // Free Bypass
+    setVal('fb-video', d.freeBypass?.video);
+    setVal('fb-skip', d.freeBypass?.skip);
+    setVal('fb-pass', d.freeBypass?.pass);
+    fbDownloads = d.freeBypass?.downloads || [];
+    renderDlBox('fb-dl-container', fbDownloads);
+
+    // Emulator
+    setVal('emu-video', d.emulator?.video);
+    setVal('emu-skip', d.emulator?.skip);
+    setVal('emu-pass', d.emulator?.pass);
+    emuDownloads = d.emulator?.downloads || [];
+    renderDlBox('emu-dl-container', emuDownloads);
+
+    // APK
+    setVal('apk-video', d.apk?.video);
+    setVal('apk-skip', d.apk?.skip);
+    apkDownloads = d.apk?.downloads || [];
+    renderDlBox('apk-dl-container', apkDownloads);
+
     packages = d.buyList || [];
     renderPackages();
   });
@@ -127,13 +150,36 @@ function loadData() {
 function setVal(id, v) { const el = document.getElementById(id); if (el) el.value = v || ''; }
 function getVal(id) { return document.getElementById(id)?.value || ''; }
 
+// Render Dynamic Download Inputs
+function renderDlBox(containerId, listArray) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+
+  listArray.forEach((item, index) => {
+    container.innerHTML += `
+      <div class="pkg-row" style="margin-bottom: 8px;">
+        <input type="text" value="${item.title || ''}" onchange="listArray[${index}].title=this.value" placeholder="Button Title (e.g. Internal Loader)">
+        <input type="text" value="${item.url || ''}" onchange="listArray[${index}].url=this.value" placeholder="Download URL (https://...)">
+        <button class="btn-del" onclick="listArray.splice(${index},1); renderDlBox('${containerId}', listArray)"><i class='bx bx-trash'></i></button>
+      </div>
+    `;
+  });
+}
+
+function addDlBox(containerId, listArray) {
+  listArray.push({ title: "NEW DOWNLOAD LINK", url: "" });
+  renderDlBox(containerId, listArray);
+}
+
+// ===== SAVE DATA =====
 function saveData() {
   const data = {
     general: { discord: getVal('gen-discord'), topup: getVal('gen-topup') },
-    freePanel: { video: getVal('fp-video'), skip: getVal('fp-skip'), pass: getVal('fp-pass'), dl1: getVal('fp-dl1'), dl2: getVal('fp-dl2') },
-    freeBypass: { video: getVal('fb-video'), skip: getVal('fb-skip'), pass: getVal('fb-pass'), dl1: getVal('fb-dl1'), dl2: getVal('fb-dl2') },
-    emulator: { video: getVal('emu-video'), skip: getVal('emu-skip'), pass: getVal('emu-pass'), dl1: getVal('emu-dl1'), dl2: getVal('emu-dl2') },
-    apk: { video: getVal('apk-video'), skip: getVal('apk-skip'), dl1: getVal('apk-dl1') },
+    freePanel: { video: getVal('fp-video'), skip: getVal('fp-skip'), pass: getVal('fp-pass'), downloads: fpDownloads },
+    freeBypass: { video: getVal('fb-video'), skip: getVal('fb-skip'), pass: getVal('fb-pass'), downloads: fbDownloads },
+    emulator: { video: getVal('emu-video'), skip: getVal('emu-skip'), pass: getVal('emu-pass'), downloads: emuDownloads },
+    apk: { video: getVal('apk-video'), skip: getVal('apk-skip'), downloads: apkDownloads },
     buyList: packages
   };
   db.ref('panel_data').update(data).then(() => alert('✅ Saved Successfully!'));
@@ -182,7 +228,6 @@ function loadAdmins() {
   });
 }
 
-// ===== CUSTOM MODALS =====
 function openAddAdminModal(role) {
   document.getElementById('add-admin-role').value = role;
   document.getElementById('modal-add-title').innerText = role === 'super' ? '👑 Add Super Admin' : '🔧 Add Normal Admin';
@@ -239,7 +284,6 @@ function removeAdmin(key) {
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; });
 });
