@@ -1,6 +1,3 @@
-// =========================================
-// FIREBASE CONFIG
-// =========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
   authDomain: "bangla-ff-admin.firebaseapp.com",
@@ -20,7 +17,6 @@ let currentUser = null, userRole = "normal", userPerms = {};
 let packages = [];
 let fpDownloads = [], fbDownloads = [], emuDownloads = [], apkDownloads = [];
 
-// Default Homepage Cards
 let homeCards = [
   { key: "freePanel", icon: "💻", title: "FREE PANEL", subtitle: "NEW PC PANEL UPDATED OB55", featured: true, visible: true },
   { key: "freeBypass", icon: "💻", title: "FREE BYPASS", subtitle: "PREMIUM • FAST • RELIABLE", featured: false, visible: true },
@@ -35,7 +31,6 @@ document.addEventListener('mousemove', e => {
   if (g) { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; }
 });
 
-// ===== AUTH =====
 function loginWithGoogle() {
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
     .then(r => checkAdmin(r.user))
@@ -57,7 +52,7 @@ function checkAdmin(user) {
 }
 
 function allPerms() {
-  return { general: 1, cards: 1, 'free-panel': 1, 'free-bypass': 1, emulator: 1, 'free-fire-apk': 1, 'mobile-panel': 1, 'buy-panel': 1 };
+  return { general:1, cards:1, 'free-panel':1, 'free-bypass':1, emulator:1, 'free-fire-apk':1, 'mobile-panel':1, 'buy-panel':1 };
 }
 
 function grantAccess(user, role, perms) {
@@ -65,11 +60,9 @@ function grantAccess(user, role, perms) {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard-screen').style.display = 'block';
   document.getElementById('user-email').innerText = user.email;
-
   const b = document.getElementById('user-role-badge');
   b.innerText = role === 'super' ? '👑 Super Admin' : '🔧 Normal Admin';
   b.className = 'role-tag ' + role;
-
   document.getElementById('tab-admins-btn').style.display = role === 'super' ? 'flex' : 'none';
   applyTabPermissions();
   loadData();
@@ -77,7 +70,7 @@ function grantAccess(user, role, perms) {
 }
 
 function applyTabPermissions() {
-  ['general', 'cards', 'free-panel', 'free-bypass', 'emulator', 'free-fire-apk', 'mobile-panel', 'buy-panel'].forEach(t => {
+  ['general','cards','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'].forEach(t => {
     const btn = document.querySelector(`.top-tab[data-tab="${t}"]`);
     if (btn) btn.style.display = (userRole === 'super' || userPerms[t]) ? 'flex' : 'none';
   });
@@ -97,8 +90,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.top-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  const btn = document.querySelector(`.top-tab[data-tab="${name}"]`) || event.currentTarget;
-  btn.classList.add('active');
+  (document.querySelector(`.top-tab[data-tab="${name}"]`) || event.currentTarget).classList.add('active');
 }
 
 function setVal(id, v) { const e = document.getElementById(id); if (e) e.value = v || ''; }
@@ -106,7 +98,6 @@ function getVal(id) { return document.getElementById(id)?.value || ''; }
 function setChk(id, v) { const e = document.getElementById(id); if (e) e.checked = v !== false; }
 function getChk(id) { return document.getElementById(id)?.checked !== false; }
 
-// ===== LOAD DATA =====
 function loadData() {
   db.ref('panel_data').on('value', snap => {
     const d = snap.val() || {};
@@ -115,10 +106,7 @@ function loadData() {
     setVal('gen-discord', d.general?.discord);
     setVal('gen-topup', d.general?.topup);
 
-    // Home Cards
-    if (d.homeCards && Array.isArray(d.homeCards) && d.homeCards.length) {
-      homeCards = d.homeCards;
-    }
+    if (d.homeCards && Array.isArray(d.homeCards) && d.homeCards.length) homeCards = d.homeCards;
     renderHomeCardsEditor();
 
     // Free Panel
@@ -161,12 +149,15 @@ function loadData() {
     setVal('mp-btnText', d.mobilePanel?.btnText || 'TICKET');
     setVal('mp-ticketLink', d.mobilePanel?.ticketLink);
 
+    // Buy Button
+    setVal('buy-btn-text', d.buyButton?.text || 'BUY NOW');
+    setVal('buy-btn-link', d.buyButton?.link || '');
+
     packages = d.buyList || [];
     renderPackages();
   });
 }
 
-// ===== HOME CARDS EDITOR =====
 function renderHomeCardsEditor() {
   const box = document.getElementById('home-cards-editor');
   if (!box) return;
@@ -176,12 +167,12 @@ function renderHomeCardsEditor() {
       <div style="border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;margin-bottom:12px;background:rgba(0,0,0,0.2);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
           <strong style="color:#a78bfa;">${c.key}</strong>
-          <label class="switch" title="Show/Hide"><input type="checkbox" ${c.visible !== false ? 'checked' : ''} onchange="homeCards[${i}].visible=this.checked"><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" ${c.visible !== false ? 'checked' : ''} onchange="homeCards[${i}].visible=this.checked"><span class="slider"></span></label>
         </div>
         <div class="pkg-row" style="margin-bottom:8px;">
-          <input style="width:70px;text-align:center;font-size:20px;" value="${c.icon || ''}" onchange="homeCards[${i}].icon=this.value" placeholder="💻">
-          <input value="${c.title || ''}" onchange="homeCards[${i}].title=this.value" placeholder="Title">
-          <input value="${c.subtitle || ''}" onchange="homeCards[${i}].subtitle=this.value" placeholder="Subtitle">
+          <input style="width:70px;text-align:center;font-size:20px;" value="${c.icon||''}" onchange="homeCards[${i}].icon=this.value" placeholder="💻">
+          <input value="${c.title||''}" onchange="homeCards[${i}].title=this.value" placeholder="Title">
+          <input value="${c.subtitle||''}" onchange="homeCards[${i}].subtitle=this.value" placeholder="Subtitle">
         </div>
         <label style="font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:6px;">
           <input type="checkbox" ${c.featured ? 'checked' : ''} onchange="homeCards[${i}].featured=this.checked"> Featured Badge
@@ -190,7 +181,7 @@ function renderHomeCardsEditor() {
   });
 }
 
-// ===== DOWNLOAD BUTTONS POPUP SYSTEM (NEW MODAL BASED) =====
+// ========== DOWNLOAD POPUP SYSTEM ==========
 function getArr(type) {
   if (type === 'fp') return fpDownloads;
   if (type === 'fb') return fbDownloads;
@@ -207,17 +198,17 @@ function renderDl(type) {
 
   arr.forEach((item, i) => {
     box.innerHTML += `
-      <div class="pkg-row" style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
-        <div style="flex:1; min-width:0;">
+      <div style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+        <div style="flex:1;min-width:0;">
           <div style="font-weight:800;color:#fff;font-size:13px;margin-bottom:3px;">
-            ${item.title || 'Download Button'} 
+            ${item.title || 'Download'} 
             <span style="font-size:10px;background:rgba(0,242,254,0.15);color:#00f2fe;padding:2px 6px;border-radius:4px;margin-left:6px;border:1px solid rgba(0,242,254,0.3);">${item.badge || 'LIVE'}</span>
           </div>
-          <div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px;">${item.url || 'No Link Set'}</div>
+          <div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px;">${item.url || 'No Link'}</div>
         </div>
         <div style="display:flex;gap:6px;margin-left:10px;">
-          <button class="btn-perm" onclick="openDlModal('${type}', ${i})" title="Edit"><i class='bx bx-edit'></i></button>
-          <button class="btn-del" onclick="getArr('${type}').splice(${i},1); renderDl('${type}');"><i class='bx bx-trash'></i></button>
+          <button class="btn-perm" onclick="openDlModal('${type}', ${i})"><i class='bx bx-edit'></i></button>
+          <button class="btn-del" onclick="getArr('${type}').splice(${i},1);renderDl('${type}')"><i class='bx bx-trash'></i></button>
         </div>
       </div>`;
   });
@@ -229,18 +220,15 @@ function openDlModal(type, editIndex = -1) {
   document.getElementById('dl-modal-title').innerText = editIndex >= 0 ? '✏️ Edit Download Button' : '📥 Add Download Button';
 
   const arr = getArr(type);
-
   if (editIndex >= 0 && arr[editIndex]) {
-    const item = arr[editIndex];
-    document.getElementById('dl-title').value = item.title || '';
-    document.getElementById('dl-badge').value = item.badge || 'LIVE';
-    document.getElementById('dl-url').value = item.url || '';
+    document.getElementById('dl-title').value = arr[editIndex].title || '';
+    document.getElementById('dl-badge').value = arr[editIndex].badge || 'LIVE';
+    document.getElementById('dl-url').value = arr[editIndex].url || '';
   } else {
     document.getElementById('dl-title').value = '';
     document.getElementById('dl-badge').value = 'LIVE';
     document.getElementById('dl-url').value = '';
   }
-
   document.getElementById('modal-dl-button').style.display = 'flex';
 }
 
@@ -256,37 +244,30 @@ function saveDlButton() {
   const arr = getArr(type);
   const item = { title, badge, url };
 
-  if (editIndex >= 0) {
-    arr[editIndex] = item;
-  } else {
-    arr.push(item);
-  }
+  if (editIndex >= 0) arr[editIndex] = item;
+  else arr.push(item);
 
   renderDl(type);
   closeModal('modal-dl-button');
 }
 
-// ===== BUY PACKAGES POPUP SYSTEM =====
+// ========== BUY PACKAGE ==========
 function renderPackages() {
   const box = document.getElementById('buy-list');
   if (!box) return;
   box.innerHTML = '';
-
   packages.forEach((p, i) => {
-    const priceText = p.priceText || (p.price ? `৳${p.price}` : '');
-    const durationText = p.durationText || '';
-    const displayPrice = p.displayPrice || (durationText ? `${priceText} / ${durationText}` : priceText);
-
+    const displayPrice = p.displayPrice || (p.durationText ? `${p.priceText || '৳'+p.price} / ${p.durationText}` : (p.priceText || '৳'+p.price));
     box.innerHTML += `
-      <div class="pkg-row" style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
-        <div style="flex:1; min-width:0;">
-          <div style="font-weight:800;color:#fff;font-size:14px;margin-bottom:4px;">${p.name || 'Untitled Package'}</div>
+      <div style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:800;color:#fff;font-size:14px;margin-bottom:4px;">${p.name || 'Untitled'}</div>
           <div style="font-size:12px;color:#00f2fe;font-weight:700;margin-bottom:2px;">${displayPrice}</div>
           <div style="font-size:11px;color:#94a3b8;">${p.desc || ''}</div>
         </div>
         <div style="display:flex;gap:6px;">
-          <button class="btn-perm" onclick="openBuyModal(${i})" title="Edit"><i class='bx bx-edit'></i></button>
-          <button class="btn-del" onclick="packages.splice(${i},1);renderPackages();"><i class='bx bx-trash'></i></button>
+          <button class="btn-perm" onclick="openBuyModal(${i})"><i class='bx bx-edit'></i></button>
+          <button class="btn-del" onclick="packages.splice(${i},1);renderPackages()"><i class='bx bx-trash'></i></button>
         </div>
       </div>`;
   });
@@ -295,7 +276,6 @@ function renderPackages() {
 function openBuyModal(editIndex = -1) {
   document.getElementById('buy-edit-index').value = editIndex;
   document.getElementById('buy-modal-title').innerText = editIndex >= 0 ? '✏️ Edit Package' : '🛒 Add New Package';
-
   if (editIndex >= 0 && packages[editIndex]) {
     const p = packages[editIndex];
     document.getElementById('buy-name').value = p.name || '';
@@ -310,7 +290,6 @@ function openBuyModal(editIndex = -1) {
     document.getElementById('buy-duration-type').value = 'DAY';
     document.getElementById('buy-features').value = '';
   }
-
   document.getElementById('modal-buy-package').style.display = 'flex';
 }
 
@@ -325,77 +304,35 @@ function saveBuyPackage() {
   if (!name) return alert('Package Name লিখুন!');
   if (!price) return alert('Price লিখুন!');
 
-  let durationText = '';
-  if (durationType === 'LIFETIME') {
-    durationText = 'LIFETIME';
-  } else if (durationNum) {
-    durationText = `${durationNum} ${durationType}`;
-  }
-
+  let durationText = durationType === 'LIFETIME' ? 'LIFETIME' : (durationNum ? `${durationNum} ${durationType}` : '');
   const priceText = `৳${price}`;
-  const fullPriceDisplay = durationText ? `${priceText} / ${durationText}` : priceText;
+  const displayPrice = durationText ? `${priceText} / ${durationText}` : priceText;
 
-  const pkg = {
-    name: name,
-    price: price,
-    priceText: priceText,
-    durationNum: durationNum,
-    durationType: durationType,
-    durationText: durationText,
-    desc: features,
-    displayPrice: fullPriceDisplay
-  };
+  const pkg = { name, price, priceText, durationNum, durationType, durationText, desc: features, displayPrice };
 
-  if (editIndex >= 0) {
-    packages[editIndex] = pkg;
-  } else {
-    packages.push(pkg);
-  }
+  if (editIndex >= 0) packages[editIndex] = pkg;
+  else packages.push(pkg);
 
   renderPackages();
   closeModal('modal-buy-package');
 }
 
-// ===== SAVE ALL DATA =====
 function saveData() {
   const data = {
-    general: {
-      logo: getVal('gen-logo'),
-      discord: getVal('gen-discord'),
-      topup: getVal('gen-topup')
-    },
+    general: { logo: getVal('gen-logo'), discord: getVal('gen-discord'), topup: getVal('gen-topup') },
     homeCards: homeCards,
-    freePanel: {
-      showVideo: getChk('fp-showVideo'), video: getVal('fp-video'),
-      showSkip: getChk('fp-showSkip'), skip: getVal('fp-skip'),
-      pass: getVal('fp-pass'), downloads: fpDownloads
-    },
-    freeBypass: {
-      showVideo: getChk('fb-showVideo'), video: getVal('fb-video'),
-      showSkip: getChk('fb-showSkip'), skip: getVal('fb-skip'),
-      pass: getVal('fb-pass'), downloads: fbDownloads
-    },
-    emulator: {
-      showVideo: getChk('emu-showVideo'), video: getVal('emu-video'),
-      showSkip: getChk('emu-showSkip'), skip: getVal('emu-skip'),
-      pass: getVal('emu-pass'), downloads: emuDownloads
-    },
-    apk: {
-      showVideo: getChk('apk-showVideo'), video: getVal('apk-video'),
-      showSkip: getChk('apk-showSkip'), skip: getVal('apk-skip'),
-      downloads: apkDownloads
-    },
-    mobilePanel: {
-      message: getVal('mp-message'),
-      btnText: getVal('mp-btnText') || 'TICKET',
-      ticketLink: getVal('mp-ticketLink')
-    },
-    buyList: packages
+    freePanel: { showVideo: getChk('fp-showVideo'), video: getVal('fp-video'), showSkip: getChk('fp-showSkip'), skip: getVal('fp-skip'), pass: getVal('fp-pass'), downloads: fpDownloads },
+    freeBypass: { showVideo: getChk('fb-showVideo'), video: getVal('fb-video'), showSkip: getChk('fb-showSkip'), skip: getVal('fb-skip'), pass: getVal('fb-pass'), downloads: fbDownloads },
+    emulator: { showVideo: getChk('emu-showVideo'), video: getVal('emu-video'), showSkip: getChk('emu-showSkip'), skip: getVal('emu-skip'), pass: getVal('emu-pass'), downloads: emuDownloads },
+    apk: { showVideo: getChk('apk-showVideo'), video: getVal('apk-video'), showSkip: getChk('apk-showSkip'), skip: getVal('apk-skip'), downloads: apkDownloads },
+    mobilePanel: { message: getVal('mp-message'), btnText: getVal('mp-btnText') || 'TICKET', ticketLink: getVal('mp-ticketLink') },
+    buyList: packages,
+    buyButton: { text: getVal('buy-btn-text') || 'BUY NOW', link: getVal('buy-btn-link') }
   };
   db.ref('panel_data').update(data).then(() => alert('✅ Saved Successfully!'));
 }
 
-// ===== ADMIN MANAGEMENT =====
+// Admin management
 function loadAdmins() {
   db.ref('admins').on('value', snap => {
     const admins = snap.val() || {};
@@ -410,7 +347,7 @@ function loadAdmins() {
       card.className = 'admin-card';
       card.innerHTML = `<div><strong>${a.email}</strong><small>${a.role === 'super' ? 'Super Admin' : 'Normal Admin'}</small></div>
         <div class="admin-card-btns">
-          ${a.role === 'normal' && userRole === 'super' ? `<button class="btn-perm" onclick="openPermModal('${key}','${a.email}')"><i class='bx bx-cog'></i> Permissions</button>` : ''}
+          ${a.role === 'normal' && userRole === 'super' ? `<button class="btn-perm" onclick="openPermModal('${key}','${a.email}')"><i class='bx bx-cog'></i></button>` : ''}
           ${!isYou && userRole === 'super' ? `<button class="btn-rm" onclick="removeAdmin('${key}')">Remove</button>` : ''}
           ${isYou ? '<span class="you-badge">You</span>' : ''}
         </div>`;
@@ -429,10 +366,10 @@ function openAddAdminModal(role) {
 function confirmAddAdmin() {
   const email = document.getElementById('add-admin-email').value.trim();
   const role = document.getElementById('add-admin-role').value;
-  if (!email || !email.includes('@')) return alert('Valid email required!');
+  if (!email || !email.includes('@')) return alert('Valid email!');
   const key = email.replace(/\./g, '_');
-  const perms = role === 'super' ? allPerms() : { general: 0, cards: 1, 'free-panel': 1, 'free-bypass': 1, emulator: 1, 'free-fire-apk': 1, 'mobile-panel': 1, 'buy-panel': 1 };
-  db.ref('admins/' + key).set({ email, role, permissions: perms }).then(() => { closeModal('modal-add-admin'); alert('✅ Admin Added!'); });
+  const perms = role === 'super' ? allPerms() : { general:0, cards:1, 'free-panel':1, 'free-bypass':1, emulator:1, 'free-fire-apk':1, 'mobile-panel':1, 'buy-panel':1 };
+  db.ref('admins/' + key).set({ email, role, permissions: perms }).then(() => { closeModal('modal-add-admin'); alert('✅ Added!'); });
 }
 
 function openPermModal(key, email) {
@@ -440,7 +377,7 @@ function openPermModal(key, email) {
   document.getElementById('perm-email-label').innerText = email;
   db.ref('admins/' + key + '/permissions').once('value').then(s => {
     const p = s.val() || {};
-    ['general', 'cards', 'free-panel', 'free-bypass', 'emulator', 'free-fire-apk', 'mobile-panel', 'buy-panel'].forEach(k => {
+    ['general','cards','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'].forEach(k => {
       const el = document.getElementById('perm-' + k); if (el) el.checked = !!p[k];
     });
     document.getElementById('modal-permissions').style.display = 'flex';
@@ -450,12 +387,12 @@ function openPermModal(key, email) {
 function savePermissions() {
   const key = document.getElementById('perm-email-key').value;
   const perms = {};
-  ['general', 'cards', 'free-panel', 'free-bypass', 'emulator', 'free-fire-apk', 'mobile-panel', 'buy-panel'].forEach(k => {
+  ['general','cards','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'].forEach(k => {
     perms[k] = document.getElementById('perm-' + k)?.checked || false;
   });
   db.ref('admins/' + key + '/permissions').set(perms).then(() => { closeModal('modal-permissions'); alert('✅ Saved!'); });
 }
 
-function removeAdmin(key) { if (confirm('Remove this admin?')) db.ref('admins/' + key).remove(); }
+function removeAdmin(key) { if (confirm('Remove?')) db.ref('admins/' + key).remove(); }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; }));
