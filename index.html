@@ -71,7 +71,7 @@
       <!-- HOME CARDS -->
       <section id="tab-cards" class="tab-pane">
         <h2>🎴 Homepage Cards Editor</h2>
-        <p style="color:#94a3b8;font-size:13px;margin-bottom:16px;">আইকন = ইমোজি (💻 🔥 ⚡ 📱) বা ইমেজ লিংক</p>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:16px;">আইকন = ইমোজি (💻🔥⚡📱) বা ইমেজ লিংক</p>
         <div class="card" id="home-cards-editor"></div>
       </section>
 
@@ -84,7 +84,7 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fp-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="fp-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="fp-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
+          <label class="section-label-sm">Download Buttons</label>
           <div id="fp-dl-container"></div>
           <button class="btn-add" onclick="openDlModal('fp')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
@@ -99,7 +99,7 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fb-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="fb-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="fb-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
+          <label class="section-label-sm">Download Buttons</label>
           <div id="fb-dl-container"></div>
           <button class="btn-add" onclick="openDlModal('fb')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
@@ -114,7 +114,7 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="emu-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="emu-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="emu-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
+          <label class="section-label-sm">Download Buttons</label>
           <div id="emu-dl-container"></div>
           <button class="btn-add" onclick="openDlModal('emu')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
@@ -128,7 +128,7 @@
           <div class="field"><label>YouTube Embed Link</label><input type="text" id="apk-video"></div>
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="apk-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="apk-skip"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:16px 0 10px;display:block;">Download Buttons</label>
+          <label class="section-label-sm">Download Buttons</label>
           <div id="apk-dl-container"></div>
           <button class="btn-add" onclick="openDlModal('apk')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
@@ -137,10 +137,16 @@
       <!-- MOBILE PANEL -->
       <section id="tab-mobile-panel" class="tab-pane">
         <h2>📱 Mobile Panel</h2>
-        <div class="card">
+        <div class="card" style="margin-bottom:20px;">
+          <h3 class="card-sub-title">📝 Page Header</h3>
           <div class="field"><label>Message Text</label><input type="text" id="mp-message" placeholder="Mobile panel কিনতে Ticket এ যোগাযোগ করুন"></div>
           <div class="field"><label>TICKET Button Text</label><input type="text" id="mp-btnText" value="TICKET"></div>
           <div class="field"><label>TICKET Button Link</label><input type="text" id="mp-ticketLink" placeholder="https://discord.gg/..."></div>
+        </div>
+        <div class="card">
+          <h3 class="card-sub-title">📦 Mobile Packages List</h3>
+          <div id="mp-list"></div>
+          <button class="btn-add" onclick="openMpModal()"><i class='bx bx-plus'></i> Add New Package</button>
         </div>
       </section>
 
@@ -148,12 +154,12 @@
       <section id="tab-buy-panel" class="tab-pane">
         <h2>🛒 Buy Panel List</h2>
         <div class="card" style="margin-bottom:20px;">
-          <h3 style="margin:0 0 14px;font-size:15px;color:#a78bfa;">🔘 Bottom BUY NOW Button</h3>
-          <div class="field"><label>Button Name</label><input type="text" id="buy-btn-text" placeholder="BUY NOW" value="BUY NOW"></div>
+          <h3 class="card-sub-title">🔘 Bottom BUY NOW Button</h3>
+          <div class="field"><label>Button Name</label><input type="text" id="buy-btn-text" value="BUY NOW"></div>
           <div class="field"><label>Button Link</label><input type="text" id="buy-btn-link" placeholder="https://discord.gg/..."></div>
         </div>
         <div class="card">
-          <h3 style="margin:0 0 14px;font-size:15px;color:#a78bfa;">📦 Packages</h3>
+          <h3 class="card-sub-title">📦 Packages</h3>
           <div id="buy-list"></div>
           <button class="btn-add" onclick="openBuyModal()"><i class='bx bx-plus'></i> Add New Package</button>
         </div>
@@ -178,63 +184,51 @@
     </main>
   </div>
 
-  <!-- ========== ALL MODALS ========== -->
+  <!-- ===== MODALS ===== -->
 
-  <!-- Download Button Popup -->
+  <!-- DL Button Modal -->
   <div id="modal-dl-button" class="modal-overlay" style="display:none;">
-    <div class="modal-box" style="max-width:460px;">
+    <div class="modal-box">
       <div class="modal-header">
         <h3 id="dl-modal-title">📥 Add Download Button</h3>
         <button class="modal-close" onclick="closeModal('modal-dl-button')"><i class='bx bx-x'></i></button>
       </div>
       <div class="modal-body">
-        <div class="field">
-          <label>Button Title</label>
-          <input type="text" id="dl-title" placeholder="e.g. MSI EMULATOR / BR MODS">
-        </div>
-        <div class="field">
-          <label>Badge Text (LIVE / V4.6 / OB55)</label>
-          <input type="text" id="dl-badge" value="LIVE" placeholder="LIVE">
-        </div>
-        <div class="field">
-          <label>Download Link (URL)</label>
-          <input type="text" id="dl-url" placeholder="https://www.mediafire.com/...">
-        </div>
+        <div class="field"><label>Button Title</label><input type="text" id="dl-title" placeholder="e.g. MSI EMULATOR"></div>
+        <div class="field"><label>Badge (LIVE / V4.6)</label><input type="text" id="dl-badge" value="LIVE"></div>
+        <div class="field"><label>Download URL</label><input type="text" id="dl-url" placeholder="https://..."></div>
         <input type="hidden" id="dl-type" value="fp">
         <input type="hidden" id="dl-edit-index" value="-1">
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeModal('modal-dl-button')">Cancel</button>
-        <button class="btn-confirm green" onclick="saveDlButton()"><i class='bx bx-check'></i> Save Button</button>
+        <button class="btn-confirm green" onclick="saveDlButton()"><i class='bx bx-check'></i> Save</button>
       </div>
     </div>
   </div>
 
-  <!-- Buy Package Popup -->
+  <!-- Buy Package Modal -->
   <div id="modal-buy-package" class="modal-overlay" style="display:none;">
     <div class="modal-box" style="max-width:480px;">
       <div class="modal-header">
-        <h3 id="buy-modal-title">🛒 Add New Package</h3>
+        <h3 id="buy-modal-title">🛒 Add Package</h3>
         <button class="modal-close" onclick="closeModal('modal-buy-package')"><i class='bx bx-x'></i></button>
       </div>
       <div class="modal-body">
-        <div class="field">
-          <label>Package Name</label>
-          <input type="text" id="buy-name" placeholder="e.g. BR MODE PANEL">
-        </div>
-        <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div class="field"><label>Package Name</label><input type="text" id="buy-name" placeholder="BR MODE PANEL"></div>
+        <div class="price-row">
           <div class="field" style="flex:1;margin-bottom:0;">
             <label>Price (৳)</label>
-            <div style="position:relative;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#00f2fe;font-weight:800;">৳</span>
-              <input type="number" id="buy-price" placeholder="500" style="padding-left:28px;" min="0">
+            <div class="price-input-wrap">
+              <span>৳</span>
+              <input type="number" id="buy-price" placeholder="500" min="0">
             </div>
           </div>
           <div class="field" style="flex:1;margin-bottom:0;">
             <label>Duration</label>
-            <div style="display:flex;gap:8px;">
-              <input type="number" id="buy-duration-num" placeholder="30" style="width:70px;" min="1">
-              <select id="buy-duration-type" style="flex:1;background:rgba(6,7,12,.85);border:1px solid rgba(255,255,255,.1);color:#fff;padding:11px 8px;border-radius:10px;font-size:13px;outline:none;">
+            <div class="duration-row">
+              <input type="number" id="buy-duration-num" placeholder="30" min="1">
+              <select id="buy-duration-type">
                 <option value="DAY">Day</option>
                 <option value="MONTH">Month</option>
                 <option value="YEAR">Year</option>
@@ -243,15 +237,52 @@
             </div>
           </div>
         </div>
-        <div class="field">
-          <label>Features</label>
-          <input type="text" id="buy-features" placeholder="Aimbot AI • Anti-Ban • Auto Update">
-        </div>
+        <div class="field"><label>Features</label><input type="text" id="buy-features" placeholder="Aimbot AI • Anti-Ban"></div>
         <input type="hidden" id="buy-edit-index" value="-1">
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeModal('modal-buy-package')">Cancel</button>
-        <button class="btn-confirm green" onclick="saveBuyPackage()"><i class='bx bx-check'></i> Save Package</button>
+        <button class="btn-confirm green" onclick="saveBuyPackage()"><i class='bx bx-check'></i> Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Package Modal -->
+  <div id="modal-mp-package" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-header">
+        <h3 id="mp-modal-title">📱 Add Mobile Package</h3>
+        <button class="modal-close" onclick="closeModal('modal-mp-package')"><i class='bx bx-x'></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="field"><label>Package Name</label><input type="text" id="mp-pkg-name" placeholder="MOBILE VIP"></div>
+        <div class="price-row">
+          <div class="field" style="flex:1;margin-bottom:0;">
+            <label>Price (৳)</label>
+            <div class="price-input-wrap">
+              <span>৳</span>
+              <input type="number" id="mp-pkg-price" placeholder="500" min="0">
+            </div>
+          </div>
+          <div class="field" style="flex:1;margin-bottom:0;">
+            <label>Duration</label>
+            <div class="duration-row">
+              <input type="number" id="mp-pkg-duration-num" placeholder="30" min="1">
+              <select id="mp-pkg-duration-type">
+                <option value="DAY">Day</option>
+                <option value="MONTH">Month</option>
+                <option value="YEAR">Year</option>
+                <option value="LIFETIME">Lifetime</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field"><label>Features</label><input type="text" id="mp-pkg-features" placeholder="Aimbot • Anti-Ban"></div>
+        <input type="hidden" id="mp-pkg-edit-index" value="-1">
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('modal-mp-package')">Cancel</button>
+        <button class="btn-confirm green" onclick="saveMpPackage()"><i class='bx bx-check'></i> Save</button>
       </div>
     </div>
   </div>
@@ -294,7 +325,7 @@
         <div class="perm-row"><span>Buy Panel</span><label class="switch"><input type="checkbox" id="perm-buy-panel"><span class="slider"></span></label></div>
       </div>
       <div class="modal-footer">
-        <button class="btn-confirm green" onclick="savePermissions()"><i class='bx bx-save'></i> Save Permissions</button>
+        <button class="btn-confirm green" onclick="savePermissions()"><i class='bx bx-save'></i> Save</button>
       </div>
     </div>
   </div>
