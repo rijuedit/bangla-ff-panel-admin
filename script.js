@@ -1,15 +1,15 @@
 // =========================================
-// FIREBASE CONFIGURATION (পাসওয়ার্ড ও ডাটাবেস)
+// FIREBASE CONFIGURATION (Connected)
 // =========================================
 const firebaseConfig = {
-  // আপনার Firebase Config এর কোডগুলো এখানে পেস্ট করবেন
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+  authDomain: "bangla-ff-admin.firebaseapp.com",
+  databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "bangla-ff-admin",
+  storageBucket: "bangla-ff-admin.firebasestorage.app",
+  messagingSenderId: "295013484465",
+  appId: "1:295013484465:web:b6bc2a949e239095761f90",
+  measurementId: "G-BBL16S84J8"
 };
 
 // Initialize Firebase
@@ -18,7 +18,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 
 let currentUser = null;
-let userRole = "normal"; // Default
+let userRole = "normal";
 
 // Mouse Glow Effect
 document.addEventListener('mousemove', function (e) {
@@ -41,18 +41,18 @@ function loginWithGoogle() {
     });
 }
 
-// Check If Logged In User Is Admin
+// Check Admin Permission
 function checkAdminPermission(user) {
   const emailKey = user.email.replace(/\./g, '_at_');
   
   db.ref('admins/' + emailKey).once('value').then((snapshot) => {
     const adminData = snapshot.val();
     
-    // First run bootstrap: If database has NO admins at all, make first logged in user Super Admin!
-    db.ref('admins').once('value').then((allAdminsSnap) => {
-      if (!allAdminsSnap.exists()) {
-        const initialAdmin = { email: user.email, role: 'super' };
-        db.ref('admins/' + emailKey).set(initialAdmin);
+    // Bootstrap: If NO admins exist, make first user Super Admin
+    db.ref('admins').once('value').then((allSnap) => {
+      if (!allSnap.exists()) {
+        const initial = { email: user.email, role: 'super' };
+        db.ref('admins/' + emailKey).set(initial);
         grantAccess(user, 'super');
         return;
       }
@@ -70,63 +70,45 @@ function checkAdminPermission(user) {
 function grantAccess(user, role) {
   currentUser = user;
   userRole = role;
-
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard-screen').style.display = 'flex';
-
   document.getElementById('user-email').innerText = user.email;
   
-  const roleBadge = document.getElementById('user-role-badge');
-  if (role === 'super') {
-    roleBadge.innerText = '👑 Super Admin';
-    roleBadge.className = 'role-tag super';
-    document.getElementById('tab-btn-admins').style.display = 'flex';
-  } else {
-    roleBadge.innerText = '🔧 Normal Admin';
-    roleBadge.className = 'role-tag normal';
-    document.getElementById('tab-btn-admins').style.display = 'none';
-  }
+  const badge = document.getElementById('user-role-badge');
+  badge.innerText = role === 'super' ? '👑 Super Admin' : '🔧 Normal Admin';
+  badge.className = 'role-tag ' + role;
+  
+  document.getElementById('tab-btn-admins').style.display = role === 'super' ? 'flex' : 'none';
 
   loadDataFromDB();
   loadAdminsList();
 }
 
-// Check Auth State On Page Load
 auth.onAuthStateChanged((user) => {
-  if (user) {
-    checkAdminPermission(user);
-  } else {
+  if (user) checkAdminPermission(user);
+  else {
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('dashboard-screen').style.display = 'none';
   }
 });
 
-// Logout
-function logout() {
-  auth.signOut();
-}
+function logout() { auth.signOut(); }
 
-// Switch Tabs
 function switchTab(tabName) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
-
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tabName).classList.add('active');
   event.currentTarget.classList.add('active');
 }
 
-// Load Data From Database To Inputs
+// Load Data
 function loadDataFromDB() {
-  db.ref('panel_data').once('value').then((snapshot) => {
+  db.ref('panel_data').on('value', (snapshot) => {
     const data = snapshot.val() || {};
-    
-    // General
     if(data.general) {
       document.getElementById('gen-discord').value = data.general.discord || '';
       document.getElementById('gen-topup').value = data.general.topup || '';
     }
-
-    // Free Panel
     if(data.freePanel) {
       document.getElementById('fp-video').value = data.freePanel.video || '';
       document.getElementById('fp-skip').value = data.freePanel.skip || '';
@@ -134,12 +116,13 @@ function loadDataFromDB() {
       document.getElementById('fp-dl1').value = data.freePanel.dl1 || '';
       document.getElementById('fp-dl2').value = data.freePanel.dl2 || '';
     }
+    // ... আপনি চাইলে বাকি ট্যাবগুলোর জন্যও একই ভাবে যোগ করতে পারেন
   });
 }
 
-// Save All Inputs To Database
+// Save Data
 function saveData() {
-  const panelData = {
+  const data = {
     general: {
       discord: document.getElementById('gen-discord').value,
       topup: document.getElementById('gen-topup').value
@@ -153,62 +136,37 @@ function saveData() {
     }
   };
 
-  db.ref('panel_data').set(panelData).then(() => {
-    alert('✅ All Data Saved Successfully!');
+  db.ref('panel_data').update(data).then(() => {
+    alert('✅ Data Updated on Live Site!');
   });
 }
 
-// ADMIN MANAGEMENT (Super Admin Only)
+// Admin Management
 function loadAdminsList() {
   db.ref('admins').on('value', (snapshot) => {
     const admins = snapshot.val() || {};
     const superBox = document.getElementById('super-admins-container');
     const normalBox = document.getElementById('normal-admins-container');
-
-    superBox.innerHTML = '';
-    normalBox.innerHTML = '';
+    superBox.innerHTML = ''; normalBox.innerHTML = '';
 
     Object.keys(admins).forEach((key) => {
       const admin = admins[key];
       const isYou = currentUser && currentUser.email === admin.email;
-
       const card = document.createElement('div');
       card.className = 'admin-item-card';
-      card.innerHTML = `
-        <div>
-          <strong>${admin.email} ${isYou ? '(You)' : ''}</strong>
-          <small>${admin.role === 'super' ? 'Super Admin' : 'Normal Admin'}</small>
-        </div>
-        ${!isYou && userRole === 'super' ? `<button class="btn-remove" onclick="removeAdmin('${key}')">Remove</button>` : `<span class="you-tag">${isYou ? 'You' : ''}</span>`}
-      `;
-
-      if (admin.role === 'super') {
-        superBox.appendChild(card);
-      } else {
-        normalBox.appendChild(card);
-      }
+      card.innerHTML = `<div><strong>${admin.email}</strong><small>${admin.role}</small></div>
+      ${!isYou && userRole === 'super' ? `<button class="btn-remove" onclick="removeAdmin('${key}')">Remove</button>` : ''}`;
+      if (admin.role === 'super') superBox.appendChild(card);
+      else normalBox.appendChild(card);
     });
   });
 }
 
 function addNewAdmin(role) {
-  if (userRole !== 'super') return alert('Only Super Admin can add new admins!');
-  
-  const email = prompt(`Enter Email for new ${role === 'super' ? 'Super Admin' : 'Normal Admin'}:`);
-  if (!email || !email.includes('@')) return alert('Invalid Email!');
-
-  const emailKey = email.replace(/\./g, '_at_');
-  db.ref('admins/' + emailKey).set({
-    email: email,
-    role: role
-  }).then(() => {
-    alert('✅ Admin Added Successfully!');
-  });
+  const email = prompt("Enter email:");
+  if (email) db.ref('admins/' + email.replace(/\./g, '_at_')).set({ email, role });
 }
 
-function removeAdmin(emailKey) {
-  if (userRole !== 'super') return alert('Only Super Admin can remove admins!');
-  if (confirm('Are you sure you want to remove this admin?')) {
-    db.ref('admins/' + emailKey).remove();
-  }
+function removeAdmin(key) {
+  if (confirm("Remove this admin?")) db.ref('admins/' + key).remove();
 }
