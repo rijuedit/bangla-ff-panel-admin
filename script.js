@@ -1,167 +1,281 @@
+// Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
-  authDomain: "bangla-ff-admin.firebaseapp.com",
-  databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "bangla-ff-admin",
-  storageBucket: "bangla-ff-admin.firebasestorage.app",
-  messagingSenderId: "295013484465",
-  appId: "1:295013484465:web:b6bc2a949e239095761f90",
-  measurementId: "G-BBL16S84J8"
+    apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+    authDomain: "bangla-ff-admin.firebaseapp.com",
+    databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "bangla-ff-admin",
+    storageBucket: "bangla-ff-admin.firebasestorage.app",
+    messagingSenderId: "295013484465",
+    appId: "1:295013484465:web:b6bc2a949e239095761f90",
+    measurementId: "G-BBL16S84J8"
 };
+
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(), db = firebase.database();
-let currentUser=null, userRole="normal", userPerms={};
-let packages=[], mpPackages=[], fpDownloads=[], fbDownloads=[], emuDownloads=[], apkDownloads=[];
-let homeCards = [];
+const auth = firebase.auth();
+const database = firebase.database();
 
-document.addEventListener('mousemove', e => { const g = document.querySelector('.mouse-glow'); if (g) { g.style.left = e.clientX+'px'; g.style.top = e.clientY+'px'; }});
-function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(r => checkAdmin(r.user)).catch(e => document.getElementById('login-error').innerText = e.message); }
-function checkAdmin(user) {
-  const key = user.email.replace(/\./g, '_');
-  if (user.email === "mdrijowan359@gmail.com") { db.ref('admins/'+key).set({ email:user.email, role:'super', permissions:allPerms() }); grantAccess(user, 'super', allPerms()); return; }
-  db.ref('admins/'+key).once('value').then(s => { const d = s.val(); if (d) grantAccess(user, d.role, d.permissions||{}); else { alert('Access Denied!'); auth.signOut(); } });
-}
-function allPerms() { return { general:1, cards:1, 'free-panel':1, 'free-bypass':1, emulator:1, 'free-fire-apk':1, 'mobile-panel':1, 'buy-panel':1 }; }
-function grantAccess(user, role, perms) {
-  currentUser=user; userRole=role; userPerms=role==='super'?allPerms():(perms||{});
-  document.getElementById('login-screen').style.display='none'; document.getElementById('dashboard-screen').style.display='block';
-  document.getElementById('user-email').innerText=user.email;
-  const b=document.getElementById('user-role-badge'); b.innerText=role==='super'?'👑 Super Admin':'🔧 Normal Admin'; b.className='role-tag '+role;
-  document.getElementById('tab-admins-btn').style.display=role==='super'?'flex':'none';
-  ['general','cards','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'].forEach(t => {
-    const btn = document.querySelector(`.top-tab[data-tab="${t}"]`); if (btn) btn.style.display = (userRole==='super'||userPerms[t])?'flex':'none';
-  });
-  loadData(); if(role==='super') loadAdmins();
-}
-auth.onAuthStateChanged(u => { if(u) checkAdmin(u); else { document.getElementById('login-screen').style.display='flex'; document.getElementById('dashboard-screen').style.display='none'; }});
-function logout() { auth.signOut(); }
-function switchTab(name) { document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.top-tab').forEach(t=>t.classList.remove('active')); document.getElementById('tab-'+name).classList.add('active'); (document.querySelector(`.top-tab[data-tab="${name}"]`)||event.currentTarget).classList.add('active'); }
-function setVal(id,v){ const e=document.getElementById(id); if(e) e.value=v||''; }
-function getVal(id){ return document.getElementById(id)?.value||''; }
-function setChk(id,v){ const e=document.getElementById(id); if(e) e.checked=v!==false; }
-function getChk(id){ return document.getElementById(id)?.checked!==false; }
+const SUPER_ADMIN = "mdrijowan359@gmail.com";
 
-function loadData() {
-  db.ref('panel_data').on('value', snap => {
-    const d = snap.val()||{};
-    setVal('gen-logo', d.general?.logo); setVal('gen-discord', d.general?.discord); setVal('gen-topup', d.general?.topup);
-    if(d.homeCards?.length) homeCards=d.homeCards; renderHomeCardsEditor();
-    
-    setChk('fp-showVideo',d.freePanel?.showVideo); setVal('fp-video',d.freePanel?.video); setChk('fp-showSkip',d.freePanel?.showSkip); setVal('fp-skip',d.freePanel?.skip); setVal('fp-pass',d.freePanel?.pass); fpDownloads=d.freePanel?.downloads||[]; renderDl('fp');
-    setChk('fb-showVideo',d.freeBypass?.showVideo); setVal('fb-video',d.freeBypass?.video); setChk('fb-showSkip',d.freeBypass?.showSkip); setVal('fb-skip',d.freeBypass?.skip); setVal('fb-pass',d.freeBypass?.pass); fbDownloads=d.freeBypass?.downloads||[]; renderDl('fb');
-    setChk('emu-showVideo',d.emulator?.showVideo); setVal('emu-video',d.emulator?.video); setChk('emu-showSkip',d.emulator?.showSkip); setVal('emu-skip',d.emulator?.skip); setVal('emu-pass',d.emulator?.pass); emuDownloads=d.emulator?.downloads||[]; renderDl('emu');
-    setChk('apk-showVideo',d.apk?.showVideo); setVal('apk-video',d.apk?.video); setChk('apk-showSkip',d.apk?.showSkip); setVal('apk-skip',d.apk?.skip); apkDownloads=d.apk?.downloads||[]; renderDl('apk');
+// Mouse Glow Effect
+document.addEventListener('mousemove', (e) => {
+    const glow = document.querySelector('.mouse-glow');
+    if (glow) {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+    }
+});
 
-    setVal('mp-message', d.mobilePanel?.message); setVal('mp-btnText', d.mobilePanel?.btnText); setVal('mp-ticketLink', d.mobilePanel?.ticketLink); setVal('mp-webhook', d.mobilePanel?.webhook);
-    mpPackages=d.mobilePanel?.packages||[]; renderMpPackages();
+// Tab Switch Logic
+document.querySelectorAll('.nav-tab').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        button.classList.add('active');
+        document.getElementById(button.getAttribute('data-tab')).classList.add('active');
+    });
+});
 
-    setVal('buy-btn-text', d.buyButton?.text); setVal('buy-btn-link', d.buyButton?.link); setVal('buy-webhook', d.buyButton?.webhook);
-    packages=d.buyList||[]; renderPackages();
-  });
-}
+// Google Login
+document.getElementById('google-login-btn').addEventListener('click', () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(error => Swal.fire('Error', error.message, 'error'));
+});
 
-function renderHomeCardsEditor() {
-  const box = document.getElementById('home-cards-editor'); if(!box) return; box.innerHTML = '';
-  homeCards.forEach((c,i) => {
-    box.innerHTML += `<div style="border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;margin-bottom:12px;background:rgba(0,0,0,0.2);">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><strong style="color:#a78bfa;">${c.key}</strong><label class="switch"><input type="checkbox" ${c.visible!==false?'checked':''} onchange="homeCards[${i}].visible=this.checked"><span class="slider"></span></label></div>
-      <div class="pkg-row"><input style="width:70px;text-align:center;font-size:20px;" value="${c.icon||''}" onchange="homeCards[${i}].icon=this.value"><input value="${c.title||''}" onchange="homeCards[${i}].title=this.value"><input value="${c.subtitle||''}" onchange="homeCards[${i}].subtitle=this.value"></div>
-      <label style="font-size:12px;color:#94a3b8;"><input type="checkbox" ${c.featured?'checked':''} onchange="homeCards[${i}].featured=this.checked"> Featured Badge</label>
-    </div>`;
-  });
-}
+// Logout
+document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
 
-function getArr(t){ return t==='fp'?fpDownloads:t==='fb'?fbDownloads:t==='emu'?emuDownloads:t==='apk'?apkDownloads:[]; }
-function renderDl(type) {
-  const box = document.getElementById(type+'-dl-container'); if(!box) return; const arr = getArr(type); box.innerHTML = '';
-  arr.forEach((item,i) => {
-    box.innerHTML += `<div style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
-      <div style="flex:1;min-width:0;"><div style="font-weight:800;color:#fff;font-size:13px;margin-bottom:3px;">${item.title||'DL'} <span style="font-size:10px;background:rgba(0,242,254,0.15);color:#00f2fe;padding:2px 6px;border-radius:4px;">${item.badge||'LIVE'}</span></div><div style="font-size:11px;color:#94a3b8;">${item.url||'No Link'}</div></div>
-      <div style="display:flex;gap:6px;"><button class="btn-perm" onclick="openDlModal('${type}',${i})"><i class='bx bx-edit'></i></button><button class="btn-del" onclick="getArr('${type}').splice(${i},1);renderDl('${type}')"><i class='bx bx-trash'></i></button></div>
-    </div>`;
-  });
-}
-function openDlModal(type, editIndex=-1) {
-  document.getElementById('dl-type').value=type; document.getElementById('dl-edit-index').value=editIndex;
-  const arr=getArr(type);
-  if(editIndex>=0 && arr[editIndex]){ setVal('dl-title',arr[editIndex].title); setVal('dl-badge',arr[editIndex].badge); setVal('dl-url',arr[editIndex].url); }
-  else{ setVal('dl-title',''); setVal('dl-badge','LIVE'); setVal('dl-url',''); }
-  document.getElementById('modal-dl-button').style.display='flex';
-}
-function saveDlButton() {
-  const type=getVal('dl-type'), idx=parseInt(getVal('dl-edit-index')), title=getVal('dl-title'), badge=getVal('dl-badge')||'LIVE', url=getVal('dl-url');
-  if(!title) return alert('Title!'); const arr=getArr(type); const item={title,badge,url};
-  if(idx>=0) arr[idx]=item; else arr.push(item); renderDl(type); closeModal('modal-dl-button');
+// Auth Observer
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-dashboard').style.display = 'flex';
+        document.getElementById('user-email').innerText = user.email;
+        document.getElementById('user-photo').src = user.photoURL || 'https://via.placeholder.com/40';
+
+        loadGeneralSettings();
+        loadHomeCardsEditor();
+        loadProducts();
+    } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('admin-dashboard').style.display = 'none';
+    }
+});
+
+// 1. General Settings
+function loadGeneralSettings() {
+    database.ref('general_settings').on('value', snapshot => {
+        const data = snapshot.val() || {};
+        document.getElementById('setting-logo').value = data.logo || '';
+        document.getElementById('setting-discord').value = data.discord || '';
+        document.getElementById('setting-topup').value = data.topup || '';
+    });
 }
 
-function buildDur(num, type){ if(type==='LIFETIME') return 'LIFETIME'; return num?`${num} ${type}`:''; }
-
-// BUY PC
-function renderPackages() {
-  const box=document.getElementById('buy-list'); if(!box) return; box.innerHTML='';
-  packages.forEach((p,i) => {
-    box.innerHTML += `<div style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
-      <div style="flex:1;min-width:0;"><div style="font-weight:800;color:#fff;font-size:14px;margin-bottom:4px;">${p.name}</div><div style="font-size:12px;color:#00f2fe;font-weight:700;">Sell: ৳${p.sellPrice} <span style="color:#ef4444;margin-left:8px;">Buy: ৳${p.buyPrice}</span></div></div>
-      <div style="display:flex;gap:6px;"><button class="btn-perm" onclick="openBuyModal(${i})"><i class='bx bx-edit'></i></button><button class="btn-del" onclick="packages.splice(${i},1);renderPackages()"><i class='bx bx-trash'></i></button></div>
-    </div>`;
-  });
-}
-function openBuyModal(idx=-1) {
-  document.getElementById('buy-edit-index').value=idx;
-  if(idx>=0){ const p=packages[idx]; setVal('buy-name',p.name); setVal('buy-buy-price',p.buyPrice); setVal('buy-sell-price',p.sellPrice); setVal('buy-duration-num',p.durationNum); setVal('buy-duration-type',p.durationType); setVal('buy-features',p.desc); }
-  else { setVal('buy-name',''); setVal('buy-buy-price',''); setVal('buy-sell-price',''); setVal('buy-duration-num','30'); setVal('buy-duration-type','DAY'); setVal('buy-features',''); }
-  document.getElementById('modal-buy-package').style.display='flex';
-}
-function saveBuyPackage() {
-  const name=getVal('buy-name'), buyPrice=getVal('buy-buy-price'), sellPrice=getVal('buy-sell-price'), durationNum=getVal('buy-duration-num'), durationType=getVal('buy-duration-type'), desc=getVal('buy-features'), idx=parseInt(getVal('buy-edit-index'));
-  if(!name||!sellPrice) return alert('Name & Sell Price required!');
-  const pkg = { name, buyPrice, sellPrice, durationNum, durationType, durationText:buildDur(durationNum,durationType), desc };
-  if(idx>=0) packages[idx]=pkg; else packages.push(pkg); renderPackages(); closeModal('modal-buy-package');
+function saveGeneralSettings() {
+    database.ref('general_settings').set({
+        logo: document.getElementById('setting-logo').value,
+        discord: document.getElementById('setting-discord').value,
+        topup: document.getElementById('setting-topup').value
+    }).then(() => Swal.fire('Saved', 'General Settings সেভ হয়েছে!', 'success'));
 }
 
-// MOBILE PANEL (WITH CATEGORY)
-function renderMpPackages() {
-  const box=document.getElementById('mp-list'); if(!box) return; box.innerHTML='';
-  mpPackages.forEach((p,i) => {
-    let catIcon = p.category === 'IOS' ? "<i class='bx bxl-apple'></i> iOS" : "<i class='bx bxl-android'></i> Android";
-    box.innerHTML += `<div style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
-      <div style="flex:1;min-width:0;">
-        <div style="font-weight:800;color:#fff;font-size:14px;margin-bottom:4px;">${p.name} <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;margin-left:6px;">${catIcon}</span></div>
-        <div style="font-size:12px;color:#00f2fe;font-weight:700;">Sell: ৳${p.sellPrice} <span style="color:#ef4444;margin-left:8px;">Buy: ৳${p.buyPrice}</span></div>
-      </div>
-      <div style="display:flex;gap:6px;"><button class="btn-perm" onclick="openMpModal(${i})"><i class='bx bx-edit'></i></button><button class="btn-del" onclick="mpPackages.splice(${i},1);renderMpPackages()"><i class='bx bx-trash'></i></button></div>
-    </div>`;
-  });
-}
-function openMpModal(idx=-1) {
-  document.getElementById('mp-pkg-edit-index').value=idx;
-  if(idx>=0){ const p=mpPackages[idx]; setVal('mp-pkg-category',p.category); setVal('mp-pkg-name',p.name); setVal('mp-pkg-buy-price',p.buyPrice); setVal('mp-pkg-sell-price',p.sellPrice); setVal('mp-pkg-duration-num',p.durationNum); setVal('mp-pkg-duration-type',p.durationType); setVal('mp-pkg-features',p.desc); }
-  else { setVal('mp-pkg-category','ANDROID'); setVal('mp-pkg-name',''); setVal('mp-pkg-buy-price',''); setVal('mp-pkg-sell-price',''); setVal('mp-pkg-duration-num','30'); setVal('mp-pkg-duration-type','DAY'); setVal('mp-pkg-features',''); }
-  document.getElementById('modal-mp-package').style.display='flex';
-}
-function saveMpPackage() {
-  const category=getVal('mp-pkg-category'), name=getVal('mp-pkg-name'), buyPrice=getVal('mp-pkg-buy-price'), sellPrice=getVal('mp-pkg-sell-price'), durationNum=getVal('mp-pkg-duration-num'), durationType=getVal('mp-pkg-duration-type'), desc=getVal('mp-pkg-features'), idx=parseInt(getVal('mp-pkg-edit-index'));
-  if(!name||!sellPrice) return alert('Name & Sell Price required!');
-  const pkg = { category, name, buyPrice, sellPrice, durationNum, durationType, durationText:buildDur(durationNum,durationType), desc };
-  if(idx>=0) mpPackages[idx]=pkg; else mpPackages.push(pkg); renderMpPackages(); closeModal('modal-mp-package');
+// 2. Home Cards Editor
+const defaultCards = {
+    freePanel: { title: "FREE PANEL", subtitle: "NEW PC PANEL UPDATED OB55", icon: "💻", badge: "FEATURED", link: "free.html", isVisible: true },
+    freeBypass: { title: "FREE BYPASS", subtitle: "PREMIUM • FAST • RELIABLE", icon: "💻", badge: "", link: "bypass.html", isVisible: false },
+    emulator: { title: "EMULATOR", subtitle: "WORKING EMULATOR", icon: "💎", badge: "", link: "emulator.html", isVisible: true },
+    freeFireApk: { title: "FREE FIRE APK", subtitle: "DOWNLOAD LATEST APK", icon: "⚡", badge: "", link: "apk.html", isVisible: true },
+    mobilePanel: { title: "MOBILE PANEL", subtitle: "ANDROID MOBILE SYSTEM", icon: "📱", badge: "", link: "mobile.html", isVisible: true },
+    buyPanel: { title: "BUY PANEL", subtitle: "PREMIUM • FAST • RELIABLE", icon: "🔥", badge: "VIP", link: "buy.html", isVisible: true }
+};
+
+function loadHomeCardsEditor() {
+    const container = document.getElementById('home-cards-container');
+    database.ref('home_cards').on('value', snapshot => {
+        const data = snapshot.val() || defaultCards;
+        container.innerHTML = '';
+
+        Object.keys(data).forEach(key => {
+            const card = data[key];
+            const div = document.createElement('div');
+            div.className = 'home-card-item';
+            div.innerHTML = `
+                <div class="card-item-header">
+                    <h4>${key}</h4>
+                    <label><input type="checkbox" id="card-visible-${key}" ${card.isVisible !== false ? 'checked' : ''}> Show</label>
+                </div>
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="card-title-${key}" value="${card.title || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Subtitle</label>
+                    <input type="text" id="card-subtitle-${key}" value="${card.subtitle || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Icon / Emoji / Image URL</label>
+                    <input type="text" id="card-icon-${key}" value="${card.icon || ''}">
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="card-badge-${key}" ${card.badge ? 'checked' : ''}> Featured Badge</label>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    });
 }
 
-function saveData() {
-  const data = {
-    general: { logo:getVal('gen-logo'), discord:getVal('gen-discord'), topup:getVal('gen-topup') },
-    homeCards,
-    freePanel: { showVideo:getChk('fp-showVideo'), video:getVal('fp-video'), showSkip:getChk('fp-showSkip'), skip:getVal('fp-skip'), pass:getVal('fp-pass'), downloads:fpDownloads },
-    freeBypass: { showVideo:getChk('fb-showVideo'), video:getVal('fb-video'), showSkip:getChk('fb-showSkip'), skip:getVal('fb-skip'), pass:getVal('fb-pass'), downloads:fbDownloads },
-    emulator: { showVideo:getChk('emu-showVideo'), video:getVal('emu-video'), showSkip:getChk('emu-showSkip'), skip:getVal('emu-skip'), pass:getVal('emu-pass'), downloads:emuDownloads },
-    apk: { showVideo:getChk('apk-showVideo'), video:getVal('apk-video'), showSkip:getChk('apk-showSkip'), skip:getVal('apk-skip'), downloads:apkDownloads },
-    mobilePanel: { message:getVal('mp-message'), btnText:getVal('mp-btnText'), ticketLink:getVal('mp-ticketLink'), webhook:getVal('mp-webhook'), packages:mpPackages },
-    buyList: packages, buyButton: { text:getVal('buy-btn-text'), link:getVal('buy-btn-link'), webhook:getVal('buy-webhook') }
-  };
-  db.ref('panel_data').update(data).then(()=>alert('✅ Saved!'));
+function saveHomeCards() {
+    const keys = ['freePanel', 'freeBypass', 'emulator', 'freeFireApk', 'mobilePanel', 'buyPanel'];
+    const updatedCards = {};
+
+    keys.forEach(key => {
+        const title = document.getElementById(`card-title-${key}`) ? document.getElementById(`card-title-${key}`).value : defaultCards[key].title;
+        const subtitle = document.getElementById(`card-subtitle-${key}`) ? document.getElementById(`card-subtitle-${key}`).value : defaultCards[key].subtitle;
+        const icon = document.getElementById(`card-icon-${key}`) ? document.getElementById(`card-icon-${key}`).value : defaultCards[key].icon;
+        const isVisible = document.getElementById(`card-visible-${key}`) ? document.getElementById(`card-visible-${key}`).checked : true;
+        const hasBadge = document.getElementById(`card-badge-${key}`) ? document.getElementById(`card-badge-${key}`).checked : false;
+
+        updatedCards[key] = {
+            title: title,
+            subtitle: subtitle,
+            icon: icon,
+            badge: hasBadge ? "FEATURED" : "",
+            link: defaultCards[key] ? defaultCards[key].link : "index.html",
+            isVisible: isVisible
+        };
+    });
+
+    database.ref('home_cards').set(updatedCards)
+        .then(() => Swal.fire('Saved', 'Homepage Cards সেভ হয়েছে!', 'success'));
 }
 
-function loadAdmins(){ db.ref('admins').on('value',s=>{ /* same code as before */ }); }
-function openAddAdminModal(r){ setVal('add-admin-role',r); setVal('add-admin-email',''); document.getElementById('modal-add-admin').style.display='flex'; }
-function confirmAddAdmin(){ /* same */ closeModal('modal-add-admin'); }
-function closeModal(id){ document.getElementById(id).style.display='none'; }
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';}));
+// 3. Products / Panel Package Manager
+function openProductModal(id = null) {
+    document.getElementById('product-form').reset();
+    document.getElementById('price-duration-rows').innerHTML = '';
+    document.getElementById('prod-id').value = '';
+
+    if (id) {
+        document.getElementById('modal-title').innerText = 'প্যাকেজ এডিট করুন';
+        database.ref('products/' + id).once('value', snapshot => {
+            const p = snapshot.val();
+            if (p) {
+                document.getElementById('prod-id').value = id;
+                document.getElementById('prod-title').value = p.title || '';
+                document.getElementById('prod-icon').value = p.icon || '';
+                document.getElementById('prod-category').value = p.category || 'buy';
+                document.getElementById('prod-visible').checked = p.isVisible !== false;
+
+                if (p.priceList && p.priceList.length > 0) {
+                    p.priceList.forEach(item => addPriceDurationRow(item.duration, item.sellPrice, item.buyPrice));
+                } else {
+                    addPriceDurationRow('30 Day', p.sellPrice || 0, p.buyPrice || 0);
+                }
+            }
+        });
+    } else {
+        document.getElementById('modal-title').innerText = 'নতুন প্যাকেজ যুক্ত করুন';
+        addPriceDurationRow('1 Hour', '100', '50');
+        addPriceDurationRow('7 Day', '350', '200');
+        addPriceDurationRow('30 Day', '600', '400');
+    }
+
+    document.getElementById('product-modal').style.display = 'flex';
+}
+
+function closeProductModal() {
+    document.getElementById('product-modal').style.display = 'none';
+}
+
+function addPriceDurationRow(duration = '', sellPrice = '', buyPrice = '') {
+    const container = document.getElementById('price-duration-rows');
+    const div = document.createElement('div');
+    div.className = 'price-row-item';
+    div.innerHTML = `
+        <input type="text" class="p-dur" placeholder="মেয়াদ (e.g. 30 Day)" value="${duration}" required>
+        <input type="number" class="p-sell" placeholder="Sell Price (৳)" value="${sellPrice}" required>
+        <input type="number" class="p-buy" placeholder="Buy Price (৳)" value="${buyPrice}">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-del-row"><i class="fa-solid fa-trash"></i></button>
+    `;
+    container.appendChild(div);
+}
+
+document.getElementById('product-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const id = document.getElementById('prod-id').value || database.ref('products').push().key;
+    const title = document.getElementById('prod-title').value;
+    const icon = document.getElementById('prod-icon').value;
+    const category = document.getElementById('prod-category').value;
+    const isVisible = document.getElementById('prod-visible').checked;
+
+    const priceRows = document.querySelectorAll('.price-row-item');
+    const priceList = [];
+    priceRows.forEach(row => {
+        priceList.push({
+            duration: row.querySelector('.p-dur').value,
+            sellPrice: row.querySelector('.p-sell').value,
+            buyPrice: row.querySelector('.p-buy').value || 0
+        });
+    });
+
+    database.ref('products/' + id).set({
+        title, icon, category, isVisible, priceList
+    }).then(() => {
+        closeProductModal();
+        Swal.fire('Saved', 'প্যাকেজ সেভ হয়েছে!', 'success');
+    });
+});
+
+function loadProducts() {
+    const container = document.getElementById('product-list');
+    database.ref('products').on('value', snapshot => {
+        container.innerHTML = '';
+        const data = snapshot.val();
+        if (data) {
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+                const card = document.createElement('div');
+                card.className = 'product-card-admin';
+
+                let iconHTML = item.icon && item.icon.startsWith('http') ? `<img src="${item.icon}">` : (item.icon || '👑');
+                let pricesHTML = '';
+                if (item.priceList) {
+                    item.priceList.forEach(p => {
+                        pricesHTML += `<span class="price-pill">${p.duration}: ৳${p.sellPrice} <small class="buy-price-text">(Buy: ৳${p.buyPrice || 0})</small></span>`;
+                    });
+                }
+
+                card.innerHTML = `
+                    <div class="product-info">
+                        <div class="product-icon-frame">${iconHTML}</div>
+                        <div>
+                            <h4>${item.title} <small style="color:var(--text-muted);">[${item.category}]</small></h4>
+                            <div style="margin-top:6px;">${pricesHTML}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="openProductModal('${key}')" class="btn-secondary"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteProduct('${key}')" class="btn-del-row" style="padding:0 12px;"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } else {
+            container.innerHTML = '<p style="color:var(--text-muted); text-align:center;">কোনো প্যাকেজ যুক্ত করা নেই। "+ Add New Package" এ ক্লিক করে যুক্ত করুন।</p>';
+        }
+    });
+}
+
+function deleteProduct(key) {
+    Swal.fire({
+        title: 'মুছে ফেলতে চান?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff4757',
+        confirmButtonText: 'হ্যাঁ'
+    }).then(r => {
+        if (r.isConfirmed) database.ref('products/' + key).remove();
+    });
+}
