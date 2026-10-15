@@ -34,11 +34,12 @@
       <div class="nav-left"><i class='bx bxs-crown'></i><span>BANGLA FF ADMIN</span></div>
       <div class="nav-center">
         <button class="top-tab active" data-tab="general" onclick="switchTab('general')"><i class='bx bx-slider-alt'></i> General</button>
+        <button class="top-tab" data-tab="cards" onclick="switchTab('cards')"><i class='bx bx-grid-alt'></i> Home Cards</button>
         <button class="top-tab" data-tab="free-panel" onclick="switchTab('free-panel')"><i class='bx bx-laptop'></i> Free Panel</button>
         <button class="top-tab" data-tab="free-bypass" onclick="switchTab('free-bypass')"><i class='bx bx-shield'></i> Bypass</button>
         <button class="top-tab" data-tab="emulator" onclick="switchTab('emulator')"><i class='bx bx-desktop'></i> Emulator</button>
         <button class="top-tab" data-tab="free-fire-apk" onclick="switchTab('free-fire-apk')"><i class='bx bx-mobile'></i> APK</button>
-        <button class="top-tab" data-tab="mobile-panel" onclick="switchTab('mobile-panel')"><i class='bx bx-mobile-alt'></i> Mobile Panel</button>
+        <button class="top-tab" data-tab="mobile-panel" onclick="switchTab('mobile-panel')"><i class='bx bx-mobile-alt'></i> Mobile</button>
         <button class="top-tab" data-tab="buy-panel" onclick="switchTab('buy-panel')"><i class='bx bx-shopping-bag'></i> Buy Panel</button>
         <button class="top-tab super-only" id="tab-admins-btn" onclick="switchTab('admins')"><i class='bx bxs-user-badge'></i> Admins</button>
       </div>
@@ -59,20 +60,17 @@
       <section id="tab-general" class="tab-pane active">
         <h2>⚙️ General Settings</h2>
         <div class="card">
-          <div class="field"><label>Website Logo URL (png/jpg link)</label><input type="text" id="gen-logo" placeholder="https://i.ibb.co/..../logo.png"></div>
+          <div class="field"><label>Website Logo URL</label><input type="text" id="gen-logo" placeholder="https://i.ibb.co/.../logo.png"></div>
           <div class="field"><label>Discord Support Link</label><input type="text" id="gen-discord" placeholder="https://discord.gg/..."></div>
           <div class="field"><label>Diamond Top-Up Link</label><input type="text" id="gen-topup" placeholder="https://..."></div>
         </div>
+      </section>
 
-        <div class="card" style="margin-top:20px;">
-          <h3 style="margin:0 0 10px;font-size:15px;color:#a78bfa;">👁️ Homepage Boxes (Show / Hide)</h3>
-          <div class="perm-row"><span>💻 Free Panel</span><label class="switch"><input type="checkbox" id="vis-freePanel" checked><span class="slider"></span></label></div>
-          <div class="perm-row"><span>🛡️ Free Bypass</span><label class="switch"><input type="checkbox" id="vis-freeBypass" checked><span class="slider"></span></label></div>
-          <div class="perm-row"><span>🖥️ Emulator</span><label class="switch"><input type="checkbox" id="vis-emulator" checked><span class="slider"></span></label></div>
-          <div class="perm-row"><span>📱 Free Fire APK</span><label class="switch"><input type="checkbox" id="vis-freeFireApk" checked><span class="slider"></span></label></div>
-          <div class="perm-row"><span>🔥 Buy Panel</span><label class="switch"><input type="checkbox" id="vis-buyPanel" checked><span class="slider"></span></label></div>
-          <div class="perm-row"><span>📱 Mobile Panel</span><label class="switch"><input type="checkbox" id="vis-mobilePanel" checked><span class="slider"></span></label></div>
-        </div>
+      <!-- HOME CARDS (Icon + Title + Subtitle + Hide) -->
+      <section id="tab-cards" class="tab-pane">
+        <h2>🎴 Homepage Cards Editor</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:16px;">আইকন = ইমোজি (💻 🔥 ⚡ 📱 💎) অথবা ইমেজ লিংক</p>
+        <div class="card" id="home-cards-editor"></div>
       </section>
 
       <!-- FREE PANEL -->
@@ -84,7 +82,7 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fp-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="fp-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="fp-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:12px 0 8px;display:block;">Download Buttons</label>
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons (Title + Badge + Link)</label>
           <div id="fp-dl-container"></div>
           <button class="btn-add" onclick="addDl('fp')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
@@ -99,7 +97,7 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="fb-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="fb-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="fb-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:12px 0 8px;display:block;">Download Buttons</label>
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
           <div id="fb-dl-container"></div>
           <button class="btn-add" onclick="addDl('fb')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
@@ -114,7 +112,7 @@
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="emu-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="emu-skip"></div>
           <div class="field"><label>RAR Password</label><input type="text" id="emu-pass"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:12px 0 8px;display:block;">Download Buttons</label>
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
           <div id="emu-dl-container"></div>
           <button class="btn-add" onclick="addDl('emu')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
@@ -128,28 +126,19 @@
           <div class="field"><label>YouTube Embed Link</label><input type="text" id="apk-video"></div>
           <div class="perm-row"><span>⏭️ Show How To Skip</span><label class="switch"><input type="checkbox" id="apk-showSkip" checked><span class="slider"></span></label></div>
           <div class="field"><label>How To Skip Link</label><input type="text" id="apk-skip"></div>
-          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:12px 0 8px;display:block;">Download Buttons</label>
+          <label style="font-size:13px;font-weight:700;color:#cbd5e1;margin:14px 0 8px;display:block;">Download Buttons</label>
           <div id="apk-dl-container"></div>
           <button class="btn-add" onclick="addDl('apk')"><i class='bx bx-plus'></i> Add Download Button</button>
         </div>
       </section>
 
-      <!-- MOBILE PANEL (Special) -->
+      <!-- MOBILE PANEL -->
       <section id="tab-mobile-panel" class="tab-pane">
         <h2>📱 Mobile Panel</h2>
         <div class="card">
-          <div class="field">
-            <label>Message Text (পৃষ্ঠায় যে লেখা দেখাবে)</label>
-            <input type="text" id="mp-message" placeholder="Mobile panel কিনতে Ticket এ যোগাযোগ করুন">
-          </div>
-          <div class="field">
-            <label>TICKET Button Text</label>
-            <input type="text" id="mp-btnText" placeholder="TICKET" value="TICKET">
-          </div>
-          <div class="field">
-            <label>TICKET Button Link</label>
-            <input type="text" id="mp-ticketLink" placeholder="https://discord.gg/... or telegram link">
-          </div>
+          <div class="field"><label>Message Text</label><input type="text" id="mp-message" placeholder="Mobile panel কিনতে Ticket এ যোগাযোগ করুন"></div>
+          <div class="field"><label>TICKET Button Text</label><input type="text" id="mp-btnText" value="TICKET"></div>
+          <div class="field"><label>TICKET Button Link</label><input type="text" id="mp-ticketLink" placeholder="https://discord.gg/..."></div>
         </div>
       </section>
 
@@ -166,7 +155,7 @@
       <section id="tab-admins" class="tab-pane">
         <h2>👑 Admin Management</h2>
         <div class="info-box">
-          <p>💡 Super Admin: সব কাজ + Admin manage</p>
+          <p>💡 Super Admin: সব কাজ</p>
           <p>💡 Normal Admin: Permission অনুযায়ী</p>
         </div>
         <div class="admin-actions">
@@ -181,7 +170,7 @@
     </main>
   </div>
 
-  <!-- ADD ADMIN MODAL -->
+  <!-- MODALS -->
   <div id="modal-add-admin" class="modal-overlay" style="display:none;">
     <div class="modal-box">
       <div class="modal-header">
@@ -199,7 +188,6 @@
     </div>
   </div>
 
-  <!-- PERM MODAL -->
   <div id="modal-permissions" class="modal-overlay" style="display:none;">
     <div class="modal-box">
       <div class="modal-header">
@@ -210,6 +198,7 @@
         <p class="perm-for">Access for: <b id="perm-email-label">—</b></p>
         <input type="hidden" id="perm-email-key">
         <div class="perm-row"><span>General</span><label class="switch"><input type="checkbox" id="perm-general"><span class="slider"></span></label></div>
+        <div class="perm-row"><span>Home Cards</span><label class="switch"><input type="checkbox" id="perm-cards"><span class="slider"></span></label></div>
         <div class="perm-row"><span>Free Panel</span><label class="switch"><input type="checkbox" id="perm-free-panel"><span class="slider"></span></label></div>
         <div class="perm-row"><span>Bypass</span><label class="switch"><input type="checkbox" id="perm-free-bypass"><span class="slider"></span></label></div>
         <div class="perm-row"><span>Emulator</span><label class="switch"><input type="checkbox" id="perm-emulator"><span class="slider"></span></label></div>
