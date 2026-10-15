@@ -190,7 +190,7 @@ function renderHomeCardsEditor() {
   });
 }
 
-// ===== DOWNLOAD BUTTONS (Title + Badge + Link) =====
+// ===== DOWNLOAD BUTTONS POPUP SYSTEM (NEW MODAL BASED) =====
 function getArr(type) {
   if (type === 'fp') return fpDownloads;
   if (type === 'fb') return fbDownloads;
@@ -204,20 +204,66 @@ function renderDl(type) {
   if (!box) return;
   const arr = getArr(type);
   box.innerHTML = '';
+
   arr.forEach((item, i) => {
     box.innerHTML += `
-      <div class="pkg-row" style="margin-bottom:8px;flex-wrap:wrap;">
-        <input style="min-width:120px;" value="${item.title || ''}" onchange="getArr('${type}')[${i}].title=this.value" placeholder="Button Title">
-        <input style="width:90px;" value="${item.badge || 'LIVE'}" onchange="getArr('${type}')[${i}].badge=this.value" placeholder="LIVE">
-        <input style="flex:1;min-width:150px;" value="${item.url || ''}" onchange="getArr('${type}')[${i}].url=this.value" placeholder="Download URL">
-        <button class="btn-del" onclick="getArr('${type}').splice(${i},1);renderDl('${type}')"><i class='bx bx-trash'></i></button>
+      <div class="pkg-row" style="background:rgba(0,0,0,0.25);padding:12px 16px;border-radius:12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:800;color:#fff;font-size:13px;margin-bottom:3px;">
+            ${item.title || 'Download Button'} 
+            <span style="font-size:10px;background:rgba(0,242,254,0.15);color:#00f2fe;padding:2px 6px;border-radius:4px;margin-left:6px;border:1px solid rgba(0,242,254,0.3);">${item.badge || 'LIVE'}</span>
+          </div>
+          <div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px;">${item.url || 'No Link Set'}</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-left:10px;">
+          <button class="btn-perm" onclick="openDlModal('${type}', ${i})" title="Edit"><i class='bx bx-edit'></i></button>
+          <button class="btn-del" onclick="getArr('${type}').splice(${i},1); renderDl('${type}');"><i class='bx bx-trash'></i></button>
+        </div>
       </div>`;
   });
 }
 
-function addDl(type) {
-  getArr(type).push({ title: 'NEW DOWNLOAD', badge: 'LIVE', url: '' });
+function openDlModal(type, editIndex = -1) {
+  document.getElementById('dl-type').value = type;
+  document.getElementById('dl-edit-index').value = editIndex;
+  document.getElementById('dl-modal-title').innerText = editIndex >= 0 ? '✏️ Edit Download Button' : '📥 Add Download Button';
+
+  const arr = getArr(type);
+
+  if (editIndex >= 0 && arr[editIndex]) {
+    const item = arr[editIndex];
+    document.getElementById('dl-title').value = item.title || '';
+    document.getElementById('dl-badge').value = item.badge || 'LIVE';
+    document.getElementById('dl-url').value = item.url || '';
+  } else {
+    document.getElementById('dl-title').value = '';
+    document.getElementById('dl-badge').value = 'LIVE';
+    document.getElementById('dl-url').value = '';
+  }
+
+  document.getElementById('modal-dl-button').style.display = 'flex';
+}
+
+function saveDlButton() {
+  const type = document.getElementById('dl-type').value;
+  const editIndex = parseInt(document.getElementById('dl-edit-index').value);
+  const title = document.getElementById('dl-title').value.trim();
+  const badge = document.getElementById('dl-badge').value.trim() || 'LIVE';
+  const url = document.getElementById('dl-url').value.trim();
+
+  if (!title) return alert('Button Title লিখুন!');
+
+  const arr = getArr(type);
+  const item = { title, badge, url };
+
+  if (editIndex >= 0) {
+    arr[editIndex] = item;
+  } else {
+    arr.push(item);
+  }
+
   renderDl(type);
+  closeModal('modal-dl-button');
 }
 
 // ===== BUY PACKAGES POPUP SYSTEM =====
