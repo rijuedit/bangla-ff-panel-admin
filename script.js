@@ -1,5 +1,5 @@
 // =========================================
-// FIREBASE CONFIGURATION (Connected)
+// FIREBASE CONFIG
 // =========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
@@ -12,80 +12,84 @@ const firebaseConfig = {
   measurementId: "G-BBL16S84J8"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
 let currentUser = null;
 let userRole = "normal";
+let userPerms = {};
+let packages = [];
 
-// Mouse Glow Effect
-document.addEventListener('mousemove', function (e) {
-  const glow = document.querySelector('.mouse-glow');
-  if (glow) {
-    glow.style.left = e.clientX + 'px';
-    glow.style.top = e.clientY + 'px';
-  }
+// Mouse glow
+document.addEventListener('mousemove', e => {
+  const g = document.querySelector('.mouse-glow');
+  if (g) { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; }
 });
 
-// Google Sign-In
+// ===== AUTH =====
 function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
-    .then((result) => {
-      checkAdminPermission(result.user);
-    })
-    .catch((error) => {
-      document.getElementById('login-error').innerText = error.message;
-    });
+    .then(r => checkAdmin(r.user))
+    .catch(e => document.getElementById('login-error').innerText = e.message);
 }
 
-// Check Admin Permission
-function checkAdminPermission(user) {
-  const emailKey = user.email.replace(/\./g, '_at_');
-  
-  db.ref('admins/' + emailKey).once('value').then((snapshot) => {
-    const adminData = snapshot.val();
-    
-    // Bootstrap: If NO admins exist, make first user Super Admin
-    db.ref('admins').once('value').then((allSnap) => {
-      if (!allSnap.exists()) {
-        const initial = { email: user.email, role: 'super' };
-        db.ref('admins/' + emailKey).set(initial);
-        grantAccess(user, 'super');
-        return;
-      }
-
-      if (adminData) {
-        grantAccess(user, adminData.role);
-      } else {
-        alert('Access Denied! You are not an authorized admin.');
-        auth.signOut();
-      }
-    });
+function checkAdmin(user) {
+  const key = user.email.replace(/\./g, '_');
+  db.ref('admins').once('value').then(snap => {
+    if (!snap.exists()) {
+      // First user = Super Admin
+      db.ref('admins/' + key).set({ email: user.email, role: 'super', permissions: allPermsTrue() });
+      grantAccess(user, 'super', allPermsTrue());
+      return;
+    }
+    const data = snap.val()[key];
+    if (data) grantAccess(user, data.role, data.permissions || {});
+    else { alert('Access Denied!'); auth.signOut(); }
   });
 }
 
-function grantAccess(user, role) {
+function allPermsTrue() {
+  return { general: true, 'free-panel': true, 'free-bypass': true, emulator: true, 'free-fire-apk': true, 'buy-panel': true };
+}
+
+function grantAccess(user, role, perms) {
   currentUser = user;
   userRole = role;
+  userPerms = role === 'super' ? allPermsTrue() : (perms || {});
+
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('dashboard-screen').style.display = 'flex';
+  document.getElementById('dashboard-screen').style.display = 'block';
   document.getElementById('user-email').innerText = user.email;
-  
+
   const badge = document.getElementById('user-role-badge');
   badge.innerText = role === 'super' ? '👑 Super Admin' : '🔧 Normal Admin';
   badge.className = 'role-tag ' + role;
-  
-  document.getElementById('tab-btn-admins').style.display = role === 'super' ? 'flex' : 'none';
 
-  loadDataFromDB();
-  loadAdminsList();
+  // Show/hide tabs based on role + permissions
+  document.getElementById('tab-admins-btn').style.display = role === 'super' ? 'flex' : 'none';
+  applyTabPermissions();
+
+  loadData();
+  if (role === 'super') loadAdmins();
 }
 
-auth.onAuthStateChanged((user) => {
-  if (user) checkAdminPermission(user);
+function applyTabPermissions() {
+  const tabs = ['general','free-panel','free-bypass','emulator','free-fire-apk','buy-panel'];
+  tabs.forEach(t => {
+    const btn = document.querySelector(`.top-tab[data-tab="${t}"]`);
+    if (!btn) return;
+    if (userRole === 'super' || userPerms[t]) {
+      btn.style.display = 'flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+auth.onAuthStateChanged(user => {
+  if (user) checkAdmin(user);
   else {
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('dashboard-screen').style.display = 'none';
@@ -94,79 +98,146 @@ auth.onAuthStateChanged((user) => {
 
 function logout() { auth.signOut(); }
 
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tabName).classList.add('active');
-  event.currentTarget.classList.add('active');
+// ===== TABS =====
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.top-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  const btn = document.querySelector(`.top-tab[data-tab="${name}"]`) || event.currentTarget;
+  btn.classList.add('active');
 }
 
-// Load Data
-function loadDataFromDB() {
-  db.ref('panel_data').on('value', (snapshot) => {
-    const data = snapshot.val() || {};
-    if(data.general) {
-      document.getElementById('gen-discord').value = data.general.discord || '';
-      document.getElementById('gen-topup').value = data.general.topup || '';
-    }
-    if(data.freePanel) {
-      document.getElementById('fp-video').value = data.freePanel.video || '';
-      document.getElementById('fp-skip').value = data.freePanel.skip || '';
-      document.getElementById('fp-pass').value = data.freePanel.pass || '1';
-      document.getElementById('fp-dl1').value = data.freePanel.dl1 || '';
-      document.getElementById('fp-dl2').value = data.freePanel.dl2 || '';
-    }
-    // ... আপনি চাইলে বাকি ট্যাবগুলোর জন্যও একই ভাবে যোগ করতে পারেন
+// ===== DATA LOAD / SAVE =====
+function loadData() {
+  db.ref('panel_data').on('value', snap => {
+    const d = snap.val() || {};
+    setVal('gen-discord', d.general?.discord);
+    setVal('gen-topup', d.general?.topup);
+    setVal('fp-video', d.freePanel?.video); setVal('fp-skip', d.freePanel?.skip); setVal('fp-pass', d.freePanel?.pass); setVal('fp-dl1', d.freePanel?.dl1); setVal('fp-dl2', d.freePanel?.dl2);
+    setVal('fb-video', d.freeBypass?.video); setVal('fb-skip', d.freeBypass?.skip); setVal('fb-pass', d.freeBypass?.pass); setVal('fb-dl1', d.freeBypass?.dl1); setVal('fb-dl2', d.freeBypass?.dl2);
+    setVal('emu-video', d.emulator?.video); setVal('emu-skip', d.emulator?.skip); setVal('emu-pass', d.emulator?.pass); setVal('emu-dl1', d.emulator?.dl1); setVal('emu-dl2', d.emulator?.dl2);
+    setVal('apk-video', d.apk?.video); setVal('apk-skip', d.apk?.skip); setVal('apk-dl1', d.apk?.dl1);
+    packages = d.buyList || [];
+    renderPackages();
   });
 }
 
-// Save Data
+function setVal(id, v) { const el = document.getElementById(id); if (el) el.value = v || ''; }
+function getVal(id) { return document.getElementById(id)?.value || ''; }
+
 function saveData() {
   const data = {
-    general: {
-      discord: document.getElementById('gen-discord').value,
-      topup: document.getElementById('gen-topup').value
-    },
-    freePanel: {
-      video: document.getElementById('fp-video').value,
-      skip: document.getElementById('fp-skip').value,
-      pass: document.getElementById('fp-pass').value,
-      dl1: document.getElementById('fp-dl1').value,
-      dl2: document.getElementById('fp-dl2').value
-    }
+    general: { discord: getVal('gen-discord'), topup: getVal('gen-topup') },
+    freePanel: { video: getVal('fp-video'), skip: getVal('fp-skip'), pass: getVal('fp-pass'), dl1: getVal('fp-dl1'), dl2: getVal('fp-dl2') },
+    freeBypass: { video: getVal('fb-video'), skip: getVal('fb-skip'), pass: getVal('fb-pass'), dl1: getVal('fb-dl1'), dl2: getVal('fb-dl2') },
+    emulator: { video: getVal('emu-video'), skip: getVal('emu-skip'), pass: getVal('emu-pass'), dl1: getVal('emu-dl1'), dl2: getVal('emu-dl2') },
+    apk: { video: getVal('apk-video'), skip: getVal('apk-skip'), dl1: getVal('apk-dl1') },
+    buyList: packages
   };
-
-  db.ref('panel_data').update(data).then(() => {
-    alert('✅ Data Updated on Live Site!');
-  });
+  db.ref('panel_data').update(data).then(() => alert('✅ Saved Successfully!'));
 }
 
-// Admin Management
-function loadAdminsList() {
-  db.ref('admins').on('value', (snapshot) => {
-    const admins = snapshot.val() || {};
-    const superBox = document.getElementById('super-admins-container');
-    const normalBox = document.getElementById('normal-admins-container');
-    superBox.innerHTML = ''; normalBox.innerHTML = '';
+// ===== BUY PACKAGES =====
+function renderPackages() {
+  const box = document.getElementById('buy-list');
+  if (!box) return;
+  box.innerHTML = '';
+  packages.forEach((p, i) => {
+    box.innerHTML += `<div class="pkg-row">
+      <input value="${p.name||''}" onchange="packages[${i}].name=this.value" placeholder="Name">
+      <input value="${p.price||''}" onchange="packages[${i}].price=this.value" placeholder="Price">
+      <input value="${p.desc||''}" onchange="packages[${i}].desc=this.value" placeholder="Features">
+      <button class="btn-del" onclick="packages.splice(${i},1);renderPackages()"><i class='bx bx-trash'></i></button>
+    </div>`;
+  });
+}
+function addPackage() { packages.push({ name: 'NEW PANEL', price: '৳0', desc: '' }); renderPackages(); }
 
-    Object.keys(admins).forEach((key) => {
-      const admin = admins[key];
-      const isYou = currentUser && currentUser.email === admin.email;
+// ===== ADMIN MANAGEMENT =====
+function loadAdmins() {
+  db.ref('admins').on('value', snap => {
+    const admins = snap.val() || {};
+    const sBox = document.getElementById('super-list');
+    const nBox = document.getElementById('normal-list');
+    if (!sBox || !nBox) return;
+    sBox.innerHTML = ''; nBox.innerHTML = '';
+
+    Object.keys(admins).forEach(key => {
+      const a = admins[key];
+      const isYou = currentUser && currentUser.email === a.email;
       const card = document.createElement('div');
-      card.className = 'admin-item-card';
-      card.innerHTML = `<div><strong>${admin.email}</strong><small>${admin.role}</small></div>
-      ${!isYou && userRole === 'super' ? `<button class="btn-remove" onclick="removeAdmin('${key}')">Remove</button>` : ''}`;
-      if (admin.role === 'super') superBox.appendChild(card);
-      else normalBox.appendChild(card);
+      card.className = 'admin-card';
+      card.innerHTML = `
+        <div><strong>${a.email}</strong><small>${a.role === 'super' ? 'Super Admin' : 'Normal Admin'}</small></div>
+        <div class="admin-card-btns">
+          ${a.role === 'normal' && userRole === 'super' ? `<button class="btn-perm" onclick="openPermModal('${key}','${a.email}')"><i class='bx bx-cog'></i> Permissions</button>` : ''}
+          ${!isYou && userRole === 'super' ? `<button class="btn-rm" onclick="removeAdmin('${key}')">Remove</button>` : ''}
+          ${isYou ? '<span class="you-badge">You</span>' : ''}
+        </div>`;
+      if (a.role === 'super') sBox.appendChild(card);
+      else nBox.appendChild(card);
     });
   });
 }
 
-function addNewAdmin(role) {
-  const email = prompt("Enter email:");
-  if (email) db.ref('admins/' + email.replace(/\./g, '_at_')).set({ email, role });
+// ===== CUSTOM MODALS =====
+function openAddAdminModal(role) {
+  document.getElementById('add-admin-role').value = role;
+  document.getElementById('modal-add-title').innerText = role === 'super' ? '👑 Add Super Admin' : '🔧 Add Normal Admin';
+  document.getElementById('add-admin-email').value = '';
+  document.getElementById('modal-add-admin').style.display = 'flex';
+}
+
+function confirmAddAdmin() {
+  const email = document.getElementById('add-admin-email').value.trim();
+  const role = document.getElementById('add-admin-role').value;
+  if (!email || !email.includes('@')) return alert('Valid email required!');
+  const key = email.replace(/\./g, '_');
+  const perms = role === 'super' ? allPermsTrue() : { general:false,'free-panel':true,'free-bypass':true,emulator:true,'free-fire-apk':true,'buy-panel':true };
+  db.ref('admins/' + key).set({ email, role, permissions: perms }).then(() => {
+    closeModal('modal-add-admin');
+    alert('✅ Admin Added!');
+  });
+}
+
+function openPermModal(key, email) {
+  document.getElementById('perm-email-key').value = key;
+  document.getElementById('perm-email-label').innerText = email;
+  db.ref('admins/' + key + '/permissions').once('value').then(snap => {
+    const p = snap.val() || {};
+    document.getElementById('perm-general').checked = !!p.general;
+    document.getElementById('perm-free-panel').checked = !!p['free-panel'];
+    document.getElementById('perm-free-bypass').checked = !!p['free-bypass'];
+    document.getElementById('perm-emulator').checked = !!p.emulator;
+    document.getElementById('perm-free-fire-apk').checked = !!p['free-fire-apk'];
+    document.getElementById('perm-buy-panel').checked = !!p['buy-panel'];
+    document.getElementById('modal-permissions').style.display = 'flex';
+  });
+}
+
+function savePermissions() {
+  const key = document.getElementById('perm-email-key').value;
+  const perms = {
+    general: document.getElementById('perm-general').checked,
+    'free-panel': document.getElementById('perm-free-panel').checked,
+    'free-bypass': document.getElementById('perm-free-bypass').checked,
+    emulator: document.getElementById('perm-emulator').checked,
+    'free-fire-apk': document.getElementById('perm-free-fire-apk').checked,
+    'buy-panel': document.getElementById('perm-buy-panel').checked
+  };
+  db.ref('admins/' + key + '/permissions').set(perms).then(() => {
+    closeModal('modal-permissions');
+    alert('✅ Permissions Saved!');
+  });
 }
 
 function removeAdmin(key) {
-  if (confirm("Remove this admin?")) db.ref('admins/' + key).remove();
+  if (confirm('Remove this admin?')) db.ref('admins/' + key).remove();
 }
+
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; });
+});
