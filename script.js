@@ -1,6 +1,3 @@
-// =========================================
-// FIREBASE CONFIG
-// =========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
   authDomain: "bangla-ff-admin.firebaseapp.com",
@@ -20,20 +17,17 @@ let currentUser = null;
 let userRole = "normal";
 let userPerms = {};
 let packages = [];
-
-// Dynamic Download Lists
 let fpDownloads = [];
 let fbDownloads = [];
 let emuDownloads = [];
 let apkDownloads = [];
+let mpDownloads = [];
 
-// Mouse glow
 document.addEventListener('mousemove', e => {
   const g = document.querySelector('.mouse-glow');
   if (g) { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; }
 });
 
-// ===== AUTH =====
 function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
@@ -43,13 +37,11 @@ function loginWithGoogle() {
 
 function checkAdmin(user) {
   const key = user.email.replace(/\./g, '_');
-
   if (user.email === "mdrijowan359@gmail.com") {
     db.ref('admins/' + key).set({ email: user.email, role: 'super', permissions: allPermsTrue() });
     grantAccess(user, 'super', allPermsTrue());
     return;
   }
-
   db.ref('admins/' + key).once('value').then(snap => {
     const data = snap.val();
     if (data) grantAccess(user, data.role, data.permissions || {});
@@ -58,7 +50,10 @@ function checkAdmin(user) {
 }
 
 function allPermsTrue() {
-  return { general: true, 'free-panel': true, 'free-bypass': true, emulator: true, 'free-fire-apk': true, 'buy-panel': true };
+  return {
+    general: true, 'free-panel': true, 'free-bypass': true, emulator: true,
+    'free-fire-apk': true, 'mobile-panel': true, 'buy-panel': true
+  };
 }
 
 function grantAccess(user, role, perms) {
@@ -76,13 +71,12 @@ function grantAccess(user, role, perms) {
 
   document.getElementById('tab-admins-btn').style.display = role === 'super' ? 'flex' : 'none';
   applyTabPermissions();
-
   loadData();
   if (role === 'super') loadAdmins();
 }
 
 function applyTabPermissions() {
-  const tabs = ['general','free-panel','free-bypass','emulator','free-fire-apk','buy-panel'];
+  const tabs = ['general','free-panel','free-bypass','emulator','free-fire-apk','mobile-panel','buy-panel'];
   tabs.forEach(t => {
     const btn = document.querySelector(`.top-tab[data-tab="${t}"]`);
     if (!btn) return;
@@ -108,84 +102,123 @@ function switchTab(name) {
   btn.classList.add('active');
 }
 
-// ===== LOAD & RENDER DOWNLOAD BOXES =====
+function setVal(id, v) { const el = document.getElementById(id); if (el) el.value = v || ''; }
+function getVal(id) { return document.getElementById(id)?.value || ''; }
+
 function loadData() {
   db.ref('panel_data').on('value', snap => {
     const d = snap.val() || {};
+
     setVal('gen-discord', d.general?.discord);
     setVal('gen-topup', d.general?.topup);
+
+    // Visibility toggles
+    const vis = d.cardVisibility || {};
+    const setCheck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val !== false; };
+    setCheck('vis-freePanel', vis.freePanel);
+    setCheck('vis-freeBypass', vis.freeBypass);
+    setCheck('vis-emulator', vis.emulator);
+    setCheck('vis-freeFireApk', vis.freeFireApk);
+    setCheck('vis-buyPanel', vis.buyPanel);
+    setCheck('vis-mobilePanel', vis.mobilePanel);
 
     // Free Panel
     setVal('fp-video', d.freePanel?.video);
     setVal('fp-skip', d.freePanel?.skip);
     setVal('fp-pass', d.freePanel?.pass);
     fpDownloads = d.freePanel?.downloads || [];
-    renderDlBox('fp-dl-container', fpDownloads);
+    renderDlBox('fp-dl-container', fpDownloads, 'fpDownloads');
 
-    // Free Bypass
+    // Bypass
     setVal('fb-video', d.freeBypass?.video);
     setVal('fb-skip', d.freeBypass?.skip);
     setVal('fb-pass', d.freeBypass?.pass);
     fbDownloads = d.freeBypass?.downloads || [];
-    renderDlBox('fb-dl-container', fbDownloads);
+    renderDlBox('fb-dl-container', fbDownloads, 'fbDownloads');
 
     // Emulator
     setVal('emu-video', d.emulator?.video);
     setVal('emu-skip', d.emulator?.skip);
     setVal('emu-pass', d.emulator?.pass);
     emuDownloads = d.emulator?.downloads || [];
-    renderDlBox('emu-dl-container', emuDownloads);
+    renderDlBox('emu-dl-container', emuDownloads, 'emuDownloads');
 
     // APK
     setVal('apk-video', d.apk?.video);
     setVal('apk-skip', d.apk?.skip);
     apkDownloads = d.apk?.downloads || [];
-    renderDlBox('apk-dl-container', apkDownloads);
+    renderDlBox('apk-dl-container', apkDownloads, 'apkDownloads');
+
+    // Mobile Panel
+    setVal('mp-video', d.mobilePanel?.video);
+    setVal('mp-skip', d.mobilePanel?.skip);
+    setVal('mp-pass', d.mobilePanel?.pass);
+    mpDownloads = d.mobilePanel?.downloads || [];
+    renderDlBox('mp-dl-container', mpDownloads, 'mpDownloads');
 
     packages = d.buyList || [];
     renderPackages();
   });
 }
 
-function setVal(id, v) { const el = document.getElementById(id); if (el) el.value = v || ''; }
-function getVal(id) { return document.getElementById(id)?.value || ''; }
-
-// Render Dynamic Download Inputs
-function renderDlBox(containerId, listArray) {
+function renderDlBox(containerId, listArray, arrayName) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
-
   listArray.forEach((item, index) => {
     container.innerHTML += `
-      <div class="pkg-row" style="margin-bottom: 8px;">
-        <input type="text" value="${item.title || ''}" onchange="listArray[${index}].title=this.value" placeholder="Button Title (e.g. Internal Loader)">
-        <input type="text" value="${item.url || ''}" onchange="listArray[${index}].url=this.value" placeholder="Download URL (https://...)">
-        <button class="btn-del" onclick="listArray.splice(${index},1); renderDlBox('${containerId}', listArray)"><i class='bx bx-trash'></i></button>
-      </div>
-    `;
+      <div class="pkg-row" style="margin-bottom:8px;">
+        <input type="text" value="${item.title || ''}" onchange="${arrayName}[${index}].title=this.value" placeholder="Button Title">
+        <input type="text" value="${item.url || ''}" onchange="${arrayName}[${index}].url=this.value" placeholder="Download URL">
+        <button class="btn-del" onclick="${arrayName}.splice(${index},1); renderDlBox('${containerId}', ${arrayName}, '${arrayName}')"><i class='bx bx-trash'></i></button>
+      </div>`;
   });
 }
 
 function addDlBox(containerId, listArray) {
-  listArray.push({ title: "NEW DOWNLOAD LINK", url: "" });
-  renderDlBox(containerId, listArray);
+  // detect which array
+  if (containerId === 'fp-dl-container') { fpDownloads.push({ title: 'NEW DOWNLOAD', url: '' }); renderDlBox(containerId, fpDownloads, 'fpDownloads'); }
+  else if (containerId === 'fb-dl-container') { fbDownloads.push({ title: 'NEW DOWNLOAD', url: '' }); renderDlBox(containerId, fbDownloads, 'fbDownloads'); }
+  else if (containerId === 'emu-dl-container') { emuDownloads.push({ title: 'NEW DOWNLOAD', url: '' }); renderDlBox(containerId, emuDownloads, 'emuDownloads'); }
+  else if (containerId === 'apk-dl-container') { apkDownloads.push({ title: 'NEW DOWNLOAD', url: '' }); renderDlBox(containerId, apkDownloads, 'apkDownloads'); }
+  else if (containerId === 'mp-dl-container') { mpDownloads.push({ title: 'NEW DOWNLOAD', url: '' }); renderDlBox(containerId, mpDownloads, 'mpDownloads'); }
 }
 
-// ===== SAVE DATA =====
 function saveData() {
   const data = {
-    general: { discord: getVal('gen-discord'), topup: getVal('gen-topup') },
-    freePanel: { video: getVal('fp-video'), skip: getVal('fp-skip'), pass: getVal('fp-pass'), downloads: fpDownloads },
-    freeBypass: { video: getVal('fb-video'), skip: getVal('fb-skip'), pass: getVal('fb-pass'), downloads: fbDownloads },
-    emulator: { video: getVal('emu-video'), skip: getVal('emu-skip'), pass: getVal('emu-pass'), downloads: emuDownloads },
-    apk: { video: getVal('apk-video'), skip: getVal('apk-skip'), downloads: apkDownloads },
+    general: {
+      discord: getVal('gen-discord'),
+      topup: getVal('gen-topup')
+    },
+    cardVisibility: {
+      freePanel: document.getElementById('vis-freePanel')?.checked !== false,
+      freeBypass: document.getElementById('vis-freeBypass')?.checked !== false,
+      emulator: document.getElementById('vis-emulator')?.checked !== false,
+      freeFireApk: document.getElementById('vis-freeFireApk')?.checked !== false,
+      buyPanel: document.getElementById('vis-buyPanel')?.checked !== false,
+      mobilePanel: document.getElementById('vis-mobilePanel')?.checked !== false
+    },
+    freePanel: {
+      video: getVal('fp-video'), skip: getVal('fp-skip'), pass: getVal('fp-pass'), downloads: fpDownloads
+    },
+    freeBypass: {
+      video: getVal('fb-video'), skip: getVal('fb-skip'), pass: getVal('fb-pass'), downloads: fbDownloads
+    },
+    emulator: {
+      video: getVal('emu-video'), skip: getVal('emu-skip'), pass: getVal('emu-pass'), downloads: emuDownloads
+    },
+    apk: {
+      video: getVal('apk-video'), skip: getVal('apk-skip'), downloads: apkDownloads
+    },
+    mobilePanel: {
+      video: getVal('mp-video'), skip: getVal('mp-skip'), pass: getVal('mp-pass'), downloads: mpDownloads
+    },
     buyList: packages
   };
+
   db.ref('panel_data').update(data).then(() => alert('✅ Saved Successfully!'));
 }
 
-// ===== BUY PACKAGES =====
 function renderPackages() {
   const box = document.getElementById('buy-list');
   if (!box) return;
@@ -201,7 +234,6 @@ function renderPackages() {
 }
 function addPackage() { packages.push({ name: 'NEW PANEL', price: '৳0', desc: '' }); renderPackages(); }
 
-// ===== ADMIN MANAGEMENT =====
 function loadAdmins() {
   db.ref('admins').on('value', snap => {
     const admins = snap.val() || {};
@@ -240,7 +272,10 @@ function confirmAddAdmin() {
   const role = document.getElementById('add-admin-role').value;
   if (!email || !email.includes('@')) return alert('Valid email required!');
   const key = email.replace(/\./g, '_');
-  const perms = role === 'super' ? allPermsTrue() : { general:false,'free-panel':true,'free-bypass':true,emulator:true,'free-fire-apk':true,'buy-panel':true };
+  const perms = role === 'super' ? allPermsTrue() : {
+    general: false, 'free-panel': true, 'free-bypass': true, emulator: true,
+    'free-fire-apk': true, 'mobile-panel': true, 'buy-panel': true
+  };
   db.ref('admins/' + key).set({ email, role, permissions: perms }).then(() => {
     closeModal('modal-add-admin');
     alert('✅ Admin Added!');
@@ -257,6 +292,7 @@ function openPermModal(key, email) {
     document.getElementById('perm-free-bypass').checked = !!p['free-bypass'];
     document.getElementById('perm-emulator').checked = !!p.emulator;
     document.getElementById('perm-free-fire-apk').checked = !!p['free-fire-apk'];
+    document.getElementById('perm-mobile-panel').checked = !!p['mobile-panel'];
     document.getElementById('perm-buy-panel').checked = !!p['buy-panel'];
     document.getElementById('modal-permissions').style.display = 'flex';
   });
@@ -270,6 +306,7 @@ function savePermissions() {
     'free-bypass': document.getElementById('perm-free-bypass').checked,
     emulator: document.getElementById('perm-emulator').checked,
     'free-fire-apk': document.getElementById('perm-free-fire-apk').checked,
+    'mobile-panel': document.getElementById('perm-mobile-panel').checked,
     'buy-panel': document.getElementById('perm-buy-panel').checked
   };
   db.ref('admins/' + key + '/permissions').set(perms).then(() => {
