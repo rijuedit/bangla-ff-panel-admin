@@ -7,253 +7,227 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <style>
-    :root {
-      --bg: #05020a;
-      --card: #11071a;
-      --border: #2a113d;
-      --pink: #ff0066;
-      --purple: #9d00ff;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-    }
-
+    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    
+    /* ── LOGIN SCREEN ── */
+    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-box { background: var(--card); border: 2px solid var(--purple); border-radius: 16px; padding: 40px 30px; text-align: center; width: 100%; max-width: 380px; box-shadow: 0 0 40px rgba(157,0,255,0.2); }
+    .login-icon { font-size: 50px; color: #facc15; margin-bottom: 10px; }
+    .login-box h2 { font-size: 22px; color: #fff; margin-bottom: 6px; font-weight: 900; }
+    .login-box p { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: #fff; color: #000; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-google:hover { background: #f1f5f9; transform: translateY(-2px); }
+    .btn-google img { width: 20px; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    /* ── DASHBOARD SCREEN ── */
+    #dashboard-screen { display: none; }
+    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand i { font-size: 28px; color: var(--pink); background: rgba(255,0,102,0.15); padding: 6px; border-radius: 10px; }
+    .brand h1 { font-size: 18px; font-weight: 900; color: #fff; }
+    
+    .header-right { display: flex; align-items: center; gap: 15px; }
+    .notify-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,0,102,0.1); border: 1px solid var(--pink); color: var(--pink); display: grid; place-items: center; font-size: 20px; cursor: pointer; text-decoration: none; transition: 0.2s; }
+    .notify-btn:hover { background: var(--pink); color: #fff; box-shadow: 0 0 15px rgba(255,0,102,0.4); }
+    .user-badge { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; font-weight: 700; }
+    .user-badge span { color: #facc15; }
+    .btn-logout { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-    /* ── HEADER ── */
-    .admin-header {
-      background: rgba(17, 7, 26, 0.9);
-      border-bottom: 2px solid var(--purple);
-      padding: 16px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 0 20px rgba(157,0,255,0.2);
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .brand i {
-      font-size: 32px;
-      color: var(--pink);
-      background: rgba(255,0,102,0.15);
-      padding: 8px;
-      border-radius: 12px;
-    }
-    .brand h1 {
-      font-size: 20px;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: 1px;
-    }
-    .brand span {
-      display: block;
-      font-size: 11px;
-      color: var(--purple);
-      font-weight: 700;
-    }
-
-    .admin-badge {
-      background: linear-gradient(135deg, var(--purple), var(--pink));
-      padding: 6px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    /* ── MAIN DASHBOARD ── */
-    .dashboard-container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    .page-title {
-      font-size: 24px;
-      font-weight: 900;
-      margin-bottom: 30px;
-      color: #fff;
-      text-transform: uppercase;
-      border-left: 4px solid var(--pink);
-      padding-left: 12px;
-    }
-
-    /* ── GRID ── */
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .admin-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      transition: 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .admin-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 3px;
-      background: linear-gradient(90deg, var(--purple), var(--pink));
-      opacity: 0;
-      transition: 0.3s;
-    }
-    .admin-card:hover {
-      border-color: var(--purple);
-      box-shadow: 0 0 20px rgba(157,0,255,0.15);
-      transform: translateY(-4px);
-    }
-    .admin-card:hover::before { opacity: 1; }
-
-    .card-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      background: rgba(157,0,255,0.1);
-      border: 1px solid rgba(157,0,255,0.3);
-      display: grid;
-      place-items: center;
-      font-size: 24px;
-      color: var(--purple);
-    }
-
-    .card-info h3 {
-      font-size: 18px;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-    .card-info p {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    .manage-btn {
-      margin-top: auto;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: 0.25s;
-    }
-    .admin-card:hover .manage-btn {
-      background: linear-gradient(135deg, var(--purple), var(--pink));
-      border-color: transparent;
-      box-shadow: 0 0 15px rgba(255,0,102,0.3);
-    }
-
+    .dashboard-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+    .page-title { font-size: 20px; font-weight: 900; margin-bottom: 30px; color: #fff; text-transform: uppercase; border-left: 4px solid var(--pink); padding-left: 12px; }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 14px; transition: 0.3s; }
+    .admin-card:hover { border-color: var(--purple); box-shadow: 0 0 20px rgba(157,0,255,0.15); transform: translateY(-4px); }
+    .card-icon { width: 50px; height: 50px; border-radius: 12px; background: rgba(157,0,255,0.1); border: 1px solid rgba(157,0,255,0.3); display: grid; place-items: center; font-size: 24px; color: var(--purple); }
+    .card-info h3 { font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .card-info p { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .manage-btn { margin-top: auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; transition: 0.25s; }
+    .admin-card:hover .manage-btn { background: linear-gradient(135deg, var(--purple), var(--pink)); border-color: transparent; }
   </style>
 </head>
 <body>
 
-  <!-- ADMIN HEADER -->
-  <header class="admin-header">
-    <div class="brand">
-      <i class='bx bx-code-block'></i>
-      <div>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-box">
+      <i class='bx bxs-lock-alt login-icon'></i>
+      <h2>Admin Panel</h2>
+      <p>Sign in with your authorized admin account</p>
+      <button class="btn-google" onclick="signIn()">
+        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google"> Sign in with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD SCREEN -->
+  <div id="dashboard-screen">
+    <header class="admin-header">
+      <div class="brand">
+        <i class='bx bx-code-block'></i>
         <h1>BANGLA FF PANEL</h1>
-        <span>ADMINISTRATION</span>
       </div>
-    </div>
-    <div class="admin-badge">
-      <i class='bx bxs-user-badge'></i> ADMIN
-    </div>
-  </header>
-
-  <!-- DASHBOARD -->
-  <div class="dashboard-container">
-    <h2 class="page-title">Control Panel Dashboard</h2>
-
-    <div class="admin-grid">
-      <!-- 1. PC Panel -->
-      <div class="admin-card">
-        <div class="card-icon" style="color:#00f2fe; border-color:#00f2fe; background:rgba(0,242,254,0.1);"><i class='bx bx-desktop'></i></div>
-        <div class="card-info">
-          <h3>Manage PC Panels</h3>
-          <p>Add, edit, or delete PC panel products, change images, set prices and duration plans.</p>
+      <div class="header-right">
+        <a href="manage-notifications.html" class="notify-btn" title="Notifications"><i class='bx bxs-bell'></i></a>
+        <div class="user-badge">
+          <span id="roleText">Role</span> | <b id="emailText" style="color:#fff;">email@gmail.com</b>
         </div>
-        <a href="manage-pc.html" class="manage-btn">Edit PC Panels <i class='bx bx-right-arrow-alt'></i></a>
+        <button class="btn-logout" onclick="signOut()">Logout</button>
       </div>
+    </header>
 
-      <!-- 2. Mobile Panel -->
-      <div class="admin-card">
-        <div class="card-icon" style="color:#facc15; border-color:#facc15; background:rgba(250,204,21,0.1);"><i class='bx bx-mobile-alt'></i></div>
-        <div class="card-info">
-          <h3>Manage Mobile Panels</h3>
-          <p>Add/edit Android and iOS panel packages, prices, and update purchase links.</p>
+    <div class="dashboard-container">
+      <h2 class="page-title">Control Panel Dashboard</h2>
+      
+      <div class="admin-grid" id="adminGrid">
+        <!-- 1. PC Panel -->
+        <div class="admin-card" id="card-pc" style="display:none;">
+          <div class="card-icon" style="color:#00f2fe; border-color:#00f2fe; background:rgba(0,242,254,0.1);"><i class='bx bx-desktop'></i></div>
+          <div class="card-info">
+            <h3>Manage PC Panels</h3>
+            <p>Add, edit, or delete PC panel products, change images and prices.</p>
+          </div>
+          <a href="manage-pc.html" class="manage-btn">Edit PC Panels <i class='bx bx-right-arrow-alt'></i></a>
         </div>
-        <a href="manage-mobile.html" class="manage-btn">Edit Mobile Panels <i class='bx bx-right-arrow-alt'></i></a>
-      </div>
 
-      <!-- 3. Free Bypass -->
-      <div class="admin-card">
-        <div class="card-icon"><i class='bx bx-shield-quarter'></i></div>
-        <div class="card-info">
-          <h3>Free Bypass Settings</h3>
-          <p>Update Free Bypass download links, RAR password, and YouTube tutorial video.</p>
+        <!-- 2. Mobile Panel -->
+        <div class="admin-card" id="card-mobile" style="display:none;">
+          <div class="card-icon" style="color:#facc15; border-color:#facc15; background:rgba(250,204,21,0.1);"><i class='bx bx-mobile-alt'></i></div>
+          <div class="card-info">
+            <h3>Manage Mobile Panels</h3>
+            <p>Add/edit Android and iOS panel packages and update links.</p>
+          </div>
+          <a href="manage-mobile.html" class="manage-btn">Edit Mobile Panels <i class='bx bx-right-arrow-alt'></i></a>
         </div>
-        <a href="manage-bypass.html" class="manage-btn">Edit Bypass <i class='bx bx-right-arrow-alt'></i></a>
-      </div>
 
-      <!-- 4. Emulator -->
-      <div class="admin-card">
-        <div class="card-icon"><i class='bx bx-game'></i></div>
-        <div class="card-info">
-          <h3>Emulator Settings</h3>
-          <p>Update MSI and BlueStacks emulator download links, RAR password, and video.</p>
+        <!-- 3. Free Bypass -->
+        <div class="admin-card" id="card-bypass" style="display:none;">
+          <div class="card-icon"><i class='bx bx-shield-quarter'></i></div>
+          <div class="card-info">
+            <h3>Free Bypass</h3>
+            <p>Update Free Bypass links, password, and tutorial video.</p>
+          </div>
+          <a href="manage-bypass.html" class="manage-btn">Edit Bypass <i class='bx bx-right-arrow-alt'></i></a>
         </div>
-        <a href="manage-emulator.html" class="manage-btn">Edit Emulator <i class='bx bx-right-arrow-alt'></i></a>
-      </div>
 
-      <!-- 5. APK -->
-      <div class="admin-card">
-        <div class="card-icon" style="color:#22c55e; border-color:#22c55e; background:rgba(34,197,94,0.1);"><i class='bx bxl-android'></i></div>
-        <div class="card-info">
-          <h3>Free Fire APK Settings</h3>
-          <p>Update Normal Free Fire APK version name, download link, and tutorial video.</p>
+        <!-- 4. Emulator -->
+        <div class="admin-card" id="card-emulator" style="display:none;">
+          <div class="card-icon"><i class='bx bx-game'></i></div>
+          <div class="card-info">
+            <h3>Emulator</h3>
+            <p>Update MSI and BlueStacks emulator download links.</p>
+          </div>
+          <a href="manage-emulator.html" class="manage-btn">Edit Emulator <i class='bx bx-right-arrow-alt'></i></a>
         </div>
-        <a href="manage-apk.html" class="manage-btn">Edit APK <i class='bx bx-right-arrow-alt'></i></a>
-      </div>
 
-      <!-- 6. Notifications -->
-      <div class="admin-card">
-        <div class="card-icon" style="color:#ff0066; border-color:#ff0066; background:rgba(255,0,102,0.1);"><i class='bx bx-bell'></i></div>
-        <div class="card-info">
-          <h3>Site Notifications</h3>
-          <p>Send real-time popup alerts or update messages to all users on the main website.</p>
+        <!-- 5. APK -->
+        <div class="admin-card" id="card-apk" style="display:none;">
+          <div class="card-icon" style="color:#22c55e; border-color:#22c55e; background:rgba(34,197,94,0.1);"><i class='bx bxl-android'></i></div>
+          <div class="card-info">
+            <h3>Free Fire APK</h3>
+            <p>Update Normal Free Fire APK link and tutorial video.</p>
+          </div>
+          <a href="manage-apk.html" class="manage-btn">Edit APK <i class='bx bx-right-arrow-alt'></i></a>
         </div>
-        <a href="manage-notifications.html" class="manage-btn">Send Notification <i class='bx bx-right-arrow-alt'></i></a>
+
+        <!-- 6. Admin Management (Super Admin Only) -->
+        <div class="admin-card" id="card-admins" style="display:none;">
+          <div class="card-icon" style="color:#9d00ff; border-color:#9d00ff; background:rgba(157,0,255,0.1);"><i class='bx bxs-group'></i></div>
+          <div class="card-info">
+            <h3>Admin Management</h3>
+            <p>Add/Remove admins and control access permissions.</p>
+          </div>
+          <a href="manage-admins.html" class="manage-btn">Manage Admins <i class='bx bx-right-arrow-alt'></i></a>
+        </div>
+
       </div>
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+      authDomain: "bangla-ff-admin.firebaseapp.com",
+      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bangla-ff-admin",
+      storageBucket: "bangla-ff-admin.firebasestorage.app",
+      messagingSenderId: "295013484465",
+      appId: "1:295013484465:web:b6bc2a949e239095761f90"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    
+    const auth = firebase.auth();
+    const db = firebase.database();
+    
+    // Master Email (যাতে প্রথমবার আপনি ঢুকতে পারেন)
+    const MASTER_EMAIL = "mdrijuwan359@gmail.com"; 
+
+    function signIn() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(err => alert(err.message));
+    }
+
+    function signOut() {
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('emailText').textContent = user.email;
+        checkAdminRole(user.email);
+      } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('dashboard-screen').style.display = 'none';
+      }
+    });
+
+    function checkAdminRole(email) {
+      const emailKey = email.replace(/\./g, ','); // ফায়ারবেসে ডট (.) সেভ হয় না, তাই কমা (,)
+
+      db.ref('admins').once('value').then(snap => {
+        const admins = snap.val() || {};
+        const isSuper = (admins.super && admins.super[emailKey]) || email === MASTER_EMAIL;
+        const isNormal = admins.normal && admins.normal[emailKey];
+
+        if (isSuper) {
+          // Super Admin can see everything
+          document.getElementById('roleText').textContent = "Super Admin";
+          document.getElementById('roleText').style.color = "#facc15";
+          showCards({ pc:true, mobile:true, bypass:true, emulator:true, apk:true, admins:true });
+          showDashboard();
+        } else if (isNormal) {
+          // Normal Admin checks permissions
+          document.getElementById('roleText').textContent = "Normal Admin";
+          document.getElementById('roleText').style.color = "#00f2fe";
+          const perms = isNormal.permissions || {};
+          showCards({ pc: perms.pc, mobile: perms.mobile, bypass: perms.bypass, emulator: perms.emulator, apk: perms.apk, admins: false });
+          showDashboard();
+        } else {
+          // Not an admin
+          auth.signOut();
+          alert("Access Denied! You are not an admin.");
+        }
+      });
+    }
+
+    function showCards(perms) {
+      document.getElementById('card-pc').style.display = perms.pc ? 'flex' : 'none';
+      document.getElementById('card-mobile').style.display = perms.mobile ? 'flex' : 'none';
+      document.getElementById('card-bypass').style.display = perms.bypass ? 'flex' : 'none';
+      document.getElementById('card-emulator').style.display = perms.emulator ? 'flex' : 'none';
+      document.getElementById('card-apk').style.display = perms.apk ? 'flex' : 'none';
+      document.getElementById('card-admins').style.display = perms.admins ? 'flex' : 'none';
+    }
+
+    function showDashboard() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard-screen').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
