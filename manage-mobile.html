@@ -25,10 +25,14 @@
     
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; color: #a090b5; font-size: 0.9rem; }
-    .form-group input { width: 100%; padding: 12px; background: #05020a; border: 1px solid #2a113d; color: #fff; border-radius: 8px; outline: none; }
+    .form-group input, .form-group select { width: 100%; padding: 12px; background: #05020a; border: 1px solid #2a113d; color: #fff; border-radius: 8px; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: #9d00ff; }
     
     .pkg-container { background: #0c0514; border: 1px solid #2a113d; padding: 15px; border-radius: 10px; margin-bottom: 15px; position: relative; }
-    .pkg-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .pkg-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+    
+    .duration-flex { display: flex; gap: 8px; }
+    
     .remove-pkg { position: absolute; top: -10px; right: -10px; background: #ff0066; color: #fff; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-weight: bold; }
     .add-pkg-btn { background: #1a0b28; color: #00cc66; border: 1px dashed #00cc66; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; }
     
@@ -44,7 +48,6 @@
 </head>
 <body>
 
-  <!-- Sidebar -->
   <div class="sidebar">
     <h2>ADMIN PANEL</h2>
     <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
@@ -68,7 +71,18 @@
         <div class="pkg-container">
           <button class="remove-pkg" onclick="this.parentElement.remove()">X</button>
           <div class="pkg-row">
-            <div class="form-group"><label>Duration</label><input type="text" class="p-dur" value="1 Day"></div>
+            <div class="form-group">
+              <label>Duration</label>
+              <div class="duration-flex">
+                <input type="number" class="p-dur-num" value="1" min="1">
+                <select class="p-dur-unit" onchange="this.previousElementSibling.style.display = (this.value === 'Lifetime') ? 'none' : 'block';">
+                  <option value="Days">Days</option>
+                  <option value="Months">Months</option>
+                  <option value="Years">Years</option>
+                  <option value="Lifetime">Lifetime</option>
+                </select>
+              </div>
+            </div>
             <div class="form-group"><label>Old Price</label><input type="number" class="p-old" value="150"></div>
             <div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" value="100"></div>
             <div class="form-group"><label>Buy Price</label><input type="number" class="p-buy" value="50"></div>
@@ -99,8 +113,7 @@
       databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "bangla-ff-admin"
     };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getDatabase(initializeApp(firebaseConfig));
 
     window.addPackageRow = function() {
       const wrapper = document.getElementById('packagesWrapper');
@@ -108,7 +121,18 @@
         <div class="pkg-container">
           <button class="remove-pkg" onclick="this.parentElement.remove()">X</button>
           <div class="pkg-row">
-            <div class="form-group"><label>Duration</label><input type="text" class="p-dur" placeholder="e.g. 1 Month"></div>
+            <div class="form-group">
+              <label>Duration</label>
+              <div class="duration-flex">
+                <input type="number" class="p-dur-num" value="1" min="1">
+                <select class="p-dur-unit" onchange="this.previousElementSibling.style.display = (this.value === 'Lifetime') ? 'none' : 'block';">
+                  <option value="Days">Days</option>
+                  <option value="Months">Months</option>
+                  <option value="Years">Years</option>
+                  <option value="Lifetime">Lifetime</option>
+                </select>
+              </div>
+            </div>
             <div class="form-group"><label>Old Price</label><input type="number" class="p-old" placeholder="500"></div>
             <div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" placeholder="400"></div>
             <div class="form-group"><label>Buy Price</label><input type="number" class="p-buy" placeholder="200"></div>
@@ -125,9 +149,15 @@
 
       let packages = [];
       document.querySelectorAll('.pkg-container').forEach(pkg => {
-        let dur = pkg.querySelector('.p-dur').value, oldP = pkg.querySelector('.p-old').value;
-        let sellP = pkg.querySelector('.p-sell').value, buyP = pkg.querySelector('.p-buy').value;
-        if(dur && sellP) packages.push({ duration: dur, old_price: Number(oldP)||0, sell_price: Number(sellP)||0, buy_price: Number(buyP)||0 });
+        let durNum = pkg.querySelector('.p-dur-num').value;
+        let durUnit = pkg.querySelector('.p-dur-unit').value;
+        let oldP = pkg.querySelector('.p-old').value;
+        let sellP = pkg.querySelector('.p-sell').value;
+        let buyP = pkg.querySelector('.p-buy').value;
+        
+        let finalDuration = (durUnit === 'Lifetime') ? 'Lifetime' : `${durNum} ${durUnit}`;
+        
+        if(finalDuration && sellP) packages.push({ duration: finalDuration, old_price: Number(oldP)||0, sell_price: Number(sellP)||0, buy_price: Number(buyP)||0 });
       });
       if(packages.length === 0) { alert("Add at least one package!"); return; }
 
