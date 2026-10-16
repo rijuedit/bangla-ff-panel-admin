@@ -1,239 +1,408 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - BANGLA FF PANEL</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-  <style>
-    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    
-    /* Login */
-    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-    .login-box { background: var(--card); border: 2px solid var(--purple); border-radius: 16px; padding: 40px 30px; text-align: center; width: 100%; max-width: 380px; box-shadow: 0 0 40px rgba(157,0,255,0.2); }
-    .login-icon { font-size: 50px; color: #facc15; margin-bottom: 10px; }
-    .login-box h2 { font-size: 22px; color: #fff; margin-bottom: 6px; font-weight: 900; }
-    .btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: #fff; color: #000; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BANGLA FF - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
+        body { background-color: #05020a; color: #fff; overflow-x: hidden; }
+        
+        /* Mouse Glow */
+        #mouse-glow {
+            position: fixed; width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255, 0, 102, 0.4); filter: blur(20px);
+            pointer-events: none; transform: translate(-50%, -50%);
+            z-index: 9999; transition: transform 0.1s ease-out;
+        }
 
-    /* Header */
-    #dashboard-screen { display: none; }
-    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand i { font-size: 28px; color: var(--pink); background: rgba(255,0,102,0.15); padding: 6px; border-radius: 10px; }
-    .header-right { display: flex; align-items: center; gap: 15px; }
-    .notify-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,0,102,0.1); border: 1px solid var(--pink); color: var(--pink); display: grid; place-items: center; font-size: 20px; text-decoration: none; }
-    .user-badge { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; font-weight: 700; }
-    .btn-logout { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        /* Login Screen */
+        .login-container {
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
+        .login-box {
+            background: #11071a; border: 1px solid #2a113d; padding: 40px; border-radius: 15px;
+            text-align: center; width: 350px; box-shadow: 0 0 20px rgba(157, 0, 255, 0.2);
+        }
+        .login-box h2 { color: #ff0066; margin-bottom: 20px; font-size: 28px; text-transform: uppercase; }
+        .google-btn {
+            background: #fff; color: #000; padding: 12px 20px; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            width: 100%; transition: 0.3s;
+        }
+        .google-btn img { width: 20px; margin-right: 10px; }
+        .google-btn:hover { background: #eee; transform: translateY(-2px); }
+        .error-msg { color: #ff0066; margin-top: 15px; font-size: 14px; }
 
-    /* Grid */
-    .dashboard-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-    .page-title { font-size: 20px; font-weight: 900; margin-bottom: 30px; color: #fff; border-left: 4px solid var(--pink); padding-left: 12px; }
-    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 14px; transition: 0.3s; position: relative; }
-    .admin-card:hover { border-color: var(--purple); transform: translateY(-4px); box-shadow: 0 0 20px rgba(157,0,255,0.1); }
-    
-    .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; }
-    .card-icon { width: 50px; height: 50px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; }
-    
-    /* Toggle Switch */
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .4s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider { background-color: #10b981; }
-    input:checked + .slider:before { transform: translateX(20px); }
+        /* Admin Layout with Sidebar */
+        .admin-layout {
+            display: none; /* Shows after login */
+            height: 100vh; width: 100vw; display: flex;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px; background: #0c0414; border-right: 1px solid #2a113d;
+            display: flex; flex-direction: column; height: 100vh;
+        }
+        .sidebar-logo {
+            padding: 20px; text-align: center; border-bottom: 1px solid #2a113d;
+        }
+        .sidebar-logo h2 { color: #9d00ff; text-transform: uppercase; letter-spacing: 2px; font-size: 22px; }
+        .sidebar-menu {
+            list-style: none; padding: 20px 0; flex: 1;
+        }
+        .sidebar-menu li { padding: 5px 20px; margin-bottom: 10px; }
+        .sidebar-menu a {
+            color: #fff; text-decoration: none; display: flex; align-items: center; padding: 12px 15px;
+            border-radius: 8px; transition: 0.3s; font-size: 18px; font-weight: 500; cursor: pointer;
+        }
+        .sidebar-menu a i { margin-right: 15px; width: 20px; text-align: center; color: #ff0066; }
+        .sidebar-menu a:hover, .sidebar-menu li.active a {
+            background: rgba(255, 0, 102, 0.1); color: #ff0066; border-left: 3px solid #ff0066;
+        }
+        .sidebar-footer { padding: 20px; border-top: 1px solid #2a113d; }
+        .logout-btn {
+            width: 100%; background: transparent; color: #ff0066; border: 1px solid #ff0066;
+            padding: 10px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .logout-btn:hover { background: #ff0066; color: #fff; }
 
-    .card-info h3 { font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 4px; }
-    .card-info p { font-size: 12px; color: var(--muted); line-height: 1.4; }
-    .manage-btn { margin-top: auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
-    .admin-card:hover .manage-btn { background: linear-gradient(135deg, var(--purple), var(--pink)); border-color: transparent; }
-  </style>
+        /* Main Content */
+        .main-content {
+            flex: 1; padding: 20px 40px; overflow-y: auto; background: #05020a;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #2a113d; padding-bottom: 15px; }
+        .header h1 { color: #fff; font-size: 28px; }
+        .header h1 span { color: #ff0066; }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .user-info { display: flex; align-items: center; gap: 10px; background: #11071a; padding: 8px 15px; border-radius: 20px; border: 1px solid #2a113d; }
+        .user-info img { width: 30px; height: 30px; border-radius: 50%; }
+        .notification-btn { background: transparent; border: none; color: #fff; font-size: 20px; position: relative; cursor: pointer; }
+        .notification-btn span { position: absolute; top: -5px; right: -5px; background: #ff0066; color: #fff; font-size: 10px; width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;
+        }
+        .card {
+            background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 25px;
+            transition: 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 0 20px rgba(157, 0, 255, 0.2); border-color: #9d00ff; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-icon { width: 50px; height: 50px; background: rgba(157, 0, 255, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #9d00ff; font-size: 24px; }
+        .card-title { font-size: 22px; color: #fff; font-weight: 600; margin-bottom: 10px; }
+        .card-btn {
+            display: inline-block; background: transparent; color: #fff; border: 1px solid #9d00ff;
+            padding: 8px 15px; border-radius: 5px; text-decoration: none; text-align: center;
+            transition: 0.3s; margin-top: 15px; cursor: pointer; font-size: 16px; width: max-content;
+        }
+        .card-btn:hover { background: #9d00ff; color: #fff; }
+
+        /* Visibility Toggle Switch */
+        .toggle-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 15px; border-top: 1px dashed #2a113d; padding-top: 15px; }
+        .toggle-wrapper span { font-size: 14px; color: #aaa; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2a113d; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #ff0066; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Responsive */
+        @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .sidebar { width: 200px; } .main-content { padding: 20px; } }
+    </style>
 </head>
 <body>
+    <div id="mouse-glow"></div>
 
-  <div id="login-screen">
-    <div class="login-box">
-      <i class='bx bxs-lock-alt login-icon'></i>
-      <h2>Admin Panel</h2>
-      <p>Authorized personnel only</p>
-      <button class="btn-google" onclick="signIn()">
-        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="20"> Sign in with Google
-      </button>
+    <!-- Login Screen -->
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <h2>Admin Area</h2>
+            <button class="google-btn" onclick="signInWithGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+                Sign in with Google
+            </button>
+            <div class="error-msg" id="login-error"></div>
+        </div>
     </div>
-  </div>
 
-  <div id="dashboard-screen">
-    <header class="admin-header">
-      <div class="brand"><i class='bx bx-code-block'></i> <h1>BANGLA FF PANEL</h1></div>
-      <div class="header-right">
-        <a href="manage-notifications.html" class="notify-btn"><i class='bx bxs-bell'></i></a>
-        <div class="user-badge"><span id="roleText">Role</span> | <b id="emailText">email</b></div>
-        <button class="btn-logout" onclick="signOut()">Logout</button>
-      </div>
-    </header>
-
-    <div class="dashboard-container">
-      <h2 class="page-title">CONTROL PANEL DASHBOARD</h2>
-      <div class="admin-grid" id="adminGrid">
+    <!-- Admin Layout -->
+    <div class="admin-layout" id="admin-layout" style="display: none;">
         
-        <!-- 1. Free Panel -->
-        <div class="admin-card" id="card-freepanel" style="display:none;">
-          <div class="card-header-row">
-            <div class="card-icon" style="color:#10b981; border:1px solid #10b981; background:rgba(16,185,129,0.1);"><i class='bx bx-gift'></i></div>
-            <label class="switch" title="Show/Hide on Website"><input type="checkbox" id="vis-freepanel" onchange="toggleVis('free_panel', this.checked)"><span class="slider"></span></label>
-          </div>
-          <div class="card-info"><h3>Free Panel</h3><p>Update download links, password, and video.</p></div>
-          <a href="manage-free-panel.html" class="manage-btn">Edit Free Panel →</a>
-        </div>
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>Bangla FF</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="https://imgbb.com/" target="_blank"><i class="fas fa-cloud-upload-alt"></i> ImgBB</a></li>
+                <li><a href="https://postimages.org/" target="_blank"><i class="fas fa-image"></i> PostImages</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="logout-btn" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
 
-        <!-- 2. Free Bypass -->
-        <div class="admin-card" id="card-bypass" style="display:none;">
-          <div class="card-header-row">
-            <div class="card-icon" style="color:#ff0066; border:1px solid #ff0066; background:rgba(255,0,102,0.1);"><i class='bx bx-shield-quarter'></i></div>
-            <label class="switch" title="Show/Hide on Website"><input type="checkbox" id="vis-bypass" onchange="toggleVis('free_bypass', this.checked)"><span class="slider"></span></label>
-          </div>
-          <div class="card-info"><h3>Free Bypass</h3><p>Update bypass links and configuration.</p></div>
-          <a href="manage-bypass.html" class="manage-btn">Edit Free Bypass →</a>
-        </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Overview <span>Dashboard</span></h1>
+                <div class="header-actions">
+                    <button class="notification-btn" onclick="window.location.href='manage-notifications.html'">
+                        <i class="fas fa-bell"></i>
+                        <span>3</span>
+                    </button>
+                    <div class="user-info">
+                        <img id="user-pfp" src="" alt="Admin">
+                        <span id="user-name">Admin</span>
+                    </div>
+                </div>
+            </header>
 
-        <!-- 3. Emulator -->
-        <div class="admin-card" id="card-emulator" style="display:none;">
-          <div class="card-header-row">
-            <div class="card-icon" style="color:#9d00ff; border:1px solid #9d00ff; background:rgba(157,0,255,0.1);"><i class='bx bx-game'></i></div>
-            <label class="switch" title="Show/Hide on Website"><input type="checkbox" id="vis-emulator" onchange="toggleVis('emulator', this.checked)"><span class="slider"></span></label>
-          </div>
-          <div class="card-info"><h3>Emulator</h3><p>MSI and BlueStacks emulator download settings.</p></div>
-          <a href="manage-emulator.html" class="manage-btn">Edit Emulator →</a>
-        </div>
+            <div class="dashboard-grid">
+                <!-- Free Panel -->
+                <div class="card" id="card-free">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-unlock"></i></div>
+                    </div>
+                    <div>
+                        <div class="card-title">Free Panel</div>
+                        <a href="manage-free-panel.html" class="card-btn">Manage</a>
+                        <div class="toggle-wrapper">
+                            <span>Site Visibility:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-free" onchange="updateVisibility('free_panel', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- 4. APK -->
-        <div class="admin-card" id="card-apk" style="display:none;">
-          <div class="card-header-row">
-            <div class="card-icon" style="color:#22c55e; border:1px solid #22c55e; background:rgba(34,197,94,0.1);"><i class='bx bxl-android'></i></div>
-            <label class="switch" title="Show/Hide on Website"><input type="checkbox" id="vis-apk" onchange="toggleVis('apk', this.checked)"><span class="slider"></span></label>
-          </div>
-          <div class="card-info"><h3>Free Fire APK</h3><p>Update latest FF Normal APK and skip links.</p></div>
-          <a href="manage-apk.html" class="manage-btn">Edit APK →</a>
-        </div>
+                <!-- Free Bypass -->
+                <div class="card" id="card-bypass">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                    </div>
+                    <div>
+                        <div class="card-title">Free Bypass</div>
+                        <a href="manage-bypass.html" class="card-btn">Manage</a>
+                        <div class="toggle-wrapper">
+                            <span>Site Visibility:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-bypass" onchange="updateVisibility('free_bypass', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- 5. PC Panel -->
-        <div class="admin-card" id="card-pc" style="display:none;">
-          <div class="card-header-row">
-            <div class="card-icon" style="color:#00f2fe; border:1px solid #00f2fe; background:rgba(0,242,254,0.1);"><i class='bx bx-desktop'></i></div>
-            <label class="switch" title="Show/Hide on Website"><input type="checkbox" id="vis-pc" onchange="toggleVis('pc_panel', this.checked)"><span class="slider"></span></label>
-          </div>
-          <div class="card-info"><h3>Paid PC Panels</h3><p>Add/edit PC products, prices, and bot links.</p></div>
-          <a href="manage-pc.html" class="manage-btn">Edit PC Panels →</a>
-        </div>
+                <!-- Emulator -->
+                <div class="card" id="card-emulator">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-desktop"></i></div>
+                    </div>
+                    <div>
+                        <div class="card-title">Emulator</div>
+                        <a href="manage-emulator.html" class="card-btn">Manage</a>
+                        <div class="toggle-wrapper">
+                            <span>Site Visibility:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-emulator" onchange="updateVisibility('emulator', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- 6. Mobile Panel -->
-        <div class="admin-card" id="card-mobile" style="display:none;">
-          <div class="card-header-row">
-            <div class="card-icon" style="color:#facc15; border:1px solid #facc15; background:rgba(250,204,21,0.1);"><i class='bx bx-mobile-alt'></i></div>
-            <label class="switch" title="Show/Hide on Website"><input type="checkbox" id="vis-mobile" onchange="toggleVis('mobile_panel', this.checked)"><span class="slider"></span></label>
-          </div>
-          <div class="card-info"><h3>Paid Mobile Panels</h3><p>Update Android/iOS mobile panel products.</p></div>
-          <a href="manage-mobile.html" class="manage-btn">Edit Mobile Panels →</a>
-        </div>
+                <!-- Free Fire APK -->
+                <div class="card" id="card-apk">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fab fa-android"></i></div>
+                    </div>
+                    <div>
+                        <div class="card-title">Free Fire APK</div>
+                        <a href="manage-apk.html" class="card-btn">Manage</a>
+                        <div class="toggle-wrapper">
+                            <span>Site Visibility:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-apk" onchange="updateVisibility('apk', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- 7. Admin Management -->
-        <div class="admin-card" id="card-admins" style="display:none;">
-          <div class="card-icon" style="color:#fff; border:1px solid #fff; background:rgba(255,255,255,0.1);"><i class='bx bxs-group'></i></div>
-          <div class="card-info"><h3>Admin Management</h3><p>Add/Remove admins and set permissions.</p></div>
-          <a href="manage-admins.html" class="manage-btn">Manage Admins →</a>
-        </div>
-      </div>
+                <!-- Paid PC Panels -->
+                <div class="card" id="card-pc">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-laptop"></i></div>
+                    </div>
+                    <div>
+                        <div class="card-title">Paid PC Panels</div>
+                        <a href="manage-pc.html" class="card-btn">Manage</a>
+                        <div class="toggle-wrapper">
+                            <span>Site Visibility:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-pc" onchange="updateVisibility('pc_panel', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paid Mobile Panels -->
+                <div class="card" id="card-mobile">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
+                    </div>
+                    <div>
+                        <div class="card-title">Paid Mobile Panels</div>
+                        <a href="manage-mobile.html" class="card-btn">Manage</a>
+                        <div class="toggle-wrapper">
+                            <span>Site Visibility:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-mobile" onchange="updateVisibility('mobile_panel', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Management (Super Admin Only) -->
+                <div class="card" id="card-admins" style="display: none;">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-users-cog"></i></div>
+                    </div>
+                    <div>
+                        <div class="card-title">Admin Management</div>
+                        <a href="manage-admins.html" class="card-btn" style="border-color:#ff0066; color:#ff0066;">Manage Users</a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
     </div>
-  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
-      authDomain: "bangla-ff-admin.firebaseapp.com",
-      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "bangla-ff-admin",
-      storageBucket: "bangla-ff-admin.firebasestorage.app",
-      messagingSenderId: "295013484465",
-      appId: "1:295013484465:web:b6bc2a949e239095761f90"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-    const MASTER_EMAIL = "mdrijuwan359@gmail.com"; 
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    function signIn() { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider); }
-    function signOut() { auth.signOut(); }
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+            authDomain: "bangla-ff-admin.firebaseapp.com",
+            databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "bangla-ff-admin",
+            storageBucket: "bangla-ff-admin.firebasestorage.app",
+            messagingSenderId: "295013484465",
+            appId: "1:295013484465:web:b6bc2a949e239095761f90"
+        };
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById('emailText').textContent = user.email;
-        checkAdminRole(user.email);
-        loadVisibility();
-      } else {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('dashboard-screen').style.display = 'none';
-      }
-    });
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const provider = new GoogleAuthProvider();
 
-    function checkAdminRole(email) {
-      const emailKey = email.replace(/\./g, ',');
-      db.ref('admins').once('value').then(snap => {
-        const admins = snap.val() || {};
-        const isSuper = (admins.super && admins.super[emailKey]) || email === MASTER_EMAIL;
-        const isNormal = admins.normal && admins.normal[emailKey];
+        // Mouse glow
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.getElementById('mouse-glow');
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
 
-        if (isSuper) {
-          document.getElementById('roleText').textContent = "Super Admin";
-          showCards({ free:true, bypass:true, emulator:true, apk:true, pc:true, mobile:true, admins:true });
-          showDashboard();
-        } else if (isNormal) {
-          document.getElementById('roleText').textContent = "Normal Admin";
-          const p = isNormal.permissions || {};
-          showCards({ free:p.free, bypass:p.bypass, emulator:p.emulator, apk:p.apk, pc:p.pc, mobile:p.mobile, admins:false });
-          showDashboard();
-        } else {
-          auth.signOut();
-          alert("Unauthorized Access!");
+        // Login Logic
+        window.signInWithGoogle = () => {
+            signInWithPopup(auth, provider).catch(error => {
+                document.getElementById('login-error').innerText = error.message;
+            });
+        };
+
+        window.logoutAdmin = () => {
+            signOut(auth).then(() => { location.reload(); });
+        };
+
+        // Live Time Toggles Data Update Function
+        window.updateVisibility = (moduleKey, isChecked) => {
+            update(ref(db, 'site_visibility'), {
+                [moduleKey]: isChecked
+            }).then(() => {
+                console.log(`${moduleKey} is now ${isChecked ? 'ON' : 'OFF'}`);
+            });
+        };
+
+        // Listen for Site Visibility changes in Realtime
+        function listenToVisibility() {
+            onValue(ref(db, 'site_visibility'), (snapshot) => {
+                if(snapshot.exists()){
+                    const data = snapshot.val();
+                    document.getElementById('toggle-free').checked = data.free_panel || false;
+                    document.getElementById('toggle-bypass').checked = data.free_bypass || false;
+                    document.getElementById('toggle-emulator').checked = data.emulator || false;
+                    document.getElementById('toggle-apk').checked = data.apk || false;
+                    document.getElementById('toggle-pc').checked = data.pc_panel || false;
+                    document.getElementById('toggle-mobile').checked = data.mobile_panel || false;
+                }
+            });
         }
-      });
-    }
 
-    function showCards(s) {
-      document.getElementById('card-freepanel').style.display = s.free ? 'flex' : 'none';
-      document.getElementById('card-bypass').style.display = s.bypass ? 'flex' : 'none';
-      document.getElementById('card-emulator').style.display = s.emulator ? 'flex' : 'none';
-      document.getElementById('card-apk').style.display = s.apk ? 'flex' : 'none';
-      document.getElementById('card-pc').style.display = s.pc ? 'flex' : 'none';
-      document.getElementById('card-mobile').style.display = s.mobile ? 'flex' : 'none';
-      document.getElementById('card-admins').style.display = s.admins ? 'flex' : 'none';
-    }
-    function showDashboard() {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('dashboard-screen').style.display = 'block';
-    }
+        // Auth Check
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const emailKey = user.email.replace(/\./g, ',');
+                
+                // Check Access
+                let isSuper = false;
+                let isNormal = false;
+                let normalPerms = {};
 
-    /* Visibility Toggles Logic */
-    function loadVisibility() {
-      db.ref('site_visibility').on('value', snap => {
-        const data = snap.val() || {};
-        document.getElementById('vis-freepanel').checked = data.free_panel !== false;
-        document.getElementById('vis-bypass').checked = data.free_bypass !== false;
-        document.getElementById('vis-emulator').checked = data.emulator !== false;
-        document.getElementById('vis-apk').checked = data.apk !== false;
-        document.getElementById('vis-pc').checked = data.pc_panel !== false;
-        document.getElementById('vis-mobile').checked = data.mobile_panel !== false;
-      });
-    }
+                const superSnap = await get(ref(db, `admins/super/${emailKey}`));
+                if(superSnap.exists()) isSuper = true;
+                
+                if(!isSuper){
+                    const normalSnap = await get(ref(db, `admins/normal/${emailKey}`));
+                    if(normalSnap.exists()){
+                        isNormal = true;
+                        normalPerms = normalSnap.val().permissions || {};
+                    }
+                }
 
-    function toggleVis(node, isChecked) {
-      db.ref(`site_visibility/${node}`).set(isChecked);
-    }
-  </script>
+                if(isSuper || isNormal){
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('admin-layout').style.display = 'flex';
+                    document.getElementById('user-name').innerText = user.displayName;
+                    document.getElementById('user-pfp').src = user.photoURL;
+
+                    listenToVisibility(); // Start live tracking
+
+                    // Hide modules if normal admin lacks permission
+                    if(isNormal && !isSuper){
+                        if(!normalPerms.free) document.getElementById('card-free').style.display = 'none';
+                        if(!normalPerms.bypass) document.getElementById('card-bypass').style.display = 'none';
+                        if(!normalPerms.emulator) document.getElementById('card-emulator').style.display = 'none';
+                        if(!normalPerms.apk) document.getElementById('card-apk').style.display = 'none';
+                        if(!normalPerms.pc) document.getElementById('card-pc').style.display = 'none';
+                        if(!normalPerms.mobile) document.getElementById('card-mobile').style.display = 'none';
+                    }
+                    if(isSuper) document.getElementById('card-admins').style.display = 'flex';
+                } else {
+                    signOut(auth);
+                    document.getElementById('login-error').innerText = "Unauthorized Email.";
+                }
+            } else {
+                document.getElementById('login-container').style.display = 'flex';
+                document.getElementById('admin-layout').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
