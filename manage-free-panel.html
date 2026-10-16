@@ -28,9 +28,11 @@
         }
         .back-btn:hover { background: #ff0066; border-color: #ff0066; }
 
+        .section-title { font-size: 20px; color: #fff; margin-bottom: 15px; border-left: 3px solid #ff0066; padding-left: 10px; }
+
         .form-container {
             background: #11071a; border: 1px solid #2a113d; padding: 25px;
-            border-radius: 12px; margin-bottom: 30px;
+            border-radius: 12px; margin-bottom: 40px;
         }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .input-group { display: flex; flex-direction: column; gap: 8px; }
@@ -41,18 +43,9 @@
         }
         .input-group input {
             background: #05020a; border: 1px solid #2a113d; color: #fff;
-            padding: 12px; border-radius: 8px; outline: none; cursor: text; font-size: 15px;
+            padding: 12px; border-radius: 8px; outline: none; font-size: 15px; cursor: text;
         }
         .input-group input:focus { border-color: #ff0066; }
-
-        /* Inner Toggle Switch */
-        .toggle-mini { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #aaa; font-weight: normal; }
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2a113d; transition: .3s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: #ff0066; }
-        input:checked + .slider:before { transform: translateX(16px); }
 
         .submit-btn {
             background: #ff0066; color: #fff; border: none; padding: 14px;
@@ -60,26 +53,20 @@
             width: 100%; margin-top: 20px; transition: 0.3s;
         }
         .submit-btn:hover { background: #d60055; transform: translateY(-2px); }
-        .cancel-btn {
-            background: #333; color: #fff; border: none; padding: 12px; border-radius: 8px;
-            cursor: pointer; width: 100%; margin-top: 10px; display: none; font-weight: 600;
-        }
+        .btn-update { background: #9d00ff; }
+        .btn-update:hover { background: #7a00cc; }
+        .cancel-btn { background: #333; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; display: none; font-weight: 600; }
 
-        .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .item-list { display: flex; flex-direction: column; gap: 15px; }
         .item-card {
-            background: #11071a; border: 1px solid #2a113d; padding: 20px;
-            border-radius: 12px; display: flex; flex-direction: column; gap: 10px;
+            background: #11071a; border: 1px solid #2a113d; padding: 15px 20px;
+            border-radius: 12px; display: flex; justify-content: space-between; align-items: center;
         }
-        .item-card h3 { font-size: 18px; color: #fff; }
-        .item-card p { font-size: 13px; color: #aaa; }
-        .status-tag { font-weight: 700; font-size: 12px; }
-        .status-on { color: #00cc66; }
-        .status-off { color: #ff3333; }
-
-        .item-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-edit { flex: 1; background: #e6b800; color: #000; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
-        .btn-delete { flex: 1; background: #ff0033; color: white; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
-        #empty { text-align: center; color: #555; grid-column: 1 / -1; padding: 40px; }
+        .item-info h3 { font-size: 18px; color: #fff; margin-bottom: 5px; }
+        .item-info p { font-size: 13px; color: #aaa; }
+        .item-actions { display: flex; gap: 10px; }
+        .btn-edit { background: #e6b800; color: #000; padding: 8px 15px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+        .btn-delete { background: #ff0033; color: white; padding: 8px 15px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -90,66 +77,56 @@
         <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
     </div>
 
+    <!-- 1. PAGE SETTINGS (Global Video, Skip Link, Password) -->
+    <h2 class="section-title">Page Top Settings (Global)</h2>
+    <div class="form-container">
+        <form id="settingsForm">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Main YouTube Video Link (Leave empty to hide)</label>
+                    <input type="url" id="global_yt" placeholder="https://youtube.com/...">
+                </div>
+                <div class="input-group">
+                    <label>How To Skip Link (Leave empty to hide)</label>
+                    <input type="url" id="global_skip" placeholder="https://link.com/skip">
+                </div>
+                <div class="input-group full">
+                    <label>RAR Password (Leave empty to hide)</label>
+                    <input type="text" id="global_pass" placeholder="e.g. BFF2024">
+                </div>
+            </div>
+            <button type="submit" id="settingsBtn" class="submit-btn btn-update"><i class="fas fa-save"></i> Update Page Settings</button>
+        </form>
+    </div>
+
+    <!-- 2. ADD NEW PRODUCT/ITEM -->
+    <h2 class="section-title">Add Downloadable Items</h2>
     <div class="form-container">
         <form id="addForm">
             <input type="hidden" id="edit_id">
             <div class="form-grid">
-                <!-- Panel Name -->
                 <div class="input-group">
-                    <label>Panel Title</label>
-                    <input type="text" id="title" placeholder="e.g. Free Aimbot Panel" required>
+                    <label>Item Name</label>
+                    <input type="text" id="title" placeholder="e.g. Free Aimbot Script" required>
                 </div>
-
-                <!-- Download Link -->
                 <div class="input-group">
+                    <label>Button Text</label>
+                    <input type="text" id="btn_text" placeholder="e.g. Download" value="Download" required>
+                </div>
+                <div class="input-group full">
                     <label>Download Link</label>
                     <input type="url" id="download" placeholder="Download Link" required>
                 </div>
-
-                <!-- Download Button Text -->
-                <div class="input-group full">
-                    <label>Download Button Text (e.g. Download Panel)</label>
-                    <input type="text" id="btn_text" placeholder="Download" value="Download" required>
-                </div>
-
-                <!-- YouTube Video URL + Toggle -->
-                <div class="input-group">
-                    <label>
-                        YouTube Video Link
-                        <div class="toggle-mini">
-                            <span>Enable?</span>
-                            <label class="switch">
-                                <input type="checkbox" id="yt_toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </label>
-                    <input type="url" id="yt_link" placeholder="YouTube Video URL (Optional)">
-                </div>
-
-                <!-- How To Skip Link + Toggle -->
-                <div class="input-group">
-                    <label>
-                        How to Skip Link
-                        <div class="toggle-mini">
-                            <span>Enable?</span>
-                            <label class="switch">
-                                <input type="checkbox" id="skip_toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </label>
-                    <input type="url" id="skip_link" placeholder="How To Skip Link (Optional)">
-                </div>
             </div>
-
-            <button type="submit" id="submitBtn" class="submit-btn"><i class="fas fa-plus"></i> Add Free Panel</button>
+            <button type="submit" id="submitBtn" class="submit-btn"><i class="fas fa-plus"></i> Add Item</button>
             <button type="button" id="cancelBtn" class="cancel-btn" onclick="cancelEdit()">Cancel Edit</button>
         </form>
     </div>
 
+    <!-- 3. ITEMS LIST -->
+    <h2 class="section-title">Items List</h2>
     <div class="item-list" id="itemList">
-        <div id="empty">No panels added yet</div>
+        <div style="text-align: center; color: #555; padding: 20px;">No items added yet</div>
     </div>
 
     <script type="module">
@@ -161,10 +138,7 @@
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
             authDomain: "bangla-ff-admin.firebaseapp.com",
             databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bangla-ff-admin",
-            storageBucket: "bangla-ff-admin.firebasestorage.app",
-            messagingSenderId: "295013484465",
-            appId: "1:295013484465:web:b6bc2a949e239095761f90"
+            projectId: "bangla-ff-admin"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -173,13 +147,37 @@
 
         document.addEventListener('mousemove', (e) => {
             const glow = document.getElementById('mouse-glow');
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
+            glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
         });
 
         onAuthStateChanged(auth, (user) => { if (!user) window.location.href = 'index.html'; });
 
-        // Add / Update Free Panel
+        // Load Global Page Settings
+        onValue(ref(db, 'page_settings/free_panel'), (snapshot) => {
+            if(snapshot.exists()) {
+                const data = snapshot.val();
+                document.getElementById('global_yt').value = data.yt_link || '';
+                document.getElementById('global_skip').value = data.skip_link || '';
+                document.getElementById('global_pass').value = data.rar_password || '';
+            }
+        });
+
+        // Save Global Page Settings
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('settingsBtn');
+            btn.innerHTML = 'Updating...';
+            const data = {
+                yt_link: document.getElementById('global_yt').value.trim(),
+                skip_link: document.getElementById('global_skip').value.trim(),
+                rar_password: document.getElementById('global_pass').value.trim()
+            };
+            await update(ref(db, 'page_settings/free_panel'), data);
+            btn.innerHTML = '<i class="fas fa-check"></i> Updated Successfully';
+            setTimeout(() => btn.innerHTML = '<i class="fas fa-save"></i> Update Page Settings', 2000);
+        });
+
+        // Add / Update Individual Items
         document.getElementById('addForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -188,53 +186,36 @@
 
             const data = {
                 title: document.getElementById('title').value.trim(),
-                download: document.getElementById('download').value.trim(),
                 btn_text: document.getElementById('btn_text').value.trim() || 'Download',
-                yt_link: document.getElementById('yt_link').value.trim(),
-                yt_enabled: document.getElementById('yt_toggle').checked,
-                skip_link: document.getElementById('skip_link').value.trim(),
-                skip_enabled: document.getElementById('skip_toggle').checked
+                download: document.getElementById('download').value.trim()
             };
 
-            try {
-                if (editId) {
-                    await update(ref(db, `free_panels/${editId}`), data);
-                    alert('Updated Successfully!');
-                } else {
-                    data.timestamp = Date.now();
-                    await set(push(ref(db, 'free_panels')), data);
-                    alert('Added Successfully!');
-                }
-                cancelEdit();
-            } catch (err) {
-                alert('Error: ' + err.message);
+            if (editId) {
+                await update(ref(db, `free_panels/${editId}`), data);
+            } else {
+                data.timestamp = Date.now();
+                await set(push(ref(db, 'free_panels')), data);
             }
-            btn.innerHTML = '<i class="fas fa-plus"></i> Add Free Panel';
+            cancelEdit();
         });
 
-        // Load items list
+        // Load Items List
         onValue(ref(db, 'free_panels'), (snapshot) => {
             const list = document.getElementById('itemList');
             list.innerHTML = '';
-
             if (!snapshot.exists()) {
-                list.innerHTML = '<div id="empty">No panels added yet</div>';
+                list.innerHTML = '<div style="text-align: center; color: #555; padding: 20px;">No items added yet</div>';
                 return;
             }
-
             snapshot.forEach((child) => {
                 const item = child.val();
                 const key = child.key;
-
-                const ytStatus = item.yt_enabled !== false ? '<span class="status-tag status-on">ON</span>' : '<span class="status-tag status-off">OFF</span>';
-                const skipStatus = item.skip_enabled !== false ? '<span class="status-tag status-on">ON</span>' : '<span class="status-tag status-off">OFF</span>';
-
                 list.innerHTML += `
                     <div class="item-card">
-                        <h3>${item.title}</h3>
-                        <p>Button: <b>${item.btn_text || 'Download'}</b></p>
-                        <p>YouTube Video: ${ytStatus}</p>
-                        <p>How To Skip Link: ${skipStatus}</p>
+                        <div class="item-info">
+                            <h3>${item.title}</h3>
+                            <p>Button: <b>${item.btn_text || 'Download'}</b> | Link: ${item.download}</p>
+                        </div>
                         <div class="item-actions">
                             <button class="btn-edit" onclick='editItem(${JSON.stringify(key)}, ${JSON.stringify(item)})'>Edit</button>
                             <button class="btn-delete" onclick="deleteItem('${key}')">Delete</button>
@@ -247,33 +228,25 @@
         window.editItem = (id, item) => {
             document.getElementById('edit_id').value = id;
             document.getElementById('title').value = item.title || '';
-            document.getElementById('download').value = item.download || '';
             document.getElementById('btn_text').value = item.btn_text || 'Download';
-            document.getElementById('yt_link').value = item.yt_link || '';
-            document.getElementById('yt_toggle').checked = item.yt_enabled !== false;
-            document.getElementById('skip_link').value = item.skip_link || '';
-            document.getElementById('skip_toggle').checked = item.skip_enabled !== false;
-
-            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Free Panel';
+            document.getElementById('download').value = item.download || '';
+            
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Item';
             document.getElementById('submitBtn').style.background = '#e6b800';
             document.getElementById('cancelBtn').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 500, behavior: 'smooth' });
         };
 
         window.cancelEdit = () => {
             document.getElementById('addForm').reset();
             document.getElementById('edit_id').value = '';
-            document.getElementById('yt_toggle').checked = true;
-            document.getElementById('skip_toggle').checked = true;
-            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-plus"></i> Add Free Panel';
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-plus"></i> Add Item';
             document.getElementById('submitBtn').style.background = '#ff0066';
             document.getElementById('cancelBtn').style.display = 'none';
         };
 
         window.deleteItem = (key) => {
-            if (confirm('Delete this panel?')) {
-                remove(ref(db, `free_panels/${key}`));
-            }
+            if (confirm('Delete this item?')) remove(ref(db, `free_panels/${key}`));
         };
     </script>
 </body>
