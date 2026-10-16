@@ -9,91 +9,252 @@
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
         body { background-color: #05020a; color: #fff; overflow-x: hidden; }
-        #mouse-glow { position: fixed; width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 0, 102, 0.4); filter: blur(20px); pointer-events: none; transform: translate(-50%, -50%); z-index: 9999; }
+        #mouse-glow {
+            position: fixed; width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255, 0, 102, 0.4); filter: blur(20px);
+            pointer-events: none; transform: translate(-50%, -50%); z-index: 9999;
+        }
 
         .login-container { display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .login-box { background: #11071a; border: 1px solid #2a113d; padding: 40px; border-radius: 15px; text-align: center; width: 350px; box-shadow: 0 0 20px rgba(157, 0, 255, 0.2); }
+        .login-box {
+            background: #11071a; border: 1px solid #2a113d; padding: 40px; border-radius: 15px;
+            text-align: center; width: 350px; box-shadow: 0 0 20px rgba(157, 0, 255, 0.2);
+        }
         .login-box h2 { color: #ff0066; margin-bottom: 20px; font-size: 28px; }
-        .google-btn { background: #fff; color: #000; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; }
-        .google-btn img { width: 20px; margin-right: 10px; }
+        .google-btn {
+            background: #fff; color: #000; padding: 12px 20px; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; width: 100%; gap: 10px;
+        }
+        .google-btn img { width: 20px; }
+        .error-msg { color: #ff0066; margin-top: 15px; font-size: 14px; }
 
-        .admin-layout { display: none; height: 100vh; width: 100vw; display: flex; }
-        .sidebar { width: 250px; background: #0c0414; border-right: 1px solid #2a113d; display: flex; flex-direction: column; height: 100vh; }
-        .sidebar-logo { padding: 20px; text-align: center; border-bottom: 1px solid #2a113d; }
-        .sidebar-logo h2 { color: #9d00ff; }
-        .sidebar-menu { list-style: none; padding: 20px 0; flex: 1; }
-        .sidebar-menu li { padding: 5px 20px; margin-bottom: 10px; }
-        .sidebar-menu a { color: #fff; text-decoration: none; display: flex; align-items: center; padding: 12px 15px; border-radius: 8px; font-size: 18px; cursor: pointer; }
-        .sidebar-menu a i { margin-right: 15px; color: #ff0066; }
-        .sidebar-menu li.active a { background: rgba(255, 0, 102, 0.1); color: #ff0066; border-left: 3px solid #ff0066; }
-        
-        .main-content { flex: 1; padding: 20px 40px; overflow-y: auto; background: #05020a; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #2a113d; padding-bottom: 15px; }
-        .header h1 { color: #fff; font-size: 28px; }
-        .user-info { display: flex; align-items: center; gap: 10px; background: #11071a; padding: 8px 15px; border-radius: 20px; border: 1px solid #2a113d; }
+        .admin-layout { display: none; height: 100vh; width: 100vw; }
+        .admin-layout.show { display: flex; }
+
+        .sidebar {
+            width: 250px; background: #0c0414; border-right: 1px solid #2a113d;
+            display: flex; flex-direction: column; height: 100vh; flex-shrink: 0;
+        }
+        .sidebar-logo {
+            padding: 25px 20px; text-align: center; border-bottom: 1px solid #2a113d;
+        }
+        .sidebar-logo h2 {
+            color: #9d00ff; text-transform: uppercase; letter-spacing: 2px; font-size: 22px;
+        }
+        .sidebar-logo p { color: #666; font-size: 12px; margin-top: 4px; }
+
+        .sidebar-menu { list-style: none; padding: 20px 0; flex: 1; overflow-y: auto; }
+        .sidebar-menu li { padding: 4px 15px; margin-bottom: 4px; }
+        .sidebar-menu a {
+            color: #ccc; text-decoration: none; display: flex; align-items: center;
+            padding: 12px 15px; border-radius: 8px; font-size: 16px; font-weight: 500;
+            transition: 0.25s; cursor: pointer; border-left: 3px solid transparent;
+        }
+        .sidebar-menu a i { margin-right: 14px; width: 20px; text-align: center; color: #ff0066; font-size: 15px; }
+        .sidebar-menu a:hover {
+            background: rgba(255, 0, 102, 0.08); color: #fff;
+        }
+        .sidebar-menu li.active a {
+            background: rgba(255, 0, 102, 0.12); color: #ff0066;
+            border-left-color: #ff0066;
+        }
+        .menu-divider {
+            height: 1px; background: #2a113d; margin: 12px 20px;
+        }
+        .menu-label {
+            padding: 8px 30px 4px; font-size: 11px; color: #555; text-transform: uppercase;
+            letter-spacing: 1px; font-weight: 600;
+        }
+
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid #2a113d; }
+        .logout-btn {
+            width: 100%; background: transparent; color: #ff0066; border: 1px solid #ff0066;
+            padding: 10px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s;
+        }
+        .logout-btn:hover { background: #ff0066; color: #fff; }
+
+        .main-content { flex: 1; padding: 25px 40px; overflow-y: auto; background: #05020a; }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 35px; border-bottom: 1px solid #2a113d; padding-bottom: 15px;
+        }
+        .header h1 { color: #fff; font-size: 26px; }
+        .header h1 span { color: #ff0066; }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .user-info {
+            display: flex; align-items: center; gap: 10px; background: #11071a;
+            padding: 8px 15px; border-radius: 20px; border: 1px solid #2a113d;
+        }
         .user-info img { width: 30px; height: 30px; border-radius: 50%; }
+        .notif-btn {
+            background: #11071a; border: 1px solid #2a113d; color: #fff; width: 42px; height: 42px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; font-size: 16px; transition: 0.3s; text-decoration: none;
+        }
+        .notif-btn:hover { border-color: #ff0066; color: #ff0066; }
+        .notif-btn .badge {
+            position: absolute; top: -2px; right: -2px; background: #ff0066; color: #fff;
+            font-size: 10px; width: 16px; height: 16px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 700;
+        }
 
-        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-        .card { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .card-icon { font-size: 30px; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: rgba(157, 0, 255, 0.1); border-radius: 10px; }
-        .card-icon img { width: 35px; height: 35px; border-radius: 5px; }
-        .card-title { font-size: 22px; color: #fff; font-weight: 600; margin-bottom: 10px; }
-        .card-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-manage { background: transparent; color: #fff; border: 1px solid #9d00ff; padding: 8px 12px; border-radius: 5px; text-decoration: none; text-align: center; cursor: pointer; flex: 1; }
-        .btn-edit { background: transparent; color: #ff0066; border: 1px solid #ff0066; padding: 8px 12px; border-radius: 5px; cursor: pointer; flex: 1; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+        .card {
+            background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 22px;
+            display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s;
+        }
+        .card:hover { border-color: #9d00ff; box-shadow: 0 0 18px rgba(157,0,255,0.15); transform: translateY(-3px); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-icon {
+            font-size: 28px; width: 50px; height: 50px; background: rgba(157,0,255,0.1);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        }
+        .card-icon img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; }
+        .card-title { font-size: 20px; color: #fff; font-weight: 600; margin-bottom: 12px; }
+        .card-actions { display: flex; gap: 8px; }
+        .btn-manage {
+            flex: 1; background: transparent; color: #fff; border: 1px solid #9d00ff;
+            padding: 8px 10px; border-radius: 6px; text-decoration: none; text-align: center;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.25s;
+        }
+        .btn-manage:hover { background: #9d00ff; }
+        .btn-edit {
+            flex: 1; background: transparent; color: #ff0066; border: 1px solid #ff0066;
+            padding: 8px 10px; border-radius: 6px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: 0.25s;
+        }
+        .btn-edit:hover { background: #ff0066; color: #fff; }
 
-        .toggle-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 15px; border-top: 1px dashed #2a113d; padding-top: 15px; }
+        .toggle-wrapper {
+            display: flex; align-items: center; gap: 10px; margin-top: 14px;
+            border-top: 1px dashed #2a113d; padding-top: 14px;
+        }
+        .toggle-wrapper span { font-size: 13px; color: #888; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2a113d; border-radius: 20px; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #2a113d; border-radius: 20px; transition: .3s;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+            background-color: white; border-radius: 50%; transition: .3s;
+        }
         input:checked + .slider { background-color: #ff0066; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Modal Settings */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #11071a; padding: 30px; border-radius: 12px; border: 1px solid #9d00ff; width: 400px; }
-        .modal h2 { color: #fff; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
-        .input-group input, .input-group select { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 10px; border-radius: 5px; outline: none; cursor: text; }
-        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .save-btn { background: #9d00ff; color: #fff; border: none; padding: 10px; flex: 1; border-radius: 5px; cursor: pointer; }
-        .close-btn { background: #ff0033; color: #fff; border: none; padding: 10px; flex: 1; border-radius: 5px; cursor: pointer; }
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: #11071a; padding: 28px; border-radius: 12px; border: 1px solid #9d00ff; width: 400px;
+        }
+        .modal h2 { color: #fff; margin-bottom: 18px; font-size: 22px; }
+        .input-group { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { color: #ff0066; font-size: 14px; font-weight: 600; }
+        .input-group input, .input-group select {
+            background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 11px;
+            border-radius: 6px; outline: none; cursor: text; font-size: 15px;
+        }
+        .input-group input:focus, .input-group select:focus { border-color: #9d00ff; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+        .save-btn { background: #9d00ff; color: #fff; border: none; padding: 11px; flex: 1; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .close-btn { background: #333; color: #fff; border: none; padding: 11px; flex: 1; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+        @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 200px; }
+            .main-content { padding: 20px; }
+        }
     </style>
 </head>
 <body>
     <div id="mouse-glow"></div>
 
+    <!-- Login -->
     <div class="login-container" id="login-container">
         <div class="login-box">
             <h2>Admin Area</h2>
             <button class="google-btn" onclick="signInWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> Sign in with Google
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+                Sign in with Google
             </button>
+            <div class="error-msg" id="login-error"></div>
         </div>
     </div>
 
+    <!-- Admin Layout -->
     <div class="admin-layout" id="admin-layout">
+        <!-- LEFT SIDEBAR -->
         <aside class="sidebar">
-            <div class="sidebar-logo"><h2>Bangla FF</h2></div>
+            <div class="sidebar-logo">
+                <h2>Bangla FF</h2>
+                <p>Admin Panel</p>
+            </div>
+
             <ul class="sidebar-menu">
-                <li class="active"><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li class="active">
+                    <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+                </li>
+
+                <div class="menu-divider"></div>
+                <div class="menu-label">Tools</div>
+
+                <li>
+                    <a href="https://imgbb.com/" target="_blank" rel="noopener">
+                        <i class="fas fa-cloud-upload-alt"></i> ImgBB
+                    </a>
+                </li>
+                <li>
+                    <a href="https://postimages.org/" target="_blank" rel="noopener">
+                        <i class="fas fa-image"></i> PostImages
+                    </a>
+                </li>
+
+                <div class="menu-divider"></div>
+                <div class="menu-label">System</div>
+
+                <li>
+                    <a href="manage-notifications.html">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                </li>
+                <li id="sidebar-admins" style="display:none;">
+                    <a href="manage-admins.html">
+                        <i class="fas fa-users-cog"></i> Admin Users
+                    </a>
+                </li>
             </ul>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
         </aside>
 
+        <!-- MAIN -->
         <main class="main-content">
             <header class="header">
                 <h1>Overview <span>Dashboard</span></h1>
-                <div class="user-info">
-                    <img id="user-pfp" src="" alt="Admin">
-                    <span id="user-name">Admin</span>
+                <div class="header-actions">
+                    <a href="manage-notifications.html" class="notif-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notif-count" style="display:none;">0</span>
+                    </a>
+                    <div class="user-info">
+                        <img id="user-pfp" src="" alt="Admin">
+                        <span id="user-name">Admin</span>
+                    </div>
                 </div>
             </header>
 
-            <div class="dashboard-grid" id="dashboard-grid">
-                <!-- Cards will be generated via JS for dynamic names/icons -->
-            </div>
+            <div class="dashboard-grid" id="dashboard-grid"></div>
         </main>
     </div>
 
@@ -103,8 +264,8 @@
             <h2>Edit Box Info</h2>
             <input type="hidden" id="edit_module_key">
             <div class="input-group">
-                <label>Display Name</label>
-                <input type="text" id="edit_title" placeholder="e.g. Premium Scripts">
+                <label>Display Name (User Site এ যে নাম দেখাবে)</label>
+                <input type="text" id="edit_title" placeholder="e.g. Free Panel">
             </div>
             <div class="input-group">
                 <label>Icon Type</label>
@@ -114,8 +275,8 @@
                 </select>
             </div>
             <div class="input-group">
-                <label>Icon Value (Emoji or Link)</label>
-                <input type="text" id="edit_icon_value" placeholder="💎 or https://link.com/img.png">
+                <label>Icon Value (Emoji বা Image Link)</label>
+                <input type="text" id="edit_icon_value" placeholder="🎮 বা https://i.ibb.co/....png">
             </div>
             <div class="modal-btns">
                 <button class="save-btn" onclick="saveCategoryInfo()">Save Changes</button>
@@ -126,65 +287,100 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
             authDomain: "bangla-ff-admin.firebaseapp.com",
             databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bangla-ff-admin"
+            projectId: "bangla-ff-admin",
+            storageBucket: "bangla-ff-admin.firebasestorage.app",
+            messagingSenderId: "295013484465",
+            appId: "1:295013484465:web:b6bc2a949e239095761f90"
         };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
+        const provider = new GoogleAuthProvider();
 
-        // Modules Definition
         const modules = [
-            { key: 'free_panel', defaultTitle: 'Free Panel', link: 'manage-free-panel.html' },
-            { key: 'free_bypass', defaultTitle: 'Free Bypass', link: 'manage-bypass.html' },
-            { key: 'emulator', defaultTitle: 'Emulator', link: 'manage-emulator.html' },
-            { key: 'apk', defaultTitle: 'Free Fire APK', link: 'manage-apk.html' },
-            { key: 'pc_panel', defaultTitle: 'Paid PC Panels', link: 'manage-pc.html' },
-            { key: 'mobile_panel', defaultTitle: 'Paid Mobile Panels', link: 'manage-mobile.html' }
+            { key: 'free_panel',    defaultTitle: 'Free Panel',         defaultIcon: '🆓', link: 'manage-free-panel.html' },
+            { key: 'free_bypass',   defaultTitle: 'Free Bypass',        defaultIcon: '🛡️', link: 'manage-bypass.html' },
+            { key: 'emulator',      defaultTitle: 'Emulator',           defaultIcon: '💻', link: 'manage-emulator.html' },
+            { key: 'apk',           defaultTitle: 'Free Fire APK',      defaultIcon: '📱', link: 'manage-apk.html' },
+            { key: 'pc_panel',      defaultTitle: 'Paid PC Panels',     defaultIcon: '🖥️', link: 'manage-pc.html' },
+            { key: 'mobile_panel',  defaultTitle: 'Paid Mobile Panels', defaultIcon: '📲', link: 'manage-mobile.html' }
         ];
 
         document.addEventListener('mousemove', (e) => {
-            const glow = document.getElementById('mouse-glow');
-            glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
+            const g = document.getElementById('mouse-glow');
+            g.style.left = e.clientX + 'px';
+            g.style.top = e.clientY + 'px';
         });
 
-        window.signInWithGoogle = () => { signInWithPopup(auth, new GoogleAuthProvider()); };
+        window.signInWithGoogle = () => {
+            signInWithPopup(auth, provider).catch(err => {
+                document.getElementById('login-error').innerText = err.message;
+            });
+        };
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('admin-layout').style.display = 'flex';
-                document.getElementById('user-name').innerText = user.displayName;
-                document.getElementById('user-pfp').src = user.photoURL;
-                loadDashboard();
-            } else {
-                document.getElementById('login-container').style.display = 'flex';
-                document.getElementById('admin-layout').style.display = 'none';
-            }
-        });
+        window.logoutAdmin = () => {
+            signOut(auth).then(() => location.reload());
+        };
+
+        window.updateVisibility = (key, val) => {
+            // site_visibility নোডে লিখবে — ইউজার সাইট এটাই পড়বে
+            update(ref(db, 'site_visibility'), { [key]: val })
+                .then(() => console.log('Visibility updated:', key, val))
+                .catch(err => alert('Error: ' + err.message));
+        };
+
+        window.openModal = (key, title, type, val) => {
+            document.getElementById('edit_module_key').value = key;
+            document.getElementById('edit_title').value = title;
+            document.getElementById('edit_icon_type').value = type;
+            document.getElementById('edit_icon_value').value = val;
+            document.getElementById('editModal').classList.add('show');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('editModal').classList.remove('show');
+        };
+
+        window.saveCategoryInfo = () => {
+            const key = document.getElementById('edit_module_key').value;
+            const data = {
+                title: document.getElementById('edit_title').value.trim(),
+                iconType: document.getElementById('edit_icon_type').value,
+                iconValue: document.getElementById('edit_icon_value').value.trim()
+            };
+            if (!data.title) return alert('Name required');
+            update(ref(db, `site_settings/categories/${key}`), data).then(() => closeModal());
+        };
 
         function loadDashboard() {
+            // দুই নোড একসাথে লিসেন
             onValue(ref(db, 'site_settings/categories'), (catSnap) => {
+                const categories = catSnap.val() || {};
+
                 onValue(ref(db, 'site_visibility'), (visSnap) => {
-                    const categories = catSnap.val() || {};
                     const visibility = visSnap.val() || {};
-                    
                     const grid = document.getElementById('dashboard-grid');
                     grid.innerHTML = '';
 
                     modules.forEach(mod => {
-                        const catData = categories[mod.key] || { title: mod.defaultTitle, iconType: 'emoji', iconValue: '📦' };
-                        const isVisible = visibility[mod.key] || false;
+                        const cat = categories[mod.key] || {
+                            title: mod.defaultTitle,
+                            iconType: 'emoji',
+                            iconValue: mod.defaultIcon
+                        };
+                        const isOn = visibility[mod.key] === true;
 
-                        let iconHTML = catData.iconType === 'image' 
-                            ? `<img src="${catData.iconValue}">` 
-                            : catData.iconValue;
+                        const iconHTML = cat.iconType === 'image'
+                            ? `<img src="${cat.iconValue}" alt="">`
+                            : (cat.iconValue || mod.defaultIcon);
 
                         grid.innerHTML += `
                             <div class="card">
@@ -192,49 +388,76 @@
                                     <div class="card-icon">${iconHTML}</div>
                                 </div>
                                 <div>
-                                    <div class="card-title">${catData.title}</div>
+                                    <div class="card-title">${cat.title || mod.defaultTitle}</div>
                                     <div class="card-actions">
                                         <a href="${mod.link}" class="btn-manage">Manage Items</a>
-                                        <button class="btn-edit" onclick="openModal('${mod.key}', '${catData.title}', '${catData.iconType}', '${catData.iconValue}')">Edit Box</button>
+                                        <button class="btn-edit" onclick="openModal('${mod.key}', '${(cat.title || mod.defaultTitle).replace(/'/g, "\\'")}', '${cat.iconType || 'emoji'}', '${(cat.iconValue || mod.defaultIcon).replace(/'/g, "\\'")}')">Edit Box</button>
                                     </div>
                                     <div class="toggle-wrapper">
                                         <span>Site Visibility:</span>
                                         <label class="switch">
-                                            <input type="checkbox" onchange="updateVisibility('${mod.key}', this.checked)" ${isVisible ? 'checked' : ''}>
+                                            <input type="checkbox" ${isOn ? 'checked' : ''}
+                                                onchange="updateVisibility('${mod.key}', this.checked)">
                                             <span class="slider"></span>
                                         </label>
+                                        <span style="color:${isOn ? '#00cc66' : '#ff4444'};font-size:12px;font-weight:600;">
+                                            ${isOn ? 'ON' : 'OFF'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         `;
                     });
+
+                    // Super admin card
+                    const adminCard = document.getElementById('card-admins-holder');
                 });
             });
         }
 
-        window.updateVisibility = (key, val) => { update(ref(db, 'site_visibility'), { [key]: val }); };
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                document.getElementById('login-container').style.display = 'flex';
+                document.getElementById('admin-layout').classList.remove('show');
+                return;
+            }
 
-        window.openModal = (key, title, type, val) => {
-            document.getElementById('edit_module_key').value = key;
-            document.getElementById('edit_title').value = title;
-            document.getElementById('edit_icon_type').value = type;
-            document.getElementById('edit_icon_value').value = val;
-            document.getElementById('editModal').style.display = 'flex';
-        };
+            const emailKey = user.email.replace(/\./g, ',');
+            let isSuper = false;
+            let isNormal = false;
+            let perms = {};
 
-        window.closeModal = () => { document.getElementById('editModal').style.display = 'none'; };
+            const superSnap = await get(ref(db, `admins/super/${emailKey}`));
+            if (superSnap.exists()) isSuper = true;
 
-        window.saveCategoryInfo = () => {
-            const key = document.getElementById('edit_module_key').value;
-            const data = {
-                title: document.getElementById('edit_title').value,
-                iconType: document.getElementById('edit_icon_type').value,
-                iconValue: document.getElementById('edit_icon_value').value
-            };
-            update(ref(db, `site_settings/categories/${key}`), data).then(() => {
-                closeModal();
-            });
-        };
+            if (!isSuper) {
+                const normalSnap = await get(ref(db, `admins/normal/${emailKey}`));
+                if (normalSnap.exists()) {
+                    isNormal = true;
+                    perms = normalSnap.val().permissions || {};
+                }
+            }
+
+            // Master email fallback
+            if (user.email === 'mdrijuwan359@gmail.com') isSuper = true;
+
+            if (!isSuper && !isNormal) {
+                await signOut(auth);
+                document.getElementById('login-error').innerText = 'Unauthorized Email';
+                return;
+            }
+
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('admin-layout').classList.add('show');
+            document.getElementById('user-name').innerText = user.displayName || user.email;
+            document.getElementById('user-pfp').src = user.photoURL || '';
+
+            if (isSuper) {
+                document.getElementById('sidebar-admins').style.display = 'block';
+            }
+
+            loadDashboard();
+        });
     </script>
 </body>
 </html>
