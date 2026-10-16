@@ -185,15 +185,16 @@
 </head>
 <body>
 
+    <!-- Sidebar with Correct GitHub File Names -->
     <div class="sidebar">
         <h2>OXI ADMIN</h2>
-        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
         <a href="manage-pc.html"><i class="fas fa-desktop"></i> Manage PC Panel</a>
         <a href="manage-mobile.html"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
-        <a href="manage-free.html"><i class="fas fa-gift"></i> Manage Free Panel</a>
+        <a href="manage-free-panel.html"><i class="fas fa-gift"></i> Manage Free Panel</a>
         <a href="manage-bypass.html"><i class="fas fa-bolt"></i> Manage Free Bypass</a>
         <a href="manage-emulator.html" class="active"><i class="fas fa-cube"></i> Manage Emulator</a>
-        <a href="admin-users.html"><i class="fas fa-users-cog"></i> Admin Users</a>
+        <a href="manage-admins.html"><i class="fas fa-users-cog"></i> Admin Users</a>
         <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/index.html" class="visit-site-btn" target="_blank"><i class="fas fa-external-link-alt"></i> Visit Site</a>
     </div>
 
@@ -206,7 +207,7 @@
             <div class="grid-2">
                 <div class="input-group">
                     <label>Tutorial Video Link (YouTube or Google Drive)</label>
-                    <input type="text" id="ytLink" placeholder="https://youtube.com/watch?v=... or Google Drive View Link">
+                    <input type="text" id="ytLink" placeholder="https://youtube.com/watch?v=... or Google Drive Link">
                 </div>
                 <div class="input-group">
                     <label>RAR Password (Optional)</label>
@@ -332,7 +333,6 @@
                 const id = child.key;
                 const data = child.val();
                 
-                // Safe JSON serialization for onclick handler
                 const safeTitle = (data.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const safeLink = (data.download || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
