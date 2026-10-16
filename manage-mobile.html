@@ -9,6 +9,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
     body { background-color: #05020a; color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
+    
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #0c0514; }
     ::-webkit-scrollbar-thumb { background: #2a113d; border-radius: 4px; }
@@ -42,9 +43,10 @@
 
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,2,10,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
     .modal-overlay.active { display: flex; opacity: 1; }
+    
     .modal-content { background: #11071a; border: 1px solid #2a113d; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 16px; box-shadow: 0 0 30px rgba(255,0,102,0.2); overflow-y: auto; transform: translateY(20px); transition: transform 0.3s ease; position: relative; }
     .modal-overlay.active .modal-content { transform: translateY(0); }
-    
+
     .modal-header { padding: 20px 25px; border-bottom: 1px dashed #2a113d; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: #11071a; z-index: 10; }
     .modal-header h2 { color: #fff; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
     .close-btn { background: none; border: none; color: #a090b5; font-size: 1.8rem; cursor: pointer; transition: 0.2s; }
@@ -106,7 +108,7 @@
         <button class="close-btn" onclick="closeLinkModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="color:#a090b5; font-size:0.9rem; margin-bottom:15px;">এখানে আপনার Discord বা Telegram এর লিংক দিন। Mobile প্যানেল কিনতে চাইলে সবাই এই লিংকে চলে যাবে।</p>
+        <p style="color:#a090b5; font-size:0.9rem; margin-bottom:15px;">এখানে আপনার Discord বা Telegram লিংক দিন। Mobile প্যানেল কিনতে চাইলে কাস্টমার সরাসরি এই লিংকে চলে যাবে।</p>
         <div class="form-group">
           <label>Buy Link (URL)</label>
           <input type="text" id="globalLinkInput" placeholder="https://discord.gg/...">
@@ -162,46 +164,74 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
     import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
       authDomain: "bangla-ff-admin.firebaseapp.com",
       databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "bangla-ff-admin"
+      projectId: "bangla-ff-admin",
+      storageBucket: "bangla-ff-admin.firebasestorage.app",
+      messagingSenderId: "295013484465",
+      appId: "1:295013484465:web:b6bc2a949e239095761f90"
     };
-    const db = getDatabase(initializeApp(firebaseConfig));
 
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app); // Restore auth session
+    const db = getDatabase(app);
+
+    // Modal Handlers
     window.openAddModal = function() { document.getElementById('addModal').classList.add('active'); };
     window.closeAddModal = function() { document.getElementById('addModal').classList.remove('active'); };
     window.openLinkModal = function() { document.getElementById('linkModal').classList.add('active'); };
     window.closeLinkModal = function() { document.getElementById('linkModal').classList.remove('active'); };
 
+    // Fetch Global Link
     onValue(ref(db, 'site_settings/mobile_panel/buy_link'), (snapshot) => {
-      if(snapshot.exists()) document.getElementById('globalLinkInput').value = snapshot.val();
+      if(snapshot.exists()) {
+        document.getElementById('globalLinkInput').value = snapshot.val();
+      }
     });
 
+    // Save Global Link
     window.saveGlobalLink = function() {
       const link = document.getElementById('globalLinkInput').value;
+      if(!link) { alert("Please enter a link!"); return; }
+
       set(ref(db, 'site_settings/mobile_panel/buy_link'), link).then(() => {
         alert("Global Link Saved Successfully!");
         closeLinkModal();
+      }).catch((err) => {
+        alert("Error saving link: " + err.message);
       });
     };
 
+    // Dynamic Row Add
     window.addPackageRow = function() {
       const wrapper = document.getElementById('packagesWrapper');
       wrapper.insertAdjacentHTML('beforeend', `
         <div class="pkg-container">
           <button class="remove-pkg" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
           <div class="pkg-row">
-            <div class="form-group"><label>Duration</label><div class="duration-flex"><input type="number" class="p-dur-num" value="1" min="1"><select class="p-dur-unit" onchange="this.previousElementSibling.style.display = (this.value === 'Lifetime') ? 'none' : 'block';"><option value="Hours">Hours</option><option value="Days" selected>Days</option><option value="Months">Months</option><option value="Years">Years</option><option value="Lifetime">Lifetime</option></select></div></div>
-            <div class="form-group"><label>Old Price</label><input type="number" class="p-old" placeholder="0"></div><div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" placeholder="100"></div><div class="form-group"><label>Buy Price</label><input type="number" class="p-buy" placeholder="50"></div>
+            <div class="form-group">
+              <label>Duration</label>
+              <div class="duration-flex">
+                <input type="number" class="p-dur-num" value="1" min="1">
+                <select class="p-dur-unit" onchange="this.previousElementSibling.style.display = (this.value === 'Lifetime') ? 'none' : 'block';">
+                  <option value="Hours">Hours</option><option value="Days" selected>Days</option><option value="Months">Months</option><option value="Years">Years</option><option value="Lifetime">Lifetime</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group"><label>Old Price</label><input type="number" class="p-old" placeholder="0"></div>
+            <div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" placeholder="100"></div>
+            <div class="form-group"><label>Buy Price</label><input type="number" class="p-buy" placeholder="50"></div>
           </div>
         </div>
       `);
     };
 
+    // Save Mobile Panel
     window.savePanel = function() {
       const title = document.getElementById('panelTitle').value;
       const img = document.getElementById('panelImg').value;
@@ -209,20 +239,57 @@
 
       let packages = [];
       document.querySelectorAll('.pkg-container').forEach(pkg => {
-        let durNum = pkg.querySelector('.p-dur-num').value, durUnit = pkg.querySelector('.p-dur-unit').value, oldP = pkg.querySelector('.p-old').value, sellP = pkg.querySelector('.p-sell').value, buyP = pkg.querySelector('.p-buy').value;
+        let durNum = pkg.querySelector('.p-dur-num').value;
+        let durUnit = pkg.querySelector('.p-dur-unit').value;
+        let oldP = pkg.querySelector('.p-old').value;
+        let sellP = pkg.querySelector('.p-sell').value;
+        let buyP = pkg.querySelector('.p-buy').value;
+
         let finalDuration = (durUnit === 'Lifetime') ? 'Lifetime' : `${durNum} ${durUnit}`;
-        if(finalDuration && sellP) packages.push({ duration: finalDuration, old_price: Number(oldP)||0, sell_price: Number(sellP)||0, buy_price: Number(buyP)||0 });
+        if(finalDuration && sellP !== "") {
+          packages.push({
+            duration: finalDuration,
+            old_price: Number(oldP) || 0,
+            sell_price: Number(sellP) || 0,
+            buy_price: Number(buyP) || 0
+          });
+        }
       });
 
-      if(packages.length === 0) { alert("Add at least one valid package!"); return; }
+      if(packages.length === 0) { alert("Add at least one valid package with duration & sell price!"); return; }
 
       push(ref(db, 'mobile_panels'), { title, image: img, packages, timestamp: Date.now() }).then(() => {
-        document.getElementById('panelTitle').value = ''; document.getElementById('panelImg').value = '';
-        const wrapper = document.getElementById('packagesWrapper'); wrapper.innerHTML = wrapper.firstElementChild.outerHTML; 
+        alert("Mobile Panel Saved Successfully!");
+        document.getElementById('panelTitle').value = '';
+        document.getElementById('panelImg').value = '';
+        
+        const wrapper = document.getElementById('packagesWrapper');
+        wrapper.innerHTML = `
+          <div class="pkg-container">
+            <button class="remove-pkg" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            <div class="pkg-row">
+              <div class="form-group">
+                <label>Duration</label>
+                <div class="duration-flex">
+                  <input type="number" class="p-dur-num" value="1" min="1">
+                  <select class="p-dur-unit" onchange="this.previousElementSibling.style.display = (this.value === 'Lifetime') ? 'none' : 'block';">
+                    <option value="Hours">Hours</option><option value="Days" selected>Days</option><option value="Months">Months</option><option value="Years">Years</option><option value="Lifetime">Lifetime</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group"><label>Old Price</label><input type="number" class="p-old" placeholder="0"></div>
+              <div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" placeholder="100"></div>
+              <div class="form-group"><label>Buy Price</label><input type="number" class="p-buy" placeholder="50"></div>
+            </div>
+          </div>
+        `;
         closeAddModal();
+      }).catch((err) => {
+        alert("Error saving panel: " + err.message);
       });
     };
 
+    // Load Panels Live
     onValue(ref(db, 'mobile_panels'), (snapshot) => {
       const tbody = document.querySelector('#panelTable tbody');
       tbody.innerHTML = '';
@@ -231,13 +298,30 @@
         Object.keys(data).reverse().forEach(key => {
           const item = data[key];
           let pkgsHtml = '';
-          if(item.packages) item.packages.forEach(p => pkgsHtml += `<span class="pkg-tag"><i class="far fa-clock"></i> ${p.duration} | <i class="fas fa-tag"></i> ৳${p.sell_price} | <i class="fas fa-user-secret"></i> ৳${p.buy_price}</span> `);
-          tbody.innerHTML += `<tr><td><img src="${item.image || 'https://i.ibb.co/L8r1pXw/logo.png'}"></td><td style="font-weight:bold; color:#fff;">${item.title}</td><td>${pkgsHtml}</td><td style="text-align:center;"><button class="btn-del" onclick="deletePanel('${key}')"><i class="fas fa-trash"></i></button></td></tr>`;
+          if(item.packages) {
+            item.packages.forEach(p => {
+              pkgsHtml += `<span class="pkg-tag"><i class="far fa-clock"></i> ${p.duration} | <i class="fas fa-tag"></i> ৳${p.sell_price} | <i class="fas fa-user-secret"></i> ৳${p.buy_price}</span> `;
+            });
+          }
+          tbody.innerHTML += `
+            <tr>
+              <td><img src="${item.image || 'https://i.ibb.co/L8r1pXw/logo.png'}"></td>
+              <td style="font-weight:bold; color:#fff;">${item.title}</td>
+              <td>${pkgsHtml}</td>
+              <td style="text-align:center;"><button class="btn-del" onclick="deletePanel('${key}')"><i class="fas fa-trash"></i></button></td>
+            </tr>
+          `;
         });
-      } else tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No panels added yet.</td></tr>';
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#7a6a8f;">No Mobile panels added yet. Click "Add Product" to add one!</td></tr>';
+      }
     });
 
-    window.deletePanel = function(key) { if(confirm("Are you sure you want to delete this panel?")) remove(ref(db, `mobile_panels/${key}`)); };
+    window.deletePanel = function(key) {
+      if(confirm("Are you sure you want to delete this panel?")) {
+        remove(ref(db, `mobile_panels/${key}`)).catch(err => alert("Error: " + err.message));
+      }
+    };
   </script>
 </body>
 </html>
