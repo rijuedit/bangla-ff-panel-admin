@@ -69,7 +69,7 @@
             margin-bottom: 30px;
         }
 
-        /* Settings Card (YouTube & Skip Link) */
+        /* Settings Card */
         .settings-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -94,7 +94,7 @@
         /* Form Controls */
         .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .form-group label { color: var(--text-gray); font-size: 0.9rem; }
-        .form-group input, .form-group select {
+        .form-group input {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             padding: 12px;
@@ -126,9 +126,6 @@
             margin-bottom: 30px;
         }
 
-        .icon-type-selection { display: flex; gap: 20px; margin-bottom: 10px; }
-        .icon-type-selection label { cursor: pointer; display: flex; align-items: center; gap: 5px; }
-
         .btn-add {
             background: var(--neon-pink);
             color: white;
@@ -144,31 +141,23 @@
         /* Item Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
         }
 
         .item-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 15px;
+            padding: 20px;
             border-radius: 12px;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .item-icon {
-            width: 60px; height: 60px;
-            object-fit: contain;
-            margin: 0 auto 10px;
-            display: block;
-        }
-        .emoji-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+        .item-name { font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; color: #fff; }
 
-        .item-name { font-weight: bold; margin-bottom: 15px; display: block; }
-
-        .action-btns { display: flex; gap: 10px; }
-        .btn-edit { background: #ffc107; color: black; border: none; padding: 8px; border-radius: 5px; flex: 1; cursor: pointer; }
-        .btn-delete { background: #dc3545; color: white; border: none; padding: 8px; border-radius: 5px; flex: 1; cursor: pointer; }
+        .btn-delete { background: #dc3545; color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -191,7 +180,7 @@
             <h1>Manage Emulator</h1>
         </div>
 
-        <!-- Global Page Settings (Video & Skip Link) -->
+        <!-- Global Page Settings (Video & RAR Pass) -->
         <div class="settings-card">
             <h3><i class="fas fa-cog"></i> Emulator Page Settings (Optional)</h3>
             <div class="form-group">
@@ -199,8 +188,8 @@
                 <input type="text" id="page-yt-link" placeholder="https://youtube.com/watch?v=...">
             </div>
             <div class="form-group">
-                <label>Skip Link / Tutorial Button (Optional)</label>
-                <input type="text" id="page-skip-link" placeholder="https://skip-link.com">
+                <label>RAR Password (Optional)</label>
+                <input type="text" id="page-rar-pass" placeholder="e.g. 1">
             </div>
             <button class="btn-save-settings" id="btn-save-settings">Save Page Settings</button>
         </div>
@@ -211,23 +200,13 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="form-group">
                     <label>Emulator Name</label>
-                    <input type="text" id="emu-name" placeholder="e.g. MSI Player / BlueStacks">
+                    <input type="text" id="emu-name" placeholder="e.g. MSI EMULATOR">
                 </div>
                 <div class="form-group">
                     <label>Download Link</label>
                     <input type="text" id="emu-link" placeholder="Download URL">
                 </div>
             </div>
-
-            <div class="form-group" style="margin-top: 15px;">
-                <label>Logo / Icon Source</label>
-                <div class="icon-type-selection">
-                    <label><input type="radio" name="emu-icon-type" value="image" checked> Image URL</label>
-                    <label><input type="radio" name="emu-icon-type" value="emoji"> Emoji</label>
-                </div>
-                <input type="text" id="emu-icon-value" placeholder="Paste Image Link or Emoji here">
-            </div>
-
             <button class="btn-add" id="btn-add">Add Emulator</button>
         </div>
 
@@ -239,7 +218,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
@@ -256,7 +235,7 @@
 
         // --- Handle Page Settings ---
         const pageYtInput = document.getElementById('page-yt-link');
-        const pageSkipInput = document.getElementById('page-skip-link');
+        const pageRarInput = document.getElementById('page-rar-pass');
         const btnSaveSettings = document.getElementById('btn-save-settings');
 
         // Load existing settings
@@ -264,14 +243,14 @@
             if(snapshot.exists()){
                 const data = snapshot.val();
                 pageYtInput.value = data.yt_link || '';
-                pageSkipInput.value = data.skip_link || '';
+                pageRarInput.value = data.rar_password || '';
             }
         });
 
         btnSaveSettings.onclick = () => {
             set(ref(db, 'page_settings/emulator'), {
                 yt_link: pageYtInput.value.trim(),
-                skip_link: pageSkipInput.value.trim()
+                rar_password: pageRarInput.value.trim()
             }).then(() => alert("Page Settings Updated!"));
         };
 
@@ -282,22 +261,17 @@
         btnAdd.onclick = () => {
             const name = document.getElementById('emu-name').value;
             const link = document.getElementById('emu-link').value;
-            const iconType = document.querySelector('input[name="emu-icon-type"]:checked').value;
-            const iconValue = document.getElementById('emu-icon-value').value;
 
-            if(!name || !link || !iconValue) return alert("Please fill all fields!");
+            if(!name || !link) return alert("Please fill Name and Link!");
 
             push(ref(db, 'emulators'), {
                 title: name,
                 download: link,
-                iconType: iconType,
-                iconValue: iconValue,
                 timestamp: Date.now()
             }).then(() => {
                 alert("Emulator Added!");
                 document.getElementById('emu-name').value = '';
                 document.getElementById('emu-link').value = '';
-                document.getElementById('emu-icon-value').value = '';
             });
         };
 
@@ -307,17 +281,9 @@
                 const data = child.val();
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                
-                let iconHtml = data.iconType === 'image' 
-                    ? `<img src="${data.iconValue}" class="item-icon">`
-                    : `<span class="emoji-icon">${data.iconValue}</span>`;
-
                 card.innerHTML = `
-                    ${iconHtml}
-                    <span class="item-name">${data.title}</span>
-                    <div class="action-btns">
-                        <button class="btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
-                    </div>
+                    <span class="item-name"><i class="fas fa-cube" style="color:var(--neon-purple); margin-right:10px;"></i> ${data.title}</span>
+                    <button class="btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
                 `;
                 emuList.appendChild(card);
             });
