@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Free Panel - Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; }
+    .header { max-width: 700px; margin: 0 auto 30px; display: flex; align-items: center; gap: 15px; }
+    .back-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; text-decoration: none; }
+    .card { max-width: 700px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
+    input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; outline: none; }
+    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i></a>
+    <h2>Manage Free Panel</h2>
+  </div>
+
+  <div class="card">
+    <form id="freeForm">
+      <div class="form-group">
+        <label>RAR Password</label>
+        <input type="text" id="pass" placeholder="e.g. 1" required>
+      </div>
+      <div class="form-group">
+        <label>Video URL (Embed Link)</label>
+        <input type="url" id="video" placeholder="YouTube Embed Link" required>
+      </div>
+      <div class="form-group">
+        <label>How To Skip Link</label>
+        <input type="url" id="skip" placeholder="Skip Tutorial Link">
+      </div>
+      <div class="form-group">
+        <label>Download Link</label>
+        <input type="url" id="dl" placeholder="Mediafire Link" required>
+      </div>
+      <button type="submit" class="btn-save">SAVE CHANGES</button>
+    </form>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+      authDomain: "bangla-ff-admin.firebaseapp.com",
+      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bangla-ff-admin",
+      storageBucket: "bangla-ff-admin.firebasestorage.app",
+      messagingSenderId: "295013484465",
+      appId: "1:295013484465:web:b6bc2a949e239095761f90"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    db.ref('free_panel').once('value', snap => {
+      const d = snap.val();
+      if(d){
+        document.getElementById('pass').value = d.password || '';
+        document.getElementById('video').value = d.video_url || '';
+        document.getElementById('skip').value = d.how_to_skip || '';
+        document.getElementById('dl').value = d.download_link || '';
+      }
+    });
+
+    document.getElementById('freeForm').onsubmit = (e) => {
+      e.preventDefault();
+      db.ref('free_panel').set({
+        password: document.getElementById('pass').value,
+        video_url: document.getElementById('video').value,
+        how_to_skip: document.getElementById('skip').value,
+        download_link: document.getElementById('dl').value
+      }).then(() => alert("Saved!"));
+    };
+  </script>
+</body>
+</html>
