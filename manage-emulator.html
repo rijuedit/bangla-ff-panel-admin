@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Emulator - OXI ADMIN</title>
+    <title>EMULATOR - BANGLA FF PANEL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
     <style>
         :root {
@@ -15,174 +14,204 @@
             --border-color: #2a113d;
             --accent-pink: #ff0066;
             --accent-purple: #9d00ff;
-            --text-gray: #b0b0b0;
-            --success-green: #00cc66;
+            --orange-color: #ffaa00;
+            --text-gray: #a0a0a0;
         }
 
         body {
             background-color: var(--bg-deep);
-            color: white;
+            color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            display: flex;
-        }
-
-        /* Sidebar Styling */
-        .sidebar {
-            width: 260px;
-            background: #0c0514;
-            height: 100vh;
-            position: fixed;
-            border-right: 1px solid var(--border-color);
             padding: 20px;
         }
 
-        .sidebar h2 { color: var(--accent-pink); margin-bottom: 30px; text-align: center; }
-        
-        .sidebar a {
-            display: block;
-            padding: 12px 15px;
-            color: var(--text-gray);
-            text-decoration: none;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-size: 14px;
+        #mouse-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(157, 0, 255, 0.15) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
         }
 
-        .sidebar a:hover, .sidebar a.active {
-            background: rgba(157, 0, 255, 0.1);
-            color: white;
-            border-left: 3px solid var(--accent-purple);
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .main-content { margin-left: 300px; padding: 40px; width: calc(100% - 300px); }
-
-        .card {
+        /* Video Section */
+        .video-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 25px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+
+        .video-box iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: none;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* RAR Pass Box */
+        .rar-box {
+            background: rgba(255, 170, 0, 0.08);
+            border: 1px dashed var(--orange-color);
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 30px;
         }
 
-        .card h3 { color: var(--accent-purple); margin-top: 0; display: flex; align-items: center; gap: 10px; }
-
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; color: var(--text-gray); margin-bottom: 8px; font-size: 14px; }
-        
-        input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: white;
-            box-sizing: border-box;
+        .rar-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--orange-color);
+            font-weight: bold;
         }
 
-        .btn {
-            padding: 12px 25px;
-            border: none;
+        .rar-pass {
+            background: rgba(0,0,0,0.5);
+            padding: 6px 14px;
             border-radius: 6px;
+            font-family: monospace;
+            font-size: 16px;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .copy-btn {
+            background: var(--orange-color);
+            color: #000;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 6px;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover { opacity: 0.9; }
+
+        /* Emulator Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .emu-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .emu-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(157, 0, 255, 0.2);
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 0, 102, 0.15);
+            color: var(--accent-pink);
+            border: 1px solid var(--accent-pink);
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .emu-icon {
+            font-size: 45px;
+            color: var(--accent-purple);
+            margin-bottom: 15px;
+        }
+
+        .emu-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple));
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 8px;
             font-weight: bold;
             transition: 0.3s;
-            width: 100%;
         }
 
-        .btn-purple { background: var(--accent-purple); color: white; }
-        .btn-pink { background: var(--accent-pink); color: white; }
-        .btn-purple:hover, .btn-pink:hover { opacity: 0.8; transform: translateY(-2px); }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 15px; border-bottom: 1px solid var(--border-color); }
-        th { color: var(--text-gray); font-size: 12px; text-transform: uppercase; }
-
-        .btn-delete { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        
-        .visit-site-btn {
-            background: var(--success-green);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 8px;
-            display: block;
-            margin-top: 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+        .download-btn:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>OXI ADMIN</h2>
-        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
-        <a href="manage-pc.html"><i class="fas fa-desktop"></i> Manage PC Panel</a>
-        <a href="manage-mobile.html"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
-        <a href="manage-free.html"><i class="fas fa-gift"></i> Manage Free Panel</a>
-        <a href="manage-bypass.html"><i class="fas fa-bolt"></i> Manage Free Bypass</a>
-        <a href="manage-emulator.html" class="active"><i class="fas fa-cube"></i> Manage Emulator</a>
-        <a href="admin-users.html"><i class="fas fa-users-cog"></i> Admin Users</a>
-        <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/index.html" class="visit-site-btn" target="_blank">Visit Site</a>
-    </div>
+    <div id="mouse-glow"></div>
 
-    <div class="main-content">
-        <h1>Manage Emulator</h1>
-
-        <!-- Page Settings -->
-        <div class="card">
-            <h3><i class="fas fa-cog"></i> Emulator Page Settings (Optional)</h3>
-            <div class="grid-2">
-                <div class="input-group">
-                    <label>YouTube Video Link (Optional)</label>
-                    <input type="text" id="ytLink" placeholder="https://youtube.com/watch?v=...">
-                </div>
-                <div class="input-group">
-                    <label>RAR Password (Optional)</label>
-                    <input type="text" id="rarPass" placeholder="e.g., 1234">
-                </div>
+    <div class="container">
+        <!-- Video Box -->
+        <div class="video-box" id="videoBox">
+            <div class="video-placeholder" id="videoPlaceholder">
+                Tutorial Video Coming Soon...
             </div>
-            <button class="btn btn-purple" onclick="savePageSettings()">Save Page Settings</button>
+            <iframe id="videoIframe" src="" style="display: none;" allowfullscreen></iframe>
         </div>
 
-        <!-- Add New Emulator -->
-        <div class="card">
-            <h3 style="color: var(--accent-pink);">Add New Emulator</h3>
-            <div class="grid-2">
-                <div class="input-group">
-                    <label>Emulator Name</label>
-                    <input type="text" id="emuName" placeholder="e.g., MSI EMULATOR">
-                </div>
-                <div class="input-group">
-                    <label>Download Link</label>
-                    <input type="text" id="emuLink" placeholder="https://mediafire.com/file/...">
-                </div>
+        <!-- RAR Password -->
+        <div class="rar-box" id="rarBox" style="display: none;">
+            <div class="rar-title">
+                <i class="fas fa-key"></i>
+                <span>RAR Password:</span>
+                <span class="rar-pass" id="rarPassValue">---</span>
             </div>
-            <button class="btn btn-pink" onclick="addEmulator()">Add Emulator</button>
+            <button class="copy-btn" onclick="copyPassword()"><i class="fas fa-copy"></i> Copy</button>
         </div>
 
-        <!-- Emulator List -->
-        <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Emulator Name</th>
-                        <th>Download Link</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="emulatorList">
-                    <!-- Data will be loaded here -->
-                </tbody>
-            </table>
+        <!-- Emulator Cards Grid -->
+        <div class="grid" id="emulatorGrid">
+            <!-- Dynamic Items Loaded Here -->
         </div>
     </div>
 
     <script>
+        // Mouse glow follower
+        const glow = document.getElementById('mouse-glow');
+        window.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
             authDomain: "bangla-ff-admin.firebaseapp.com",
@@ -196,65 +225,80 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Load Settings
+        // Convert Link into Embed URL (Supports YouTube & Google Drive)
+        function formatEmbedUrl(url) {
+            if (!url) return '';
+            
+            // Google Drive Link
+            if (url.includes('drive.google.com')) {
+                return url.replace(/\/view(\?.*)?$/, '/preview');
+            }
+
+            // YouTube Shorts
+            if (url.includes('youtube.com/shorts/')) {
+                let id = url.split('shorts/')[1].split('?')[0];
+                return 'https://www.youtube.com/embed/' + id;
+            }
+
+            // YouTube standard & short link
+            if (url.includes('youtu.be/')) {
+                let id = url.split('youtu.be/')[1].split('?')[0];
+                return 'https://www.youtube.com/embed/' + id;
+            }
+
+            if (url.includes('youtube.com/watch')) {
+                let parts = url.split('v=');
+                if (parts.length > 1) {
+                    let id = parts[1].split('&')[0];
+                    return 'https://www.youtube.com/embed/' + id;
+                }
+            }
+
+            return url;
+        }
+
+        // Load Settings (Video & Password)
         db.ref('page_settings/emulator').on('value', (snapshot) => {
             const data = snapshot.val();
-            if(data) {
-                document.getElementById('ytLink').value = data.yt_link || '';
-                document.getElementById('rarPass').value = data.rar_password || '';
+            if (data && data.yt_link) {
+                const embedUrl = formatEmbedUrl(data.yt_link);
+                const iframe = document.getElementById('videoIframe');
+                const placeholder = document.getElementById('videoPlaceholder');
+                
+                iframe.src = embedUrl;
+                iframe.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+
+            if (data && data.rar_password) {
+                document.getElementById('rarPassValue').innerText = data.rar_password;
+                document.getElementById('rarBox').style.display = 'flex';
             }
         });
 
-        function savePageSettings() {
-            const yt = document.getElementById('ytLink').value;
-            const pass = document.getElementById('rarPass').value;
-
-            db.ref('page_settings/emulator').set({
-                yt_link: yt,
-                rar_password: pass
-            }).then(() => alert("Settings Saved!"))
-            .catch(err => alert("Error: " + err.message));
+        // Copy Password Handler
+        function copyPassword() {
+            const pass = document.getElementById('rarPassValue').innerText;
+            navigator.clipboard.writeText(pass);
+            alert("Password copied: " + pass);
         }
 
-        function addEmulator() {
-            const name = document.getElementById('emuName').value;
-            const link = document.getElementById('emuLink').value;
-
-            if(!name || !link) return alert("Please fill all fields");
-
-            const newRef = db.ref('emulators').push();
-            newRef.set({
-                title: name,
-                download: link,
-                timestamp: Date.now()
-            }).then(() => {
-                document.getElementById('emuName').value = '';
-                document.getElementById('emuLink').value = '';
-                alert("Emulator Added!");
-            }).catch(err => alert("Error: " + err.message));
-        }
-
-        // Load List
+        // Load Emulators
         db.ref('emulators').on('value', (snapshot) => {
-            const list = document.getElementById('emulatorList');
-            list.innerHTML = '';
+            const grid = document.getElementById('emulatorGrid');
+            grid.innerHTML = '';
             snapshot.forEach((child) => {
-                const data = child.val();
-                list.innerHTML += `
-                    <tr>
-                        <td>${data.title}</td>
-                        <td style="font-size: 12px; color: var(--text-gray);">${data.download}</td>
-                        <td><button class="btn-delete" onclick="deleteEmu('${child.key}')">Delete</button></td>
-                    </tr>
+                const item = child.val();
+                grid.innerHTML += `
+                    <div class="emu-card">
+                        <span class="live-badge">LIVE</span>
+                        <div class="emu-icon"><i class="fas fa-cube"></i></div>
+                        <div class="emu-title">${item.title}</div>
+                        <a href="${item.download}" target="_blank" class="download-btn"><i class="fas fa-download"></i> Download</a>
+                    </div>
                 `;
             });
         });
-
-        function deleteEmu(id) {
-            if(confirm("Are you sure?")) {
-                db.ref('emulators/' + id).remove();
-            }
-        }
     </script>
 </body>
 </html>
