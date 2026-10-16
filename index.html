@@ -3,406 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BANGLA FF - Admin Dashboard</title>
+    <title>Admin Dashboard - BANGLA FF</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
-        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
         body { background-color: #05020a; color: #fff; overflow-x: hidden; }
-        
-        /* Mouse Glow */
-        #mouse-glow {
-            position: fixed; width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255, 0, 102, 0.4); filter: blur(20px);
-            pointer-events: none; transform: translate(-50%, -50%);
-            z-index: 9999; transition: transform 0.1s ease-out;
-        }
+        #mouse-glow { position: fixed; width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 0, 102, 0.4); filter: blur(20px); pointer-events: none; transform: translate(-50%, -50%); z-index: 9999; }
 
-        /* Login Screen */
-        .login-container {
-            display: flex; justify-content: center; align-items: center; height: 100vh;
-        }
-        .login-box {
-            background: #11071a; border: 1px solid #2a113d; padding: 40px; border-radius: 15px;
-            text-align: center; width: 350px; box-shadow: 0 0 20px rgba(157, 0, 255, 0.2);
-        }
-        .login-box h2 { color: #ff0066; margin-bottom: 20px; font-size: 28px; text-transform: uppercase; }
-        .google-btn {
-            background: #fff; color: #000; padding: 12px 20px; border: none; border-radius: 8px;
-            font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            width: 100%; transition: 0.3s;
-        }
+        .login-container { display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .login-box { background: #11071a; border: 1px solid #2a113d; padding: 40px; border-radius: 15px; text-align: center; width: 350px; box-shadow: 0 0 20px rgba(157, 0, 255, 0.2); }
+        .login-box h2 { color: #ff0066; margin-bottom: 20px; font-size: 28px; }
+        .google-btn { background: #fff; color: #000; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; }
         .google-btn img { width: 20px; margin-right: 10px; }
-        .google-btn:hover { background: #eee; transform: translateY(-2px); }
-        .error-msg { color: #ff0066; margin-top: 15px; font-size: 14px; }
 
-        /* Admin Layout with Sidebar */
-        .admin-layout {
-            display: none; /* Shows after login */
-            height: 100vh; width: 100vw; display: flex;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 250px; background: #0c0414; border-right: 1px solid #2a113d;
-            display: flex; flex-direction: column; height: 100vh;
-        }
-        .sidebar-logo {
-            padding: 20px; text-align: center; border-bottom: 1px solid #2a113d;
-        }
-        .sidebar-logo h2 { color: #9d00ff; text-transform: uppercase; letter-spacing: 2px; font-size: 22px; }
-        .sidebar-menu {
-            list-style: none; padding: 20px 0; flex: 1;
-        }
+        .admin-layout { display: none; height: 100vh; width: 100vw; display: flex; }
+        .sidebar { width: 250px; background: #0c0414; border-right: 1px solid #2a113d; display: flex; flex-direction: column; height: 100vh; }
+        .sidebar-logo { padding: 20px; text-align: center; border-bottom: 1px solid #2a113d; }
+        .sidebar-logo h2 { color: #9d00ff; }
+        .sidebar-menu { list-style: none; padding: 20px 0; flex: 1; }
         .sidebar-menu li { padding: 5px 20px; margin-bottom: 10px; }
-        .sidebar-menu a {
-            color: #fff; text-decoration: none; display: flex; align-items: center; padding: 12px 15px;
-            border-radius: 8px; transition: 0.3s; font-size: 18px; font-weight: 500; cursor: pointer;
-        }
-        .sidebar-menu a i { margin-right: 15px; width: 20px; text-align: center; color: #ff0066; }
-        .sidebar-menu a:hover, .sidebar-menu li.active a {
-            background: rgba(255, 0, 102, 0.1); color: #ff0066; border-left: 3px solid #ff0066;
-        }
-        .sidebar-footer { padding: 20px; border-top: 1px solid #2a113d; }
-        .logout-btn {
-            width: 100%; background: transparent; color: #ff0066; border: 1px solid #ff0066;
-            padding: 10px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .logout-btn:hover { background: #ff0066; color: #fff; }
-
-        /* Main Content */
-        .main-content {
-            flex: 1; padding: 20px 40px; overflow-y: auto; background: #05020a;
-        }
+        .sidebar-menu a { color: #fff; text-decoration: none; display: flex; align-items: center; padding: 12px 15px; border-radius: 8px; font-size: 18px; cursor: pointer; }
+        .sidebar-menu a i { margin-right: 15px; color: #ff0066; }
+        .sidebar-menu li.active a { background: rgba(255, 0, 102, 0.1); color: #ff0066; border-left: 3px solid #ff0066; }
+        
+        .main-content { flex: 1; padding: 20px 40px; overflow-y: auto; background: #05020a; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #2a113d; padding-bottom: 15px; }
         .header h1 { color: #fff; font-size: 28px; }
-        .header h1 span { color: #ff0066; }
-        .header-actions { display: flex; align-items: center; gap: 20px; }
         .user-info { display: flex; align-items: center; gap: 10px; background: #11071a; padding: 8px 15px; border-radius: 20px; border: 1px solid #2a113d; }
         .user-info img { width: 30px; height: 30px; border-radius: 50%; }
-        .notification-btn { background: transparent; border: none; color: #fff; font-size: 20px; position: relative; cursor: pointer; }
-        .notification-btn span { position: absolute; top: -5px; right: -5px; background: #ff0066; color: #fff; font-size: 10px; width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;
-        }
-        .card {
-            background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 25px;
-            transition: 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 0 20px rgba(157, 0, 255, 0.2); border-color: #9d00ff; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card-icon { width: 50px; height: 50px; background: rgba(157, 0, 255, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #9d00ff; font-size: 24px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .card { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .card-icon { font-size: 30px; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: rgba(157, 0, 255, 0.1); border-radius: 10px; }
+        .card-icon img { width: 35px; height: 35px; border-radius: 5px; }
         .card-title { font-size: 22px; color: #fff; font-weight: 600; margin-bottom: 10px; }
-        .card-btn {
-            display: inline-block; background: transparent; color: #fff; border: 1px solid #9d00ff;
-            padding: 8px 15px; border-radius: 5px; text-decoration: none; text-align: center;
-            transition: 0.3s; margin-top: 15px; cursor: pointer; font-size: 16px; width: max-content;
-        }
-        .card-btn:hover { background: #9d00ff; color: #fff; }
+        .card-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-manage { background: transparent; color: #fff; border: 1px solid #9d00ff; padding: 8px 12px; border-radius: 5px; text-decoration: none; text-align: center; cursor: pointer; flex: 1; }
+        .btn-edit { background: transparent; color: #ff0066; border: 1px solid #ff0066; padding: 8px 12px; border-radius: 5px; cursor: pointer; flex: 1; }
 
-        /* Visibility Toggle Switch */
         .toggle-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 15px; border-top: 1px dashed #2a113d; padding-top: 15px; }
-        .toggle-wrapper span { font-size: 14px; color: #aaa; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2a113d; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2a113d; border-radius: 20px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
         input:checked + .slider { background-color: #ff0066; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Responsive */
-        @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .sidebar { width: 200px; } .main-content { padding: 20px; } }
+        /* Modal Settings */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #11071a; padding: 30px; border-radius: 12px; border: 1px solid #9d00ff; width: 400px; }
+        .modal h2 { color: #fff; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+        .input-group input, .input-group select { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 10px; border-radius: 5px; outline: none; cursor: text; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .save-btn { background: #9d00ff; color: #fff; border: none; padding: 10px; flex: 1; border-radius: 5px; cursor: pointer; }
+        .close-btn { background: #ff0033; color: #fff; border: none; padding: 10px; flex: 1; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div id="mouse-glow"></div>
 
-    <!-- Login Screen -->
     <div class="login-container" id="login-container">
         <div class="login-box">
             <h2>Admin Area</h2>
             <button class="google-btn" onclick="signInWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
-                Sign in with Google
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> Sign in with Google
             </button>
-            <div class="error-msg" id="login-error"></div>
         </div>
     </div>
 
-    <!-- Admin Layout -->
-    <div class="admin-layout" id="admin-layout" style="display: none;">
-        
-        <!-- Left Sidebar -->
+    <div class="admin-layout" id="admin-layout">
         <aside class="sidebar">
-            <div class="sidebar-logo">
-                <h2>Bangla FF</h2>
-            </div>
+            <div class="sidebar-logo"><h2>Bangla FF</h2></div>
             <ul class="sidebar-menu">
                 <li class="active"><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="https://imgbb.com/" target="_blank"><i class="fas fa-cloud-upload-alt"></i> ImgBB</a></li>
-                <li><a href="https://postimages.org/" target="_blank"><i class="fas fa-image"></i> PostImages</a></li>
             </ul>
-            <div class="sidebar-footer">
-                <button id="logout-btn" class="logout-btn" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-            </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
             <header class="header">
                 <h1>Overview <span>Dashboard</span></h1>
-                <div class="header-actions">
-                    <button class="notification-btn" onclick="window.location.href='manage-notifications.html'">
-                        <i class="fas fa-bell"></i>
-                        <span>3</span>
-                    </button>
-                    <div class="user-info">
-                        <img id="user-pfp" src="" alt="Admin">
-                        <span id="user-name">Admin</span>
-                    </div>
+                <div class="user-info">
+                    <img id="user-pfp" src="" alt="Admin">
+                    <span id="user-name">Admin</span>
                 </div>
             </header>
 
-            <div class="dashboard-grid">
-                <!-- Free Panel -->
-                <div class="card" id="card-free">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fas fa-unlock"></i></div>
-                    </div>
-                    <div>
-                        <div class="card-title">Free Panel</div>
-                        <a href="manage-free-panel.html" class="card-btn">Manage</a>
-                        <div class="toggle-wrapper">
-                            <span>Site Visibility:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="toggle-free" onchange="updateVisibility('free_panel', this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Free Bypass -->
-                <div class="card" id="card-bypass">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
-                    </div>
-                    <div>
-                        <div class="card-title">Free Bypass</div>
-                        <a href="manage-bypass.html" class="card-btn">Manage</a>
-                        <div class="toggle-wrapper">
-                            <span>Site Visibility:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="toggle-bypass" onchange="updateVisibility('free_bypass', this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Emulator -->
-                <div class="card" id="card-emulator">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fas fa-desktop"></i></div>
-                    </div>
-                    <div>
-                        <div class="card-title">Emulator</div>
-                        <a href="manage-emulator.html" class="card-btn">Manage</a>
-                        <div class="toggle-wrapper">
-                            <span>Site Visibility:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="toggle-emulator" onchange="updateVisibility('emulator', this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Free Fire APK -->
-                <div class="card" id="card-apk">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fab fa-android"></i></div>
-                    </div>
-                    <div>
-                        <div class="card-title">Free Fire APK</div>
-                        <a href="manage-apk.html" class="card-btn">Manage</a>
-                        <div class="toggle-wrapper">
-                            <span>Site Visibility:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="toggle-apk" onchange="updateVisibility('apk', this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Paid PC Panels -->
-                <div class="card" id="card-pc">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fas fa-laptop"></i></div>
-                    </div>
-                    <div>
-                        <div class="card-title">Paid PC Panels</div>
-                        <a href="manage-pc.html" class="card-btn">Manage</a>
-                        <div class="toggle-wrapper">
-                            <span>Site Visibility:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="toggle-pc" onchange="updateVisibility('pc_panel', this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Paid Mobile Panels -->
-                <div class="card" id="card-mobile">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
-                    </div>
-                    <div>
-                        <div class="card-title">Paid Mobile Panels</div>
-                        <a href="manage-mobile.html" class="card-btn">Manage</a>
-                        <div class="toggle-wrapper">
-                            <span>Site Visibility:</span>
-                            <label class="switch">
-                                <input type="checkbox" id="toggle-mobile" onchange="updateVisibility('mobile_panel', this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Admin Management (Super Admin Only) -->
-                <div class="card" id="card-admins" style="display: none;">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fas fa-users-cog"></i></div>
-                    </div>
-                    <div>
-                        <div class="card-title">Admin Management</div>
-                        <a href="manage-admins.html" class="card-btn" style="border-color:#ff0066; color:#ff0066;">Manage Users</a>
-                    </div>
-                </div>
-
+            <div class="dashboard-grid" id="dashboard-grid">
+                <!-- Cards will be generated via JS for dynamic names/icons -->
             </div>
         </main>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Edit Category Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2>Edit Box Info</h2>
+            <input type="hidden" id="edit_module_key">
+            <div class="input-group">
+                <label>Display Name</label>
+                <input type="text" id="edit_title" placeholder="e.g. Premium Scripts">
+            </div>
+            <div class="input-group">
+                <label>Icon Type</label>
+                <select id="edit_icon_type">
+                    <option value="emoji">Emoji</option>
+                    <option value="image">Image URL</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Icon Value (Emoji or Link)</label>
+                <input type="text" id="edit_icon_value" placeholder="💎 or https://link.com/img.png">
+            </div>
+            <div class="modal-btns">
+                <button class="save-btn" onclick="saveCategoryInfo()">Save Changes</button>
+                <button class="close-btn" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
             authDomain: "bangla-ff-admin.firebaseapp.com",
             databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bangla-ff-admin",
-            storageBucket: "bangla-ff-admin.firebasestorage.app",
-            messagingSenderId: "295013484465",
-            appId: "1:295013484465:web:b6bc2a949e239095761f90"
+            projectId: "bangla-ff-admin"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const provider = new GoogleAuthProvider();
 
-        // Mouse glow
+        // Modules Definition
+        const modules = [
+            { key: 'free_panel', defaultTitle: 'Free Panel', link: 'manage-free-panel.html' },
+            { key: 'free_bypass', defaultTitle: 'Free Bypass', link: 'manage-bypass.html' },
+            { key: 'emulator', defaultTitle: 'Emulator', link: 'manage-emulator.html' },
+            { key: 'apk', defaultTitle: 'Free Fire APK', link: 'manage-apk.html' },
+            { key: 'pc_panel', defaultTitle: 'Paid PC Panels', link: 'manage-pc.html' },
+            { key: 'mobile_panel', defaultTitle: 'Paid Mobile Panels', link: 'manage-mobile.html' }
+        ];
+
         document.addEventListener('mousemove', (e) => {
             const glow = document.getElementById('mouse-glow');
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
+            glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
         });
 
-        // Login Logic
-        window.signInWithGoogle = () => {
-            signInWithPopup(auth, provider).catch(error => {
-                document.getElementById('login-error').innerText = error.message;
-            });
-        };
+        window.signInWithGoogle = () => { signInWithPopup(auth, new GoogleAuthProvider()); };
 
-        window.logoutAdmin = () => {
-            signOut(auth).then(() => { location.reload(); });
-        };
-
-        // Live Time Toggles Data Update Function
-        window.updateVisibility = (moduleKey, isChecked) => {
-            update(ref(db, 'site_visibility'), {
-                [moduleKey]: isChecked
-            }).then(() => {
-                console.log(`${moduleKey} is now ${isChecked ? 'ON' : 'OFF'}`);
-            });
-        };
-
-        // Listen for Site Visibility changes in Realtime
-        function listenToVisibility() {
-            onValue(ref(db, 'site_visibility'), (snapshot) => {
-                if(snapshot.exists()){
-                    const data = snapshot.val();
-                    document.getElementById('toggle-free').checked = data.free_panel || false;
-                    document.getElementById('toggle-bypass').checked = data.free_bypass || false;
-                    document.getElementById('toggle-emulator').checked = data.emulator || false;
-                    document.getElementById('toggle-apk').checked = data.apk || false;
-                    document.getElementById('toggle-pc').checked = data.pc_panel || false;
-                    document.getElementById('toggle-mobile').checked = data.mobile_panel || false;
-                }
-            });
-        }
-
-        // Auth Check
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             if (user) {
-                const emailKey = user.email.replace(/\./g, ',');
-                
-                // Check Access
-                let isSuper = false;
-                let isNormal = false;
-                let normalPerms = {};
-
-                const superSnap = await get(ref(db, `admins/super/${emailKey}`));
-                if(superSnap.exists()) isSuper = true;
-                
-                if(!isSuper){
-                    const normalSnap = await get(ref(db, `admins/normal/${emailKey}`));
-                    if(normalSnap.exists()){
-                        isNormal = true;
-                        normalPerms = normalSnap.val().permissions || {};
-                    }
-                }
-
-                if(isSuper || isNormal){
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('admin-layout').style.display = 'flex';
-                    document.getElementById('user-name').innerText = user.displayName;
-                    document.getElementById('user-pfp').src = user.photoURL;
-
-                    listenToVisibility(); // Start live tracking
-
-                    // Hide modules if normal admin lacks permission
-                    if(isNormal && !isSuper){
-                        if(!normalPerms.free) document.getElementById('card-free').style.display = 'none';
-                        if(!normalPerms.bypass) document.getElementById('card-bypass').style.display = 'none';
-                        if(!normalPerms.emulator) document.getElementById('card-emulator').style.display = 'none';
-                        if(!normalPerms.apk) document.getElementById('card-apk').style.display = 'none';
-                        if(!normalPerms.pc) document.getElementById('card-pc').style.display = 'none';
-                        if(!normalPerms.mobile) document.getElementById('card-mobile').style.display = 'none';
-                    }
-                    if(isSuper) document.getElementById('card-admins').style.display = 'flex';
-                } else {
-                    signOut(auth);
-                    document.getElementById('login-error').innerText = "Unauthorized Email.";
-                }
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('admin-layout').style.display = 'flex';
+                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('user-pfp').src = user.photoURL;
+                loadDashboard();
             } else {
                 document.getElementById('login-container').style.display = 'flex';
                 document.getElementById('admin-layout').style.display = 'none';
             }
         });
+
+        function loadDashboard() {
+            onValue(ref(db, 'site_settings/categories'), (catSnap) => {
+                onValue(ref(db, 'site_visibility'), (visSnap) => {
+                    const categories = catSnap.val() || {};
+                    const visibility = visSnap.val() || {};
+                    
+                    const grid = document.getElementById('dashboard-grid');
+                    grid.innerHTML = '';
+
+                    modules.forEach(mod => {
+                        const catData = categories[mod.key] || { title: mod.defaultTitle, iconType: 'emoji', iconValue: '📦' };
+                        const isVisible = visibility[mod.key] || false;
+
+                        let iconHTML = catData.iconType === 'image' 
+                            ? `<img src="${catData.iconValue}">` 
+                            : catData.iconValue;
+
+                        grid.innerHTML += `
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-icon">${iconHTML}</div>
+                                </div>
+                                <div>
+                                    <div class="card-title">${catData.title}</div>
+                                    <div class="card-actions">
+                                        <a href="${mod.link}" class="btn-manage">Manage Items</a>
+                                        <button class="btn-edit" onclick="openModal('${mod.key}', '${catData.title}', '${catData.iconType}', '${catData.iconValue}')">Edit Box</button>
+                                    </div>
+                                    <div class="toggle-wrapper">
+                                        <span>Site Visibility:</span>
+                                        <label class="switch">
+                                            <input type="checkbox" onchange="updateVisibility('${mod.key}', this.checked)" ${isVisible ? 'checked' : ''}>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+            });
+        }
+
+        window.updateVisibility = (key, val) => { update(ref(db, 'site_visibility'), { [key]: val }); };
+
+        window.openModal = (key, title, type, val) => {
+            document.getElementById('edit_module_key').value = key;
+            document.getElementById('edit_title').value = title;
+            document.getElementById('edit_icon_type').value = type;
+            document.getElementById('edit_icon_value').value = val;
+            document.getElementById('editModal').style.display = 'flex';
+        };
+
+        window.closeModal = () => { document.getElementById('editModal').style.display = 'none'; };
+
+        window.saveCategoryInfo = () => {
+            const key = document.getElementById('edit_module_key').value;
+            const data = {
+                title: document.getElementById('edit_title').value,
+                iconType: document.getElementById('edit_icon_type').value,
+                iconValue: document.getElementById('edit_icon_value').value
+            };
+            update(ref(db, `site_settings/categories/${key}`), data).then(() => {
+                closeModal();
+            });
+        };
     </script>
 </body>
 </html>
