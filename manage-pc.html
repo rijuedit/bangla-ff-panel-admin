@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage PC Panels - Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; --mono: 'JetBrains Mono', monospace; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .back-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .page-title { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
+    .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 30px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+    .form-group input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: 8px; font-family: var(--mono); font-size: 13px; outline: none; }
+    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+    .item-list { display: flex; flex-direction: column; gap: 12px; }
+    .item-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+    .item-info h4 { font-size: 15px; color: #fff; margin-bottom: 4px; }
+    .item-info p { font-size: 12px; color: var(--pink); font-family: var(--mono); }
+    .btn-del { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header class="admin-header">
+    <div class="header-left">
+      <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i> Dashboard</a>
+      <h2 class="page-title">Manage PC Panel Products</h2>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="admin-card">
+      <h3 style="color:#fff; margin-bottom:20px;">+ Add New PC Panel</h3>
+      <form id="pcForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="name" placeholder="NEW OBB55 BYPASS PRO" required>
+          </div>
+          <div class="form-group">
+            <label>Icon Image URL</label>
+            <input type="url" id="icon" placeholder="https://..." required>
+          </div>
+          <div class="form-group">
+            <label>Tag (HOT/NEW/PRO)</label>
+            <input type="text" id="tag" placeholder="HOT">
+          </div>
+          <div class="form-group">
+            <label>Sales Count</label>
+            <input type="text" id="sales" placeholder="1.2K+ Sold">
+          </div>
+          <div class="form-group">
+            <label>Old Price</label>
+            <input type="text" id="old_price" placeholder="৳ 800">
+          </div>
+          <div class="form-group">
+            <label>Sell Price (Starts From)</label>
+            <input type="text" id="sell_price" placeholder="৳ 50" required>
+          </div>
+          <div class="form-group full">
+            <label>Description</label>
+            <input type="text" id="desc" placeholder="Anti-Ban • Auto Headshot">
+          </div>
+          <div class="form-group full">
+            <label>Purchase Link / Bot URL</label>
+            <input type="url" id="buy_link" placeholder="https://discord.gg/..." required>
+          </div>
+        </div>
+        <button type="submit" class="btn-save"><i class='bx bx-plus-circle'></i> Add Product</button>
+      </form>
+    </div>
+
+    <h3 style="color:#fff; margin-bottom:15px;">Existing Products</h3>
+    <div class="item-list" id="productList"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function loadProducts() {
+      db.ref('pc_products').on('value', snap => {
+        const list = document.getElementById('productList');
+        list.innerHTML = '';
+        const data = snap.val();
+        if(!data) { list.innerHTML = '<p style="color:var(--muted)">No products found.</p>'; return; }
+        
+        Object.keys(data).forEach(key => {
+          const p = data[key];
+          const div = document.createElement('div');
+          div.className = 'item-box';
+          div.innerHTML = `
+            <div class="item-info">
+              <h4>${p.name}</h4>
+              <p>${p.sell_price}</p>
+            </div>
+            <button class="btn-del" onclick="deleteProduct('${key}')">Delete</button>
+          `;
+          list.appendChild(div);
+        });
+      });
+    }
+
+    document.getElementById('pcForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      db.ref('pc_products').push({
+        name: document.getElementById('name').value,
+        icon: document.getElementById('icon').value,
+        tag: document.getElementById('tag').value,
+        sales: document.getElementById('sales').value,
+        old_price: document.getElementById('old_price').value,
+        sell_price: document.getElementById('sell_price').value,
+        desc: document.getElementById('desc').value,
+        buy_link: document.getElementById('buy_link').value,
+        plans: [
+          { label: '2 Hours Access', price: 50 },
+          { label: '5 Days Access', price: 250 },
+          { label: '30 Days Access', price: 700 },
+          { label: 'Life Time Access', price: 1400 }
+        ]
+      }).then(() => { this.reset(); });
+    });
+
+    function deleteProduct(id) {
+      if(confirm('Are you sure?')) db.ref('pc_products/' + id).remove();
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
