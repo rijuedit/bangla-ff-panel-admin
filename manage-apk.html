@@ -3,61 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Free Fire APK - Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <title>Manage Free Fire APK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <style>
-    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; --mono: 'JetBrains Mono', monospace; }
+    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .back-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
-    .page-title { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
-    .form-container { max-width: 700px; margin: 40px auto; padding: 0 20px; }
-    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; }
+    
+    .header { max-width: 700px; margin: 0 auto 30px; display: flex; align-items: center; gap: 15px; }
+    .back-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; text-decoration: none; }
+    
+    .card { max-width: 700px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
     .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
-    .form-group input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 14px 16px; border-radius: 10px; font-family: var(--mono); font-size: 14px; outline: none; }
-    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: #10b981; color: #fff; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; z-index: 1000; opacity: 0; transition: 0.35s; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    
+    .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+    
+    input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; outline: none; font-size: 14px; }
+    input:focus { border-color: var(--purple); }
+    
+    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin-top: 10px; }
+    
+    /* Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #10b981; }
+    input:checked + .slider:before { transform: translateX(20px); }
   </style>
 </head>
 <body>
 
-  <header class="admin-header">
-    <div class="header-left">
-      <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i> Dashboard</a>
-      <h2 class="page-title">Manage Free Fire APK</h2>
-    </div>
-  </header>
-
-  <div class="form-container">
-    <div class="admin-card">
-      <form id="apkForm">
-        <div class="form-group">
-          <label><i class='bx bx-rename'></i> APK Title</label>
-          <input type="text" id="apkNameInput" placeholder="FREE FIRE NORMAL OB55" required>
-        </div>
-        <div class="form-group">
-          <label><i class='bx bx-download'></i> Download Link</label>
-          <input type="url" id="apkLinkInput" placeholder="https://mediafire.com/..." required>
-        </div>
-        <div class="form-group">
-          <label><i class='bx bxl-youtube'></i> YouTube Video URL (Embed Link)</label>
-          <input type="url" id="videoInput" placeholder="https://www.youtube.com/embed/VIDEO_ID" required>
-        </div>
-        <div class="form-group">
-          <label><i class='bx bx-skip-next-circle'></i> How To Skip Link</label>
-          <input type="url" id="skipInput" placeholder="https://your-skip-link.com">
-        </div>
-        <button type="submit" class="btn-save"><i class='bx bx-save'></i> Save Changes</button>
-      </form>
-    </div>
+  <div class="header">
+    <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i></a>
+    <h2><i class='bx bxl-android'></i> MANAGE FREE FIRE APK</h2>
   </div>
 
-  <div class="toast" id="toast">✅ Saved Successfully!</div>
+  <div class="card">
+    <form id="apkForm">
+      
+      <!-- Mandatory -->
+      <div class="form-group">
+        <div class="label-row"><label><i class='bx bx-rename'></i> APK Title</label></div>
+        <input type="text" id="apkNameInput" placeholder="FREE FIRE NORMAL OB55" required>
+      </div>
+
+      <!-- Mandatory -->
+      <div class="form-group">
+        <div class="label-row"><label><i class='bx bx-download'></i> Download Link</label></div>
+        <input type="url" id="apkLinkInput" placeholder="https://mediafire.com/..." required>
+      </div>
+
+      <!-- Optional with Toggle -->
+      <div class="form-group">
+        <div class="label-row">
+          <label><i class='bx bxl-youtube'></i> YouTube Video URL</label>
+          <label class="switch" title="Enable/Disable Video"><input type="checkbox" id="videoToggle" checked><span class="slider"></span></label>
+        </div>
+        <input type="url" id="videoInput" placeholder="Optional: https://www.youtube.com/embed/VIDEO_ID">
+      </div>
+
+      <!-- Optional with Toggle -->
+      <div class="form-group">
+        <div class="label-row">
+          <label><i class='bx bx-skip-next-circle'></i> How To Skip Link</label>
+          <label class="switch" title="Enable/Disable Skip Link"><input type="checkbox" id="skipToggle" checked><span class="slider"></span></label>
+        </div>
+        <input type="url" id="skipInput" placeholder="Optional: https://your-skip-link.com">
+      </div>
+
+      <button type="submit" class="btn-save"><i class='bx bx-save'></i> Save Changes</button>
+    </form>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -71,8 +90,7 @@
       messagingSenderId: "295013484465",
       appId: "1:295013484465:web:b6bc2a949e239095761f90"
     };
-
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     db.ref('ff_apk_page').once('value').then((snap) => {
@@ -80,8 +98,12 @@
       if(data) {
         document.getElementById('apkNameInput').value = data.apk_name || '';
         document.getElementById('apkLinkInput').value = data.download_link || '';
+        
         document.getElementById('videoInput').value = data.video_url || '';
+        document.getElementById('videoToggle').checked = data.video_enabled !== false; // Default true
+        
         document.getElementById('skipInput').value = data.how_to_skip || '';
+        document.getElementById('skipToggle').checked = data.skip_enabled !== false;
       }
     });
 
@@ -91,10 +113,11 @@
         apk_name: document.getElementById('apkNameInput').value,
         download_link: document.getElementById('apkLinkInput').value,
         video_url: document.getElementById('videoInput').value,
-        how_to_skip: document.getElementById('skipInput').value
+        video_enabled: document.getElementById('videoToggle').checked,
+        how_to_skip: document.getElementById('skipInput').value,
+        skip_enabled: document.getElementById('skipToggle').checked
       }).then(() => {
-        document.getElementById('toast').classList.add('show');
-        setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
+        alert("✅ Changes Saved Successfully!");
       });
     });
   </script>
