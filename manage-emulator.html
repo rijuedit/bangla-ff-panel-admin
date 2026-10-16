@@ -8,75 +8,138 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
-        body { background-color: #05020a; color: #fff; padding: 30px; }
+        body { background-color: #05020a; color: #fff; padding: 30px; min-height: 100vh; }
         
         #mouse-glow {
             position: fixed; width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255, 0, 102, 0.4); filter: blur(20px);
+            background: rgba(157, 0, 255, 0.4); filter: blur(20px);
             pointer-events: none; transform: translate(-50%, -50%); z-index: 9999;
         }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #2a113d; padding-bottom: 15px; }
-        .back-btn { background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px; border: 1px solid #2a113d; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border-bottom: 1px solid #2a113d; padding-bottom: 15px;
+        }
+        .header h1 { font-size: 26px; }
+        .header h1 span { color: #9d00ff; }
+        .back-btn {
+            background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px;
+            border: 1px solid #2a113d; border-radius: 8px; font-weight: 600; transition: 0.3s;
+        }
         .back-btn:hover { background: #9d00ff; border-color: #9d00ff; }
 
-        .form-container { background: #11071a; border: 1px solid #2a113d; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
+        .form-container {
+            background: #11071a; border: 1px solid #2a113d; padding: 25px;
+            border-radius: 12px; margin-bottom: 30px;
+        }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .input-group { display: flex; flex-direction: column; gap: 8px; }
-        .input-group label { font-size: 16px; color: #9d00ff; font-weight: 600; }
-        .input-group input { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 12px; border-radius: 8px; outline: none; cursor: text; }
+        .input-group.full { grid-column: 1 / -1; }
+        .input-group label { font-size: 15px; color: #9d00ff; font-weight: 600; }
+        .input-group label small { color: #666; font-weight: 400; font-size: 12px; }
+        .input-group input {
+            background: #05020a; border: 1px solid #2a113d; color: #fff;
+            padding: 12px; border-radius: 8px; outline: none; cursor: text; font-size: 15px;
+        }
         .input-group input:focus { border-color: #9d00ff; }
 
-        .submit-btn { background: #9d00ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.3s; }
-        .submit-btn:hover { background: #7a00cc; transform: translateY(-2px); }
+        .icon-type-row {
+            display: flex; gap: 20px; align-items: center; margin-bottom: 8px;
+        }
+        .icon-type-row label {
+            display: flex; align-items: center; gap: 6px; color: #aaa;
+            font-size: 14px; cursor: pointer; font-weight: 500;
+        }
+        .icon-type-row input[type="radio"] { accent-color: #9d00ff; cursor: pointer; }
 
-        .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .item-card { background: #11071a; border: 1px solid #2a113d; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .item-card img { width: 100%; height: 150px; object-fit: contain; background: #05020a; border-radius: 8px; margin-bottom: 10px; padding: 10px;}
-        .item-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .action-btn { flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
-        .btn-delete { background: #ff0033; color: white; }
+        .submit-btn {
+            background: #9d00ff; color: #fff; border: none; padding: 14px;
+            border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;
+            width: 100%; margin-top: 20px; transition: 0.3s;
+        }
+        .submit-btn:hover { background: #7a00cc; transform: translateY(-2px); }
+        .cancel-btn {
+            background: #333; color: #fff; border: none; padding: 12px; border-radius: 8px;
+            cursor: pointer; width: 100%; margin-top: 10px; display: none; font-weight: 600;
+        }
+
+        .item-list {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+        }
+        .item-card {
+            background: #11071a; border: 1px solid #2a113d; padding: 20px;
+            border-radius: 12px; display: flex; flex-direction: column; gap: 12px; text-align: center;
+        }
+        .item-card .preview {
+            width: 100%; height: 120px; background: #05020a; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 50px;
+            overflow: hidden;
+        }
+        .item-card .preview img {
+            width: 100%; height: 100%; object-fit: contain; padding: 10px;
+        }
+        .item-card h3 { font-size: 18px; color: #fff; }
+        .item-actions { display: flex; gap: 10px; margin-top: 5px; }
+        .btn-edit {
+            flex: 1; background: #e6b800; color: #000; padding: 8px; border: none;
+            border-radius: 5px; font-weight: 600; cursor: pointer;
+        }
+        .btn-delete {
+            flex: 1; background: #ff0033; color: #fff; padding: 8px; border: none;
+            border-radius: 5px; font-weight: 600; cursor: pointer;
+        }
+        #empty { text-align: center; color: #555; grid-column: 1 / -1; padding: 40px; }
     </style>
 </head>
 <body>
     <div id="mouse-glow"></div>
 
     <div class="header">
-        <h1>Manage <span style="color:#9d00ff;">Emulator</span></h1>
+        <h1>Manage <span>Emulator</span></h1>
         <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
     </div>
 
     <div class="form-container">
         <form id="addForm">
+            <input type="hidden" id="edit_id">
             <div class="form-grid">
                 <div class="input-group">
                     <label>Emulator Name</label>
-                    <input type="text" id="title" placeholder="e.g. BlueStacks" required>
+                    <input type="text" id="title" placeholder="e.g. BlueStacks / MSI / LDPlayer" required>
                 </div>
-                <div class="input-group">
-                    <label>Version</label>
-                    <input type="text" id="version" placeholder="e.g. 5.10" required>
-                </div>
-                <div class="input-group">
-                    <label>Logo/Image URL</label>
-                    <input type="url" id="image" placeholder="Image Link" required>
-                </div>
+
                 <div class="input-group">
                     <label>Download Link</label>
                     <input type="url" id="download" placeholder="Download Link" required>
                 </div>
+
+                <!-- Logo: Image OR Emoji -->
+                <div class="input-group full">
+                    <label>Logo / Icon <small>(Image Link অথবা Emoji)</small></label>
+                    <div class="icon-type-row">
+                        <label><input type="radio" name="iconType" value="image" checked onchange="toggleIconType()"> Image URL</label>
+                        <label><input type="radio" name="iconType" value="emoji" onchange="toggleIconType()"> Emoji</label>
+                    </div>
+                    <input type="text" id="icon_value" placeholder="https://i.ibb.co/....png  অথবা  💻" required>
+                </div>
             </div>
-            <!-- Video and Skip link removed intentionally -->
-            <button type="submit" class="submit-btn"><i class="fas fa-plus"></i> Add Emulator</button>
+            <!-- Version REMOVED -->
+
+            <button type="submit" id="submitBtn" class="submit-btn">
+                <i class="fas fa-plus"></i> Add Emulator
+            </button>
+            <button type="button" id="cancelBtn" class="cancel-btn" onclick="cancelEdit()">Cancel Edit</button>
         </form>
     </div>
 
-    <div class="item-list" id="itemList"></div>
+    <div class="item-list" id="itemList">
+        <div id="empty">No emulators added yet</div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
@@ -89,60 +152,129 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
         const auth = getAuth(app);
+        const db = getDatabase(app);
 
         document.addEventListener('mousemove', (e) => {
-            const glow = document.getElementById('mouse-glow');
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
+            const g = document.getElementById('mouse-glow');
+            g.style.left = e.clientX + 'px';
+            g.style.top = e.clientY + 'px';
         });
 
-        onAuthStateChanged(auth, (user) => { if(!user) window.location.href = "index.html"; });
+        onAuthStateChanged(auth, (user) => {
+            if (!user) window.location.href = 'index.html';
+        });
 
-        // Add Emulator
+        window.toggleIconType = () => {
+            const type = document.querySelector('input[name="iconType"]:checked').value;
+            const input = document.getElementById('icon_value');
+            if (type === 'emoji') {
+                input.placeholder = 'e.g. 💻 🖥️ 🎮 📱';
+                input.type = 'text';
+            } else {
+                input.placeholder = 'https://i.ibb.co/....png';
+                input.type = 'url';
+            }
+        };
+
+        // Add / Update
         document.getElementById('addForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.innerHTML = "Adding...";
+            const btn = document.getElementById('submitBtn');
+            const editId = document.getElementById('edit_id').value;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
+            const iconType = document.querySelector('input[name="iconType"]:checked').value;
             const data = {
-                title: document.getElementById('title').value,
-                version: document.getElementById('version').value,
-                image: document.getElementById('image').value,
-                download: document.getElementById('download').value,
-                timestamp: Date.now()
+                title: document.getElementById('title').value.trim(),
+                download: document.getElementById('download').value.trim(),
+                iconType: iconType,
+                iconValue: document.getElementById('icon_value').value.trim()
+                // version removed
             };
 
-            const newRef = push(ref(db, 'emulators'));
-            await set(newRef, data);
-            
-            e.target.reset();
+            try {
+                if (editId) {
+                    await update(ref(db, `emulators/${editId}`), data);
+                    alert('Updated Successfully!');
+                } else {
+                    data.timestamp = Date.now();
+                    await set(push(ref(db, 'emulators')), data);
+                    alert('Added Successfully!');
+                }
+                cancelEdit();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
             btn.innerHTML = '<i class="fas fa-plus"></i> Add Emulator';
-            alert("Added Successfully!");
         });
 
-        // Load Emulators
+        // Load list
         onValue(ref(db, 'emulators'), (snapshot) => {
             const list = document.getElementById('itemList');
             list.innerHTML = '';
+
+            if (!snapshot.exists()) {
+                list.innerHTML = '<div id="empty">No emulators added yet</div>';
+                return;
+            }
+
             snapshot.forEach((child) => {
                 const item = child.val();
+                const key = child.key;
+
+                // Preview: image or emoji
+                let previewHTML = '';
+                if (item.iconType === 'image' || (item.image && !item.iconType)) {
+                    // support old data with "image" field
+                    const src = item.iconValue || item.image || '';
+                    previewHTML = `<img src="${src}" alt="">`;
+                } else {
+                    previewHTML = item.iconValue || item.image || '💻';
+                }
+
                 list.innerHTML += `
                     <div class="item-card">
-                        <img src="${item.image}" alt="${item.title}">
+                        <div class="preview">${previewHTML}</div>
                         <h3>${item.title}</h3>
-                        <p style="color:#9d00ff">Version: ${item.version}</p>
                         <div class="item-actions">
-                            <button class="action-btn btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
+                            <button class="btn-edit" onclick='editItem(${JSON.stringify(key)}, ${JSON.stringify(item)})'>Edit</button>
+                            <button class="btn-delete" onclick="deleteItem('${key}')">Delete</button>
                         </div>
                     </div>
                 `;
             });
         });
 
+        window.editItem = (id, item) => {
+            document.getElementById('edit_id').value = id;
+            document.getElementById('title').value = item.title || '';
+            document.getElementById('download').value = item.download || '';
+
+            const iconType = item.iconType || (item.image ? 'image' : 'emoji');
+            const iconValue = item.iconValue || item.image || '';
+            document.querySelector(`input[name="iconType"][value="${iconType}"]`).checked = true;
+            document.getElementById('icon_value').value = iconValue;
+            toggleIconType();
+
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Emulator';
+            document.getElementById('submitBtn').style.background = '#e6b800';
+            document.getElementById('cancelBtn').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.cancelEdit = () => {
+            document.getElementById('addForm').reset();
+            document.getElementById('edit_id').value = '';
+            document.querySelector('input[name="iconType"][value="image"]').checked = true;
+            toggleIconType();
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-plus"></i> Add Emulator';
+            document.getElementById('submitBtn').style.background = '#9d00ff';
+            document.getElementById('cancelBtn').style.display = 'none';
+        };
+
         window.deleteItem = (key) => {
-            if(confirm("Are you sure you want to delete this emulator?")){
+            if (confirm('Delete this emulator?')) {
                 remove(ref(db, `emulators/${key}`));
             }
         };
