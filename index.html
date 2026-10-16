@@ -105,6 +105,9 @@
         .visit-site-link {
             color: var(--green-glow) !important;
         }
+        .visit-site-link:hover {
+            background: rgba(0, 204, 102, 0.1) !important;
+        }
 
         .logout-btn {
             margin-top: auto;
@@ -124,7 +127,7 @@
             box-shadow: 0 0 15px var(--neon-pink);
         }
 
-        /* Main Content */
+        /* Main Content Area */
         .main-content {
             margin-left: 250px;
             flex: 1;
@@ -143,7 +146,7 @@
             color: var(--neon-pink);
         }
 
-        /* Card Grid */
+        /* Grid Cards */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -176,7 +179,6 @@
             border-radius: 12px;
         }
 
-        /* If card has image logo */
         .card-icon img {
             width: 40px;
             height: 40px;
@@ -220,7 +222,6 @@
             justify-content: space-between;
         }
 
-        /* Toggle Switch */
         .switch {
             position: relative;
             display: inline-block;
@@ -233,10 +234,7 @@
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-color: #333;
             transition: .4s;
             border-radius: 34px;
@@ -245,10 +243,8 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
-            left: 3px;
-            bottom: 3px;
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
@@ -261,13 +257,10 @@
         .status-on { color: var(--green-glow); }
         .status-off { color: var(--neon-pink); }
 
-        /* Modal Styling */
+        /* Edit Box Modal */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(5px);
             display: none;
@@ -285,16 +278,10 @@
             box-shadow: 0 0 30px rgba(157, 0, 255, 0.3);
         }
 
-        .modal-header {
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
+        .modal h2 {
             font-size: 20px;
             color: var(--neon-pink);
+            margin-bottom: 20px;
         }
 
         .form-group {
@@ -318,14 +305,10 @@
             outline: none;
         }
 
-        .form-group input:focus {
-            border-color: var(--neon-purple);
-        }
-
         .modal-footer {
             display: flex;
             gap: 15px;
-            margin-top: 30px;
+            margin-top: 25px;
         }
 
         .save-btn {
@@ -348,7 +331,6 @@
             border-radius: 8px;
             cursor: pointer;
         }
-
     </style>
 </head>
 <body>
@@ -377,8 +359,8 @@
         <a href="manage-mobile.html" class="nav-link"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
 
         <div class="sidebar-label">System</div>
-        <a href="notifications.html" class="nav-link"><i class="fas fa-bell"></i> Notifications</a>
-        <a href="#" class="nav-link"><i class="fas fa-users-cog"></i> Admin Users</a>
+        <a href="manage-notifications.html" class="nav-link"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="manage-admins.html" class="nav-link"><i class="fas fa-users-cog"></i> Admin Users</a>
 
         <a href="#" id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
@@ -395,7 +377,7 @@
                 <div class="card-icon" id="icon_free_panel"><i class="fas fa-laptop-code"></i></div>
                 <h3 class="card-title" id="title_free_panel">Free Panel</h3>
                 <div class="btn-group">
-                    <a href="manage-free.html" class="btn btn-manage">Manage Items</a>
+                    <a href="manage-free-panel.html" class="btn btn-manage">Manage Items</a>
                     <button class="btn btn-edit" onclick="openEditModal('free_panel')">Edit Box</button>
                 </div>
                 <div class="visibility-control">
@@ -404,7 +386,7 @@
                         <input type="checkbox" id="vis_free_panel">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label">OFF</span>
+                    <span class="status-label" id="lbl_free_panel">OFF</span>
                 </div>
             </div>
 
@@ -422,7 +404,7 @@
                         <input type="checkbox" id="vis_free_bypass">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label">OFF</span>
+                    <span class="status-label" id="lbl_free_bypass">OFF</span>
                 </div>
             </div>
 
@@ -440,7 +422,7 @@
                         <input type="checkbox" id="vis_emulator">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label">OFF</span>
+                    <span class="status-label" id="lbl_emulator">OFF</span>
                 </div>
             </div>
 
@@ -458,7 +440,7 @@
                         <input type="checkbox" id="vis_pc_panel">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label">OFF</span>
+                    <span class="status-label" id="lbl_pc_panel">OFF</span>
                 </div>
             </div>
 
@@ -476,16 +458,16 @@
                         <input type="checkbox" id="vis_mobile_panel">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label">OFF</span>
+                    <span class="status-label" id="lbl_mobile_panel">OFF</span>
                 </div>
             </div>
 
-            <!-- APK -->
+            <!-- Free Fire APK -->
             <div class="card" id="card_apk">
                 <div class="card-icon" id="icon_apk"><i class="fas fa-mobile"></i></div>
                 <h3 class="card-title" id="title_apk">Free Fire APK</h3>
                 <div class="btn-group">
-                    <a href="#" class="btn btn-manage">Manage Items</a>
+                    <a href="manage-apk.html" class="btn btn-manage">Manage Items</a>
                     <button class="btn btn-edit" onclick="openEditModal('apk')">Edit Box</button>
                 </div>
                 <div class="visibility-control">
@@ -494,18 +476,16 @@
                         <input type="checkbox" id="vis_apk">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label">OFF</span>
+                    <span class="status-label" id="lbl_apk">OFF</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Edit Box Modal -->
+    <!-- Edit Category Box Modal -->
     <div class="modal-overlay" id="editModal">
         <div class="modal">
-            <div class="modal-header">
-                <h2>Edit Category Box</h2>
-            </div>
+            <h2>Edit Category Box</h2>
             <input type="hidden" id="edit_category_id">
             
             <div class="form-group">
@@ -517,13 +497,13 @@
                 <label>Icon Type</label>
                 <select id="edit_icon_type">
                     <option value="icon">FontAwesome Icon Class</option>
-                    <option value="image">Image URL</option>
+                    <option value="image">Image Logo URL</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label id="icon_val_label">Icon Class (e.g. fas fa-desktop)</label>
-                <input type="text" id="edit_icon_value" placeholder="fas fa-star">
+                <input type="text" id="edit_icon_value" placeholder="fas fa-desktop">
             </div>
 
             <div class="modal-footer">
@@ -552,7 +532,7 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // UI Helpers
+        // Glow mouse
         const glow = document.getElementById('mouse-glow');
         window.addEventListener('mousemove', (e) => {
             glow.style.left = e.clientX + 'px';
@@ -569,54 +549,67 @@
             signOut(auth).then(() => window.location.href = 'login.html');
         });
 
-        // Visibility Controls Logic
+        // Visibility Toggles
         const visibilityKeys = ['free_panel', 'free_bypass', 'emulator', 'apk', 'pc_panel', 'mobile_panel'];
         visibilityKeys.forEach(key => {
             const el = document.getElementById(`vis_${key}`);
-            const statusLabel = el.parentElement.nextElementSibling;
+            const lbl = document.getElementById(`lbl_${key}`);
             
-            get(ref(db, `site_visibility/${key}`)).then(s => {
-                const val = s.exists() ? s.val() : true;
+            onValue(ref(db, `site_visibility/${key}`), (snapshot) => {
+                const val = snapshot.exists() ? snapshot.val() : true;
                 el.checked = val;
-                updateStatus(statusLabel, val);
+                lbl.textContent = val ? 'ON' : 'OFF';
+                lbl.className = val ? 'status-label status-on' : 'status-label status-off';
             });
 
             el.addEventListener('change', () => {
                 set(ref(db, `site_visibility/${key}`), el.checked);
-                updateStatus(statusLabel, el.checked);
             });
         });
 
-        function updateStatus(label, isOn) {
-            label.textContent = isOn ? 'ON' : 'OFF';
-            label.className = isOn ? 'status-label status-on' : 'status-label status-off';
-        }
+        // Real-time Edit Box Sync
+        visibilityKeys.forEach(catId => {
+            onValue(ref(db, `site_settings/categories/${catId}`), (s) => {
+                if(s.exists()){
+                    const data = s.val();
+                    if(data.title) document.getElementById(`title_${catId}`).innerText = data.title;
+                    const iconDiv = document.getElementById(`icon_${catId}`);
+                    if(data.iconType === 'icon' && data.iconValue){
+                        iconDiv.innerHTML = `<i class="${data.iconValue}"></i>`;
+                    } else if(data.iconType === 'image' && data.iconValue) {
+                        iconDiv.innerHTML = `<img src="${data.iconValue}">`;
+                    }
+                }
+            });
+        });
 
-        // --- Edit Box Logic ---
+        // Edit Modal Handlers
         window.openEditModal = function(catId) {
             document.getElementById('edit_category_id').value = catId;
-            
-            // Fetch current settings
             get(ref(db, `site_settings/categories/${catId}`)).then(snapshot => {
                 if(snapshot.exists()){
                     const data = snapshot.val();
                     document.getElementById('edit_title').value = data.title || "";
                     document.getElementById('edit_icon_type').value = data.iconType || "icon";
                     document.getElementById('edit_icon_value').value = data.iconValue || "";
+                } else {
+                    document.getElementById('edit_title').value = "";
+                    document.getElementById('edit_icon_type').value = "icon";
+                    document.getElementById('edit_icon_value').value = "";
                 }
                 document.getElementById('editModal').style.display = 'flex';
                 updateIconLabel();
             });
-        }
+        };
 
         window.closeModal = function() {
             document.getElementById('editModal').style.display = 'none';
-        }
+        };
 
         const typeSelect = document.getElementById('edit_icon_type');
         const iconLabel = document.getElementById('icon_val_label');
         function updateIconLabel() {
-            iconLabel.innerText = typeSelect.value === 'icon' ? 'FontAwesome Icon Class (e.g. fas fa-desktop)' : 'Image Logo URL';
+            iconLabel.innerText = typeSelect.value === 'icon' ? 'Icon Class (e.g. fas fa-desktop)' : 'Image Logo URL';
         }
         typeSelect.addEventListener('change', updateIconLabel);
 
@@ -629,35 +622,9 @@
             };
 
             update(ref(db, `site_settings/categories/${catId}`), data).then(() => {
-                alert("Box updated successfully!");
                 closeModal();
-                // Real-time UI update on Dashboard
-                document.getElementById(`title_${catId}`).innerText = data.title;
-                const iconDiv = document.getElementById(`icon_${catId}`);
-                if(data.iconType === 'icon'){
-                    iconDiv.innerHTML = `<i class="${data.iconValue}"></i>`;
-                } else {
-                    iconDiv.innerHTML = `<img src="${data.iconValue}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/564/564619.png'">`;
-                }
             });
         });
-
-        // Load existing titles/icons on load
-        visibilityKeys.forEach(catId => {
-            get(ref(db, `site_settings/categories/${catId}`)).then(s => {
-                if(s.exists()){
-                    const data = s.val();
-                    document.getElementById(`title_${catId}`).innerText = data.title;
-                    const iconDiv = document.getElementById(`icon_${catId}`);
-                    if(data.iconType === 'icon'){
-                        iconDiv.innerHTML = `<i class="${data.iconValue}"></i>`;
-                    } else {
-                        iconDiv.innerHTML = `<img src="${data.iconValue}" width="40">`;
-                    }
-                }
-            });
-        });
-
     </script>
 </body>
 </html>
