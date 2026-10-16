@@ -1,140 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Mobile Panels - Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <title>Manage Mobile Panels - Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; --mono: 'JetBrains Mono', monospace; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .back-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
-    .page-title { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
-    .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 30px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background-color: #05020a; color: #fff; display: flex; min-height: 100vh; }
+    
+    .sidebar { width: 260px; background: #0c0514; border-right: 2px solid #2a113d; padding: 20px 0; display: flex; flex-direction: column; }
+    .sidebar h2 { color: #ff0066; text-align: center; margin-bottom: 30px; font-size: 1.5rem; text-shadow: 0 0 10px rgba(255,0,102,0.5); }
+    .sidebar a { display: block; padding: 15px 20px; color: #a090b5; text-decoration: none; font-size: 1rem; border-left: 4px solid transparent; transition: 0.3s; }
+    .sidebar a:hover, .sidebar a.active { background: #1a0b28; color: #fff; border-left-color: #ff0066; }
+    .sidebar a i { margin-right: 10px; width: 20px; text-align: center; }
+
+    .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .header h1 { font-size: 1.8rem; color: #fff; }
+    
+    .card { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+    .card h3 { margin-bottom: 20px; color: #ff0066; border-bottom: 1px dashed #2a113d; padding-bottom: 10px; }
+    
     .form-group { margin-bottom: 15px; }
-    .form-group.full { grid-column: 1 / -1; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
-    .form-group input, .form-group select { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: 8px; font-family: var(--mono); font-size: 13px; outline: none; }
-    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
-    .item-list { display: flex; flex-direction: column; gap: 12px; }
-    .item-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
-    .item-info h4 { font-size: 15px; color: #fff; margin-bottom: 4px; }
-    .item-info p { font-size: 12px; color: var(--pink); font-family: var(--mono); }
-    .btn-del { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .form-group label { display: block; margin-bottom: 5px; color: #a090b5; font-size: 0.9rem; }
+    .form-group input { width: 100%; padding: 12px; background: #05020a; border: 1px solid #2a113d; color: #fff; border-radius: 8px; outline: none; }
+    
+    .pkg-container { background: #0c0514; border: 1px solid #2a113d; padding: 15px; border-radius: 10px; margin-bottom: 15px; position: relative; }
+    .pkg-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .remove-pkg { position: absolute; top: -10px; right: -10px; background: #ff0066; color: #fff; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+    .add-pkg-btn { background: #1a0b28; color: #00cc66; border: 1px dashed #00cc66; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; }
+    
+    .btn-submit { background: linear-gradient(90deg, #ff0066, #9d00ff); color: #fff; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #2a113d; }
+    th { color: #a090b5; }
+    td img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+    .btn-del { background: #ff0066; color: #fff; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+    .pkg-tag { background: #1a0b28; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin: 2px; display: inline-block; border: 1px solid #9d00ff; }
   </style>
 </head>
 <body>
 
-  <header class="admin-header">
-    <div class="header-left">
-      <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i> Dashboard</a>
-      <h2 class="page-title">Manage Mobile Panels</h2>
-    </div>
-  </header>
-
-  <div class="container">
-    <div class="admin-card">
-      <h3 style="color:#fff; margin-bottom:20px;">+ Add New Mobile Package</h3>
-      <form id="mobForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Package Title</label>
-            <input type="text" id="title" placeholder="ANDROID VIP HEADSHOT PANEL" required>
-          </div>
-          <div class="form-group">
-            <label>Platform</label>
-            <select id="platform">
-              <option value="ANDROID">ANDROID</option>
-              <option value="IOS">IOS</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Old Price</label>
-            <input type="text" id="old_price" placeholder="৳ 1200">
-          </div>
-          <div class="form-group">
-            <label>Price</label>
-            <input type="text" id="price" placeholder="৳ 750" required>
-          </div>
-          <div class="form-group full">
-            <label>Description</label>
-            <input type="text" id="desc" placeholder="No Root Required • 100% Anti-Ban">
-          </div>
-          <div class="form-group full">
-            <label>Buy URL</label>
-            <input type="url" id="buy_url" placeholder="https://discord.gg/..." required>
-          </div>
-        </div>
-        <button type="submit" class="btn-save"><i class='bx bx-plus-circle'></i> Add Package</button>
-      </form>
-    </div>
-
-    <h3 style="color:#fff; margin-bottom:15px;">Existing Mobile Packages</h3>
-    <div class="item-list" id="mobileList"></div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>ADMIN PANEL</h2>
+    <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="https://imgbb.com/" target="_blank"><i class="fas fa-image"></i> ImgBB Upload</a>
+    <a href="https://postimages.org/" target="_blank"><i class="fas fa-images"></i> PostImages</a>
+    <a href="manage-pc.html"><i class="fas fa-laptop"></i> Manage PC Panel</a>
+    <a href="manage-mobile.html" class="active"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script>
+  <div class="main-content">
+    <div class="header"><h1>Manage Mobile Panels</h1></div>
+
+    <div class="card">
+      <h3><i class="fas fa-plus-circle"></i> Add New Mobile Panel</h3>
+      <div class="form-group"><label>Panel Name</label><input type="text" id="panelTitle" placeholder="e.g. BR MODS VIP"></div>
+      <div class="form-group"><label>Image URL (Optional)</label><input type="text" id="panelImg" placeholder="https://i.ibb.co/..."></div>
+      <div class="form-group"><label>Custom Buy Link (Optional, leave blank for WhatsApp)</label><input type="text" id="panelLink"></div>
+
+      <h4 style="color:#00cc66; margin-bottom:10px;">Pricing Packages / Durations:</h4>
+      <div id="packagesWrapper">
+        <div class="pkg-container">
+          <button class="remove-pkg" onclick="this.parentElement.remove()">X</button>
+          <div class="pkg-row">
+            <div class="form-group"><label>Duration</label><input type="text" class="p-dur" value="1 Day"></div>
+            <div class="form-group"><label>Old Price</label><input type="number" class="p-old" value="150"></div>
+            <div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" value="100"></div>
+            <div class="form-group"><label>Buy Price</label><input type="number" class="p-buy" value="50"></div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="add-pkg-btn" onclick="addPackageRow()">+ Add Another Duration</button>
+      <button class="btn-submit" onclick="savePanel()">Save Mobile Panel</button>
+    </div>
+
+    <div class="card">
+      <h3><i class="fas fa-list"></i> Existing Mobile Panels</h3>
+      <table id="panelTable">
+        <thead><tr><th>Image</th><th>Name</th><th>Packages (Admin View)</th><th>Action</th></tr></thead>
+        <tbody><tr><td colspan="4">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
       authDomain: "bangla-ff-admin.firebaseapp.com",
       databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "bangla-ff-admin",
-      storageBucket: "bangla-ff-admin.firebasestorage.app",
-      messagingSenderId: "295013484465",
-      appId: "1:295013484465:web:b6bc2a949e239095761f90"
+      projectId: "bangla-ff-admin"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.addPackageRow = function() {
+      const wrapper = document.getElementById('packagesWrapper');
+      wrapper.insertAdjacentHTML('beforeend', `
+        <div class="pkg-container">
+          <button class="remove-pkg" onclick="this.parentElement.remove()">X</button>
+          <div class="pkg-row">
+            <div class="form-group"><label>Duration</label><input type="text" class="p-dur" placeholder="e.g. 1 Month"></div>
+            <div class="form-group"><label>Old Price</label><input type="number" class="p-old" placeholder="500"></div>
+            <div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" placeholder="400"></div>
+            <div class="form-group"><label>Buy Price</label><input type="number" class="p-buy" placeholder="200"></div>
+          </div>
+        </div>
+      `);
     };
 
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    window.savePanel = function() {
+      const title = document.getElementById('panelTitle').value;
+      const img = document.getElementById('panelImg').value;
+      const link = document.getElementById('panelLink').value;
+      if(!title) { alert("Panel Name required!"); return; }
 
-    function loadMobile() {
-      db.ref('mobile_products').on('value', snap => {
-        const list = document.getElementById('mobileList');
-        list.innerHTML = '';
-        const data = snap.val();
-        if(!data) { list.innerHTML = '<p style="color:var(--muted)">No packages found.</p>'; return; }
-        
-        Object.keys(data).forEach(key => {
-          const m = data[key];
-          const div = document.createElement('div');
-          div.className = 'item-box';
-          div.innerHTML = `
-            <div class="item-info">
-              <h4>[${m.platform}] ${m.title}</h4>
-              <p>${m.price}</p>
-            </div>
-            <button class="btn-del" onclick="deleteMobile('${key}')">Delete</button>
-          `;
-          list.appendChild(div);
-        });
+      let packages = [];
+      document.querySelectorAll('.pkg-container').forEach(pkg => {
+        let dur = pkg.querySelector('.p-dur').value, oldP = pkg.querySelector('.p-old').value;
+        let sellP = pkg.querySelector('.p-sell').value, buyP = pkg.querySelector('.p-buy').value;
+        if(dur && sellP) packages.push({ duration: dur, old_price: Number(oldP)||0, sell_price: Number(sellP)||0, buy_price: Number(buyP)||0 });
       });
-    }
+      if(packages.length === 0) { alert("Add at least one package!"); return; }
 
-    document.getElementById('mobForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      db.ref('mobile_products').push({
-        title: document.getElementById('title').value,
-        platform: document.getElementById('platform').value,
-        old_price: document.getElementById('old_price').value,
-        price: document.getElementById('price').value,
-        desc: document.getElementById('desc').value,
-        buy_url: document.getElementById('buy_url').value
-      }).then(() => { this.reset(); });
+      push(ref(db, 'mobile_panels'), { title, image: img, buy_link: link, packages, timestamp: Date.now() }).then(() => {
+        alert("Mobile Panel Saved!");
+        document.getElementById('panelTitle').value = '';
+      });
+    };
+
+    onValue(ref(db, 'mobile_panels'), (snapshot) => {
+      const tbody = document.querySelector('#panelTable tbody');
+      tbody.innerHTML = '';
+      if(snapshot.exists()){
+        const data = snapshot.val();
+        Object.keys(data).reverse().forEach(key => {
+          const item = data[key];
+          let pkgsHtml = '';
+          if(item.packages) item.packages.forEach(p => pkgsHtml += `<span class="pkg-tag">${p.duration}: Sell ৳${p.sell_price} | Buy ৳${p.buy_price}</span> `);
+          tbody.innerHTML += `<tr><td><img src="${item.image || 'https://i.ibb.co/L8r1pXw/logo.png'}"></td><td>${item.title}</td><td>${pkgsHtml}</td><td><button class="btn-del" onclick="deletePanel('${key}')"><i class="fas fa-trash"></i></button></td></tr>`;
+        });
+      } else tbody.innerHTML = '<tr><td colspan="4">No panels found.</td></tr>';
     });
 
-    function deleteMobile(id) {
-      if(confirm('Are you sure?')) db.ref('mobile_products/' + id).remove();
-    }
-
-    loadMobile();
+    window.deletePanel = function(key) { if(confirm("Delete this panel?")) remove(ref(db, `mobile_panels/${key}`)); };
   </script>
 </body>
 </html>
