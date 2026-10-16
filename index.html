@@ -96,20 +96,14 @@
         .nav-link:hover, .nav-link.active {
             background: rgba(157, 0, 255, 0.1);
             color: var(--neon-purple);
-            box-shadow: inset 0 0 10px rgba(157, 0, 255, 0.1);
         }
 
         .nav-link.active {
             border-left: 3px solid var(--neon-pink);
         }
 
-        /* Visit Site Special Styling */
         .visit-site-link {
             color: var(--green-glow) !important;
-        }
-        .visit-site-link:hover {
-            background: rgba(0, 204, 102, 0.1) !important;
-            box-shadow: inset 0 0 10px rgba(0, 204, 102, 0.1) !important;
         }
 
         .logout-btn {
@@ -130,7 +124,7 @@
             box-shadow: 0 0 15px var(--neon-pink);
         }
 
-        /* Main Content Area */
+        /* Main Content */
         .main-content {
             margin-left: 250px;
             flex: 1;
@@ -138,22 +132,18 @@
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 40px;
         }
 
         .header h1 {
             font-size: 28px;
-            color: var(--text-light);
         }
 
         .header h1 span {
             color: var(--neon-pink);
         }
 
-        /* Grid Cards */
+        /* Card Grid */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -165,7 +155,6 @@
             border: 1px solid var(--border-color);
             border-radius: 15px;
             padding: 25px;
-            position: relative;
             transition: 0.3s;
         }
 
@@ -185,6 +174,13 @@
             align-items: center;
             justify-content: center;
             border-radius: 12px;
+        }
+
+        /* If card has image logo */
+        .card-icon img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
         }
 
         .card-title {
@@ -210,29 +206,21 @@
             text-align: center;
             text-decoration: none;
             transition: 0.3s;
+            cursor: pointer;
         }
 
-        .btn-manage:hover {
-            background: var(--neon-purple);
-            border-color: var(--neon-purple);
-        }
+        .btn-manage:hover { background: var(--neon-purple); border-color: var(--neon-purple); }
+        .btn-edit:hover { background: var(--neon-pink); border-color: var(--neon-pink); }
 
-        .btn-edit:hover {
-            background: var(--neon-pink);
-            border-color: var(--neon-pink);
-        }
-
-        /* Visibility Switch */
         .visibility-control {
             border-top: 1px dashed var(--border-color);
             padding-top: 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 13px;
-            color: var(--text-gray);
         }
 
+        /* Toggle Switch */
         .switch {
             position: relative;
             display: inline-block;
@@ -240,11 +228,7 @@
             height: 22px;
         }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .switch input { opacity: 0; width: 0; height: 0; }
 
         .slider {
             position: absolute;
@@ -270,23 +254,100 @@
             border-radius: 50%;
         }
 
-        input:checked + .slider {
-            background-color: var(--green-glow);
-        }
+        input:checked + .slider { background-color: var(--green-glow); }
+        input:checked + .slider:before { transform: translateX(24px); }
 
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        .status-label {
-            margin-left: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 11px;
-        }
-        
+        .status-label { font-size: 11px; font-weight: bold; }
         .status-on { color: var(--green-glow); }
         .status-off { color: var(--neon-pink); }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 2px solid var(--neon-purple);
+            width: 450px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(157, 0, 255, 0.3);
+        }
+
+        .modal-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            color: var(--neon-pink);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: #0c0514;
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--neon-purple);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .save-btn {
+            background: var(--neon-purple);
+            border: none;
+            color: white;
+            padding: 12px;
+            flex: 1;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            border: 1px solid var(--text-gray);
+            color: var(--text-gray);
+            padding: 12px;
+            flex: 1;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
     </style>
 </head>
@@ -303,38 +364,23 @@
         </a>
 
         <div class="sidebar-label">Website Control</div>
-        <!-- VISIT SITE BUTTON ADDED HERE -->
         <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/index.html" target="_blank" class="nav-link visit-site-link">
             <i class="fas fa-external-link-alt"></i> Visit Site
         </a>
 
         <div class="sidebar-label">Tools</div>
-        <a href="https://imgbb.com/" target="_blank" class="nav-link">
-            <i class="fas fa-cloud-upload-alt"></i> ImgBB
-        </a>
-        <a href="https://postimages.org/" target="_blank" class="nav-link">
-            <i class="fas fa-image"></i> PostImages
-        </a>
+        <a href="https://imgbb.com/" target="_blank" class="nav-link"><i class="fas fa-cloud-upload-alt"></i> ImgBB</a>
+        <a href="https://postimages.org/" target="_blank" class="nav-link"><i class="fas fa-image"></i> PostImages</a>
 
         <div class="sidebar-label">Paid Panels</div>
-        <a href="manage-pc.html" class="nav-link">
-            <i class="fas fa-desktop"></i> Manage PC Panel
-        </a>
-        <a href="manage-mobile.html" class="nav-link">
-            <i class="fas fa-mobile-alt"></i> Manage Mobile Panel
-        </a>
+        <a href="manage-pc.html" class="nav-link"><i class="fas fa-desktop"></i> Manage PC Panel</a>
+        <a href="manage-mobile.html" class="nav-link"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
 
         <div class="sidebar-label">System</div>
-        <a href="notifications.html" class="nav-link">
-            <i class="fas fa-bell"></i> Notifications
-        </a>
-        <a href="#" class="nav-link">
-            <i class="fas fa-users-cog"></i> Admin Users
-        </a>
+        <a href="notifications.html" class="nav-link"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="#" class="nav-link"><i class="fas fa-users-cog"></i> Admin Users</a>
 
-        <a href="#" id="logoutBtn" class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
+        <a href="#" id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
     <!-- Main Content -->
@@ -345,111 +391,144 @@
 
         <div class="grid">
             <!-- Free Panel -->
-            <div class="card">
-                <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
-                <h3 class="card-title">Free Panel</h3>
+            <div class="card" id="card_free_panel">
+                <div class="card-icon" id="icon_free_panel"><i class="fas fa-laptop-code"></i></div>
+                <h3 class="card-title" id="title_free_panel">Free Panel</h3>
                 <div class="btn-group">
                     <a href="manage-free.html" class="btn btn-manage">Manage Items</a>
-                    <a href="#" class="btn btn-edit">Edit Box</a>
+                    <button class="btn btn-edit" onclick="openEditModal('free_panel')">Edit Box</button>
                 </div>
                 <div class="visibility-control">
-                    <span>Site Visibility:</span>
+                    <span>Visibility:</span>
                     <label class="switch">
-                        <input type="checkbox" id="vis_free_panel" checked>
+                        <input type="checkbox" id="vis_free_panel">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label status-on">ON</span>
+                    <span class="status-label">OFF</span>
                 </div>
             </div>
 
             <!-- Free Bypass -->
-            <div class="card">
-                <div class="card-icon"><i class="fas fa-shield-virus"></i></div>
-                <h3 class="card-title">Free Bypass</h3>
+            <div class="card" id="card_free_bypass">
+                <div class="card-icon" id="icon_free_bypass"><i class="fas fa-shield-virus"></i></div>
+                <h3 class="card-title" id="title_free_bypass">Free Bypass</h3>
                 <div class="btn-group">
                     <a href="manage-bypass.html" class="btn btn-manage">Manage Items</a>
-                    <a href="#" class="btn btn-edit">Edit Box</a>
+                    <button class="btn btn-edit" onclick="openEditModal('free_bypass')">Edit Box</button>
                 </div>
                 <div class="visibility-control">
-                    <span>Site Visibility:</span>
+                    <span>Visibility:</span>
                     <label class="switch">
-                        <input type="checkbox" id="vis_free_bypass" checked>
+                        <input type="checkbox" id="vis_free_bypass">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label status-on">ON</span>
+                    <span class="status-label">OFF</span>
                 </div>
             </div>
 
             <!-- Emulator -->
-            <div class="card">
-                <div class="card-icon"><i class="fas fa-microchip"></i></div>
-                <h3 class="card-title">Emulator</h3>
+            <div class="card" id="card_emulator">
+                <div class="card-icon" id="icon_emulator"><i class="fas fa-microchip"></i></div>
+                <h3 class="card-title" id="title_emulator">Emulator</h3>
                 <div class="btn-group">
                     <a href="manage-emulator.html" class="btn btn-manage">Manage Items</a>
-                    <a href="#" class="btn btn-edit">Edit Box</a>
+                    <button class="btn btn-edit" onclick="openEditModal('emulator')">Edit Box</button>
                 </div>
                 <div class="visibility-control">
-                    <span>Site Visibility:</span>
+                    <span>Visibility:</span>
                     <label class="switch">
-                        <input type="checkbox" id="vis_emulator" checked>
+                        <input type="checkbox" id="vis_emulator">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label status-on">ON</span>
-                </div>
-            </div>
-
-            <!-- APK -->
-            <div class="card">
-                <div class="card-icon"><i class="fas fa-mobile"></i></div>
-                <h3 class="card-title">Free Fire APK</h3>
-                <div class="btn-group">
-                    <a href="#" class="btn btn-manage">Manage Items</a>
-                    <a href="#" class="btn btn-edit">Edit Box</a>
-                </div>
-                <div class="visibility-control">
-                    <span>Site Visibility:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="vis_apk" checked>
-                        <span class="slider"></span>
-                    </label>
-                    <span class="status-label status-on">ON</span>
+                    <span class="status-label">OFF</span>
                 </div>
             </div>
 
             <!-- Paid PC -->
-            <div class="card">
-                <div class="card-icon"><i class="fas fa-desktop"></i></div>
-                <h3 class="card-title">Paid PC Panels</h3>
+            <div class="card" id="card_pc_panel">
+                <div class="card-icon" id="icon_pc_panel"><i class="fas fa-desktop"></i></div>
+                <h3 class="card-title" id="title_pc_panel">Paid PC Panels</h3>
                 <div class="btn-group">
                     <a href="manage-pc.html" class="btn btn-manage">Manage Items</a>
-                    <a href="#" class="btn btn-edit">Edit Box</a>
+                    <button class="btn btn-edit" onclick="openEditModal('pc_panel')">Edit Box</button>
                 </div>
                 <div class="visibility-control">
-                    <span>Site Visibility:</span>
+                    <span>Visibility:</span>
                     <label class="switch">
-                        <input type="checkbox" id="vis_pc_panel" checked>
+                        <input type="checkbox" id="vis_pc_panel">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label status-on">ON</span>
+                    <span class="status-label">OFF</span>
                 </div>
             </div>
 
             <!-- Paid Mobile -->
-            <div class="card">
-                <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
-                <h3 class="card-title">Paid Mobile Panels</h3>
+            <div class="card" id="card_mobile_panel">
+                <div class="card-icon" id="icon_mobile_panel"><i class="fas fa-mobile-alt"></i></div>
+                <h3 class="card-title" id="title_mobile_panel">Paid Mobile Panels</h3>
                 <div class="btn-group">
                     <a href="manage-mobile.html" class="btn btn-manage">Manage Items</a>
-                    <a href="#" class="btn btn-edit">Edit Box</a>
+                    <button class="btn btn-edit" onclick="openEditModal('mobile_panel')">Edit Box</button>
                 </div>
                 <div class="visibility-control">
-                    <span>Site Visibility:</span>
+                    <span>Visibility:</span>
                     <label class="switch">
-                        <input type="checkbox" id="vis_mobile_panel" checked>
+                        <input type="checkbox" id="vis_mobile_panel">
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label status-on">ON</span>
+                    <span class="status-label">OFF</span>
                 </div>
+            </div>
+
+            <!-- APK -->
+            <div class="card" id="card_apk">
+                <div class="card-icon" id="icon_apk"><i class="fas fa-mobile"></i></div>
+                <h3 class="card-title" id="title_apk">Free Fire APK</h3>
+                <div class="btn-group">
+                    <a href="#" class="btn btn-manage">Manage Items</a>
+                    <button class="btn btn-edit" onclick="openEditModal('apk')">Edit Box</button>
+                </div>
+                <div class="visibility-control">
+                    <span>Visibility:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="vis_apk">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="status-label">OFF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Box Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Category Box</h2>
+            </div>
+            <input type="hidden" id="edit_category_id">
+            
+            <div class="form-group">
+                <label>Category Title</label>
+                <input type="text" id="edit_title" placeholder="e.g. Paid PC Panel">
+            </div>
+
+            <div class="form-group">
+                <label>Icon Type</label>
+                <select id="edit_icon_type">
+                    <option value="icon">FontAwesome Icon Class</option>
+                    <option value="image">Image URL</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label id="icon_val_label">Icon Class (e.g. fas fa-desktop)</label>
+                <input type="text" id="edit_icon_value" placeholder="fas fa-star">
+            </div>
+
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                <button class="save-btn" id="saveCategoryBtn">Save Changes</button>
             </div>
         </div>
     </div>
@@ -473,54 +552,111 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // Mouse Glow
+        // UI Helpers
         const glow = document.getElementById('mouse-glow');
         window.addEventListener('mousemove', (e) => {
             glow.style.left = e.clientX + 'px';
             glow.style.top = e.clientY + 'px';
         });
 
-        // Auth Check
+        // Auth Protection
         onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-            }
+            if (!user) window.location.href = 'login.html';
         });
 
-        // Logout
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            signOut(auth).then(() => {
-                window.location.href = 'login.html';
-            });
+            signOut(auth).then(() => window.location.href = 'login.html');
         });
 
-        // Visibility Sync
+        // Visibility Controls Logic
         const visibilityKeys = ['free_panel', 'free_bypass', 'emulator', 'apk', 'pc_panel', 'mobile_panel'];
-        
         visibilityKeys.forEach(key => {
             const el = document.getElementById(`vis_${key}`);
             const statusLabel = el.parentElement.nextElementSibling;
-
-            // Get Initial State
-            get(ref(db, `site_visibility/${key}`)).then((snapshot) => {
-                const val = snapshot.exists() ? snapshot.val() : true;
+            
+            get(ref(db, `site_visibility/${key}`)).then(s => {
+                const val = s.exists() ? s.val() : true;
                 el.checked = val;
-                updateStatusLabel(statusLabel, val);
+                updateStatus(statusLabel, val);
             });
 
-            // Update State on Change
             el.addEventListener('change', () => {
-                const isChecked = el.checked;
-                set(ref(db, `site_visibility/${key}`), isChecked);
-                updateStatusLabel(statusLabel, isChecked);
+                set(ref(db, `site_visibility/${key}`), el.checked);
+                updateStatus(statusLabel, el.checked);
             });
         });
 
-        function updateStatusLabel(label, isOn) {
+        function updateStatus(label, isOn) {
             label.textContent = isOn ? 'ON' : 'OFF';
             label.className = isOn ? 'status-label status-on' : 'status-label status-off';
         }
+
+        // --- Edit Box Logic ---
+        window.openEditModal = function(catId) {
+            document.getElementById('edit_category_id').value = catId;
+            
+            // Fetch current settings
+            get(ref(db, `site_settings/categories/${catId}`)).then(snapshot => {
+                if(snapshot.exists()){
+                    const data = snapshot.val();
+                    document.getElementById('edit_title').value = data.title || "";
+                    document.getElementById('edit_icon_type').value = data.iconType || "icon";
+                    document.getElementById('edit_icon_value').value = data.iconValue || "";
+                }
+                document.getElementById('editModal').style.display = 'flex';
+                updateIconLabel();
+            });
+        }
+
+        window.closeModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        const typeSelect = document.getElementById('edit_icon_type');
+        const iconLabel = document.getElementById('icon_val_label');
+        function updateIconLabel() {
+            iconLabel.innerText = typeSelect.value === 'icon' ? 'FontAwesome Icon Class (e.g. fas fa-desktop)' : 'Image Logo URL';
+        }
+        typeSelect.addEventListener('change', updateIconLabel);
+
+        document.getElementById('saveCategoryBtn').addEventListener('click', () => {
+            const catId = document.getElementById('edit_category_id').value;
+            const data = {
+                title: document.getElementById('edit_title').value,
+                iconType: document.getElementById('edit_icon_type').value,
+                iconValue: document.getElementById('edit_icon_value').value
+            };
+
+            update(ref(db, `site_settings/categories/${catId}`), data).then(() => {
+                alert("Box updated successfully!");
+                closeModal();
+                // Real-time UI update on Dashboard
+                document.getElementById(`title_${catId}`).innerText = data.title;
+                const iconDiv = document.getElementById(`icon_${catId}`);
+                if(data.iconType === 'icon'){
+                    iconDiv.innerHTML = `<i class="${data.iconValue}"></i>`;
+                } else {
+                    iconDiv.innerHTML = `<img src="${data.iconValue}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/564/564619.png'">`;
+                }
+            });
+        });
+
+        // Load existing titles/icons on load
+        visibilityKeys.forEach(catId => {
+            get(ref(db, `site_settings/categories/${catId}`)).then(s => {
+                if(s.exists()){
+                    const data = s.val();
+                    document.getElementById(`title_${catId}`).innerText = data.title;
+                    const iconDiv = document.getElementById(`icon_${catId}`);
+                    if(data.iconType === 'icon'){
+                        iconDiv.innerHTML = `<i class="${data.iconValue}"></i>`;
+                    } else {
+                        iconDiv.innerHTML = `<img src="${data.iconValue}" width="40">`;
+                    }
+                }
+            });
+        });
 
     </script>
 </body>
