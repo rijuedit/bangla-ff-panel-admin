@@ -1,108 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Emulator - Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-  <style>
-    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; --mono: 'JetBrains Mono', monospace; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .back-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
-    .page-title { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
-    .form-container { max-width: 700px; margin: 40px auto; padding: 0 20px; }
-    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
-    .form-group input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 14px 16px; border-radius: 10px; font-family: var(--mono); font-size: 14px; outline: none; }
-    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: #10b981; color: #fff; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; z-index: 1000; opacity: 0; transition: 0.35s; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Emulator - BANGLA FF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
+        body { background-color: #05020a; color: #fff; padding: 30px; }
+        
+        #mouse-glow {
+            position: fixed; width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255, 0, 102, 0.4); filter: blur(20px);
+            pointer-events: none; transform: translate(-50%, -50%); z-index: 9999;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #2a113d; padding-bottom: 15px; }
+        .back-btn { background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px; border: 1px solid #2a113d; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .back-btn:hover { background: #9d00ff; border-color: #9d00ff; }
+
+        .form-container { background: #11071a; border: 1px solid #2a113d; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 16px; color: #9d00ff; font-weight: 600; }
+        .input-group input { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 12px; border-radius: 8px; outline: none; cursor: text; }
+        .input-group input:focus { border-color: #9d00ff; }
+
+        .submit-btn { background: #9d00ff; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.3s; }
+        .submit-btn:hover { background: #7a00cc; transform: translateY(-2px); }
+
+        .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .item-card { background: #11071a; border: 1px solid #2a113d; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .item-card img { width: 100%; height: 150px; object-fit: contain; background: #05020a; border-radius: 8px; margin-bottom: 10px; padding: 10px;}
+        .item-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .action-btn { flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+        .btn-delete { background: #ff0033; color: white; }
+    </style>
 </head>
 <body>
+    <div id="mouse-glow"></div>
 
-  <header class="admin-header">
-    <div class="header-left">
-      <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i> Dashboard</a>
-      <h2 class="page-title">Manage Emulators</h2>
+    <div class="header">
+        <h1>Manage <span style="color:#9d00ff;">Emulator</span></h1>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
     </div>
-  </header>
 
-  <div class="form-container">
-    <div class="admin-card">
-      <form id="emuForm">
-        <div class="form-group">
-          <label><i class='bx bx-lock-alt'></i> RAR Password</label>
-          <input type="text" id="passInput" placeholder="e.g. 1" required>
-        </div>
-        <div class="form-group">
-          <label><i class='bx bxl-youtube'></i> YouTube Video URL (Embed Link)</label>
-          <input type="url" id="videoInput" placeholder="https://www.youtube.com/embed/VIDEO_ID" required>
-        </div>
-        <div class="form-group">
-          <label><i class='bx bx-skip-next-circle'></i> How To Skip Link</label>
-          <input type="url" id="skipInput" placeholder="https://your-skip-link.com">
-        </div>
-        <div class="form-group">
-          <label><i class='bx bx-desktop'></i> MSI Emulator Download Link</label>
-          <input type="url" id="msiLinkInput" placeholder="https://mediafire.com/...">
-        </div>
-        <div class="form-group">
-          <label><i class='bx bx-laptop'></i> BlueStacks Download Link</label>
-          <input type="url" id="bsLinkInput" placeholder="https://mediafire.com/...">
-        </div>
-        <button type="submit" class="btn-save"><i class='bx bx-save'></i> Save Changes</button>
-      </form>
+    <div class="form-container">
+        <form id="addForm">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Emulator Name</label>
+                    <input type="text" id="title" placeholder="e.g. BlueStacks" required>
+                </div>
+                <div class="input-group">
+                    <label>Version</label>
+                    <input type="text" id="version" placeholder="e.g. 5.10" required>
+                </div>
+                <div class="input-group">
+                    <label>Logo/Image URL</label>
+                    <input type="url" id="image" placeholder="Image Link" required>
+                </div>
+                <div class="input-group">
+                    <label>Download Link</label>
+                    <input type="url" id="download" placeholder="Download Link" required>
+                </div>
+            </div>
+            <!-- Video and Skip link removed intentionally -->
+            <button type="submit" class="submit-btn"><i class="fas fa-plus"></i> Add Emulator</button>
+        </form>
     </div>
-  </div>
 
-  <div class="toast" id="toast">✅ Saved Successfully!</div>
+    <div class="item-list" id="itemList"></div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
-      authDomain: "bangla-ff-admin.firebaseapp.com",
-      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "bangla-ff-admin",
-      storageBucket: "bangla-ff-admin.firebasestorage.app",
-      messagingSenderId: "295013484465",
-      appId: "1:295013484465:web:b6bc2a949e239095761f90"
-    };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+            authDomain: "bangla-ff-admin.firebaseapp.com",
+            databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "bangla-ff-admin",
+            storageBucket: "bangla-ff-admin.firebasestorage.app",
+            messagingSenderId: "295013484465",
+            appId: "1:295013484465:web:b6bc2a949e239095761f90"
+        };
 
-    db.ref('emulator_page').once('value').then((snap) => {
-      const data = snap.val();
-      if(data) {
-        document.getElementById('passInput').value = data.password || '';
-        document.getElementById('videoInput').value = data.video_url || '';
-        document.getElementById('skipInput').value = data.how_to_skip || '';
-        document.getElementById('msiLinkInput').value = data.msi_link || '';
-        document.getElementById('bsLinkInput').value = data.bluestacks_link || '';
-      }
-    });
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
 
-    document.getElementById('emuForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      db.ref('emulator_page').set({
-        password: document.getElementById('passInput').value,
-        video_url: document.getElementById('videoInput').value,
-        how_to_skip: document.getElementById('skipInput').value,
-        msi_link: document.getElementById('msiLinkInput').value,
-        bluestacks_link: document.getElementById('bsLinkInput').value
-      }).then(() => {
-        document.getElementById('toast').classList.add('show');
-        setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
-      });
-    });
-  </script>
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.getElementById('mouse-glow');
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        onAuthStateChanged(auth, (user) => { if(!user) window.location.href = "index.html"; });
+
+        // Add Emulator
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = "Adding...";
+
+            const data = {
+                title: document.getElementById('title').value,
+                version: document.getElementById('version').value,
+                image: document.getElementById('image').value,
+                download: document.getElementById('download').value,
+                timestamp: Date.now()
+            };
+
+            const newRef = push(ref(db, 'emulators'));
+            await set(newRef, data);
+            
+            e.target.reset();
+            btn.innerHTML = '<i class="fas fa-plus"></i> Add Emulator';
+            alert("Added Successfully!");
+        });
+
+        // Load Emulators
+        onValue(ref(db, 'emulators'), (snapshot) => {
+            const list = document.getElementById('itemList');
+            list.innerHTML = '';
+            snapshot.forEach((child) => {
+                const item = child.val();
+                list.innerHTML += `
+                    <div class="item-card">
+                        <img src="${item.image}" alt="${item.title}">
+                        <h3>${item.title}</h3>
+                        <p style="color:#9d00ff">Version: ${item.version}</p>
+                        <div class="item-actions">
+                            <button class="action-btn btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        window.deleteItem = (key) => {
+            if(confirm("Are you sure you want to delete this emulator?")){
+                remove(ref(db, `emulators/${key}`));
+            }
+        };
+    </script>
 </body>
 </html>
