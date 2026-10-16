@@ -1,153 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage PC Panels - Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-  <style>
-    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; --mono: 'JetBrains Mono', monospace; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .back-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
-    .page-title { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
-    .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-    .admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 30px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group.full { grid-column: 1 / -1; }
-    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
-    .form-group input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: 8px; font-family: var(--mono); font-size: 13px; outline: none; }
-    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
-    .item-list { display: flex; flex-direction: column; gap: 12px; }
-    .item-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
-    .item-info h4 { font-size: 15px; color: #fff; margin-bottom: 4px; }
-    .item-info p { font-size: 12px; color: var(--pink); font-family: var(--mono); }
-    .btn-del { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage PC Panels</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
+        body { background-color: #05020a; color: #fff; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px; border: 1px solid #2a113d; border-radius: 8px; cursor: pointer; }
+        
+        .form-container { background: #11071a; border: 1px solid #2a113d; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { color: #9d00ff; font-weight: 600; }
+        .input-group input { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 12px; border-radius: 8px; outline: none; cursor: text;}
+        
+        .submit-btn { background: #9d00ff; color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; }
+        .cancel-btn { background: #555; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; display: none; }
+
+        .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .item-card { background: #11071a; border: 1px solid #2a113d; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+        .item-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+        .buy-price-tag { position: absolute; top: 10px; right: 10px; background: #00cc66; color: #000; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; }
+        .item-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-edit { background: #e6b800; color: #000; flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+        .btn-delete { background: #ff0033; color: white; flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+    </style>
 </head>
 <body>
 
-  <header class="admin-header">
-    <div class="header-left">
-      <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i> Dashboard</a>
-      <h2 class="page-title">Manage PC Panel Products</h2>
-    </div>
-  </header>
-
-  <div class="container">
-    <div class="admin-card">
-      <h3 style="color:#fff; margin-bottom:20px;">+ Add New PC Panel</h3>
-      <form id="pcForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Product Name</label>
-            <input type="text" id="name" placeholder="NEW OBB55 BYPASS PRO" required>
-          </div>
-          <div class="form-group">
-            <label>Icon Image URL</label>
-            <input type="url" id="icon" placeholder="https://..." required>
-          </div>
-          <div class="form-group">
-            <label>Tag (HOT/NEW/PRO)</label>
-            <input type="text" id="tag" placeholder="HOT">
-          </div>
-          <div class="form-group">
-            <label>Sales Count</label>
-            <input type="text" id="sales" placeholder="1.2K+ Sold">
-          </div>
-          <div class="form-group">
-            <label>Old Price</label>
-            <input type="text" id="old_price" placeholder="৳ 800">
-          </div>
-          <div class="form-group">
-            <label>Sell Price (Starts From)</label>
-            <input type="text" id="sell_price" placeholder="৳ 50" required>
-          </div>
-          <div class="form-group full">
-            <label>Description</label>
-            <input type="text" id="desc" placeholder="Anti-Ban • Auto Headshot">
-          </div>
-          <div class="form-group full">
-            <label>Purchase Link / Bot URL</label>
-            <input type="url" id="buy_link" placeholder="https://discord.gg/..." required>
-          </div>
-        </div>
-        <button type="submit" class="btn-save"><i class='bx bx-plus-circle'></i> Add Product</button>
-      </form>
+    <div class="header">
+        <h1>Manage <span style="color:#9d00ff;">Paid PC Panels</span></h1>
+        <a href="index.html" class="back-btn">Back to Dashboard</a>
     </div>
 
-    <h3 style="color:#fff; margin-bottom:15px;">Existing Products</h3>
-    <div class="item-list" id="productList"></div>
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
-      authDomain: "bangla-ff-admin.firebaseapp.com",
-      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "bangla-ff-admin",
-      storageBucket: "bangla-ff-admin.firebasestorage.app",
-      messagingSenderId: "295013484465",
-      appId: "1:295013484465:web:b6bc2a949e239095761f90"
-    };
-
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    function loadProducts() {
-      db.ref('pc_products').on('value', snap => {
-        const list = document.getElementById('productList');
-        list.innerHTML = '';
-        const data = snap.val();
-        if(!data) { list.innerHTML = '<p style="color:var(--muted)">No products found.</p>'; return; }
-        
-        Object.keys(data).forEach(key => {
-          const p = data[key];
-          const div = document.createElement('div');
-          div.className = 'item-box';
-          div.innerHTML = `
-            <div class="item-info">
-              <h4>${p.name}</h4>
-              <p>${p.sell_price}</p>
+    <div class="form-container">
+        <form id="addForm">
+            <input type="hidden" id="edit_id">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Panel Name</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="input-group">
+                    <label>Image URL</label>
+                    <input type="url" id="image" required>
+                </div>
+                <div class="input-group">
+                    <label>Old Price (Fake Price for strikethrough)</label>
+                    <input type="text" id="old_price" placeholder="e.g. $50" required>
+                </div>
+                <div class="input-group">
+                    <label>Sell Price (Customer Price)</label>
+                    <input type="text" id="sell_price" placeholder="e.g. $30" required>
+                </div>
+                <div class="input-group">
+                    <label style="color:#00cc66;">Buy Price (Admin Secret Price)</label>
+                    <input type="text" id="buy_price" placeholder="e.g. $20 (Only visible here)">
+                </div>
+                <div class="input-group">
+                    <label>Buy Now Link (Checkout Link)</label>
+                    <input type="url" id="buy_link" required>
+                </div>
             </div>
-            <button class="btn-del" onclick="deleteProduct('${key}')">Delete</button>
-          `;
-          list.appendChild(div);
+            <button type="submit" id="submitBtn" class="submit-btn">Save Panel</button>
+            <button type="button" id="cancelBtn" class="cancel-btn" onclick="cancelEdit()">Cancel Edit</button>
+        </form>
+    </div>
+
+    <div class="item-list" id="itemList"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, push, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+            authDomain: "bangla-ff-admin.firebaseapp.com",
+            databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "bangla-ff-admin"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Form Submit
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('edit_id').value;
+            
+            const data = {
+                title: document.getElementById('title').value,
+                image: document.getElementById('image').value,
+                old_price: document.getElementById('old_price').value,
+                sell_price: document.getElementById('sell_price').value,
+                buy_price: document.getElementById('buy_price').value || "N/A",
+                buy_link: document.getElementById('buy_link').value
+            };
+
+            if(editId) {
+                await update(ref(db, `pc_panels/${editId}`), data);
+                alert("Updated Successfully!");
+            } else {
+                data.timestamp = Date.now();
+                await set(push(ref(db, 'pc_panels')), data);
+                alert("Added Successfully!");
+            }
+            cancelEdit();
         });
-      });
-    }
 
-    document.getElementById('pcForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      db.ref('pc_products').push({
-        name: document.getElementById('name').value,
-        icon: document.getElementById('icon').value,
-        tag: document.getElementById('tag').value,
-        sales: document.getElementById('sales').value,
-        old_price: document.getElementById('old_price').value,
-        sell_price: document.getElementById('sell_price').value,
-        desc: document.getElementById('desc').value,
-        buy_link: document.getElementById('buy_link').value,
-        plans: [
-          { label: '2 Hours Access', price: 50 },
-          { label: '5 Days Access', price: 250 },
-          { label: '30 Days Access', price: 700 },
-          { label: 'Life Time Access', price: 1400 }
-        ]
-      }).then(() => { this.reset(); });
-    });
+        // Load Items
+        onValue(ref(db, 'pc_panels'), (snapshot) => {
+            const list = document.getElementById('itemList');
+            list.innerHTML = '';
+            snapshot.forEach((child) => {
+                const item = child.val();
+                list.innerHTML += `
+                    <div class="item-card">
+                        <div class="buy-price-tag">Bought at: ${item.buy_price || 'N/A'}</div>
+                        <img src="${item.image}">
+                        <h3>${item.title}</h3>
+                        <p>Sell: <span style="color:#9d00ff; font-weight:bold;">${item.sell_price}</span> <del style="color:#555; font-size:12px;">${item.old_price}</del></p>
+                        <div class="item-actions">
+                            <button class="btn-edit" onclick="editItem('${child.key}')">Edit</button>
+                            <button class="btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
 
-    function deleteProduct(id) {
-      if(confirm('Are you sure?')) db.ref('pc_products/' + id).remove();
-    }
+        // Fetch single item for edit
+        window.editItem = (id) => {
+            onValue(ref(db, `pc_panels/${id}`), (snapshot) => {
+                const item = snapshot.val();
+                document.getElementById('edit_id').value = id;
+                document.getElementById('title').value = item.title;
+                document.getElementById('image').value = item.image;
+                document.getElementById('old_price').value = item.old_price;
+                document.getElementById('sell_price').value = item.sell_price;
+                document.getElementById('buy_price').value = item.buy_price || '';
+                document.getElementById('buy_link').value = item.buy_link;
+                
+                document.getElementById('submitBtn').innerText = "Update Panel";
+                document.getElementById('submitBtn').style.background = "#e6b800";
+                document.getElementById('cancelBtn').style.display = "block";
+                window.scrollTo(0,0);
+            }, { onlyOnce: true });
+        };
 
-    loadProducts();
-  </script>
+        window.cancelEdit = () => {
+            document.getElementById('addForm').reset();
+            document.getElementById('edit_id').value = "";
+            document.getElementById('submitBtn').innerText = "Save Panel";
+            document.getElementById('submitBtn').style.background = "#9d00ff";
+            document.getElementById('cancelBtn').style.display = "none";
+        };
+
+        window.deleteItem = (key) => { if(confirm("Are you sure?")) remove(ref(db, `pc_panels/${key}`)); };
+    </script>
 </body>
 </html>
