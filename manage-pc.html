@@ -1,165 +1,227 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage PC Panels</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
-        body { background-color: #05020a; color: #fff; padding: 30px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px; border: 1px solid #2a113d; border-radius: 8px; cursor: pointer; }
-        
-        .form-container { background: #11071a; border: 1px solid #2a113d; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; }
-        .input-group label { color: #9d00ff; font-weight: 600; }
-        .input-group input { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 12px; border-radius: 8px; outline: none; cursor: text;}
-        
-        .submit-btn { background: #9d00ff; color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; }
-        .cancel-btn { background: #555; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; display: none; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage PC Panels - Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background-color: #05020a; color: #fff; display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { width: 260px; background: #0c0514; border-right: 2px solid #2a113d; padding: 20px 0; display: flex; flex-direction: column; }
+    .sidebar h2 { color: #ff0066; text-align: center; margin-bottom: 30px; font-size: 1.5rem; text-shadow: 0 0 10px rgba(255,0,102,0.5); }
+    .sidebar a { display: block; padding: 15px 20px; color: #a090b5; text-decoration: none; font-size: 1rem; border-left: 4px solid transparent; transition: 0.3s; }
+    .sidebar a:hover, .sidebar a.active { background: #1a0b28; color: #fff; border-left-color: #ff0066; }
+    .sidebar a i { margin-right: 10px; width: 20px; text-align: center; }
 
-        .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .item-card { background: #11071a; border: 1px solid #2a113d; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; position: relative; }
-        .item-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
-        .buy-price-tag { position: absolute; top: 10px; right: 10px; background: #00cc66; color: #000; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; }
-        .item-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-edit { background: #e6b800; color: #000; flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
-        .btn-delete { background: #ff0033; color: white; flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
-    </style>
+    /* Main Content */
+    .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .header h1 { font-size: 1.8rem; color: #fff; }
+    
+    .card { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+    .card h3 { margin-bottom: 20px; color: #ff0066; border-bottom: 1px dashed #2a113d; padding-bottom: 10px; }
+    
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; color: #a090b5; font-size: 0.9rem; }
+    .form-group input { width: 100%; padding: 12px; background: #05020a; border: 1px solid #2a113d; color: #fff; border-radius: 8px; outline: none; }
+    .form-group input:focus { border-color: #9d00ff; }
+
+    /* Dynamic Duration Packages */
+    .pkg-container { background: #0c0514; border: 1px solid #2a113d; padding: 15px; border-radius: 10px; margin-bottom: 15px; position: relative; }
+    .pkg-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .remove-pkg { position: absolute; top: -10px; right: -10px; background: #ff0066; color: #fff; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+    .add-pkg-btn { background: #1a0b28; color: #00cc66; border: 1px dashed #00cc66; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; }
+    
+    .btn-submit { background: linear-gradient(90deg, #ff0066, #9d00ff); color: #fff; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    .btn-submit:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(255,0,102,0.4); }
+
+    /* List Table */
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #2a113d; }
+    th { color: #a090b5; font-weight: 600; }
+    td img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+    .btn-del { background: #ff0066; color: #fff; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+    
+    .pkg-tag { background: #1a0b28; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin: 2px; display: inline-block; border: 1px solid #9d00ff; }
+  </style>
 </head>
 <body>
 
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>ADMIN PANEL</h2>
+    <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="https://imgbb.com/" target="_blank"><i class="fas fa-image"></i> ImgBB Upload</a>
+    <a href="https://postimages.org/" target="_blank"><i class="fas fa-images"></i> PostImages</a>
+    <a href="manage-pc.html" class="active"><i class="fas fa-laptop"></i> Manage PC Panel</a>
+    <a href="manage-mobile.html"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
     <div class="header">
-        <h1>Manage <span style="color:#9d00ff;">Paid PC Panels</span></h1>
-        <a href="index.html" class="back-btn">Back to Dashboard</a>
+      <h1>Manage Paid PC Panels</h1>
     </div>
 
-    <div class="form-container">
-        <form id="addForm">
-            <input type="hidden" id="edit_id">
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>Panel Name</label>
-                    <input type="text" id="title" required>
-                </div>
-                <div class="input-group">
-                    <label>Image URL</label>
-                    <input type="url" id="image" required>
-                </div>
-                <div class="input-group">
-                    <label>Old Price (Fake Price for strikethrough)</label>
-                    <input type="text" id="old_price" placeholder="e.g. $50" required>
-                </div>
-                <div class="input-group">
-                    <label>Sell Price (Customer Price)</label>
-                    <input type="text" id="sell_price" placeholder="e.g. $30" required>
-                </div>
-                <div class="input-group">
-                    <label style="color:#00cc66;">Buy Price (Admin Secret Price)</label>
-                    <input type="text" id="buy_price" placeholder="e.g. $20 (Only visible here)">
-                </div>
-                <div class="input-group">
-                    <label>Buy Now Link (Checkout Link)</label>
-                    <input type="url" id="buy_link" required>
-                </div>
-            </div>
-            <button type="submit" id="submitBtn" class="submit-btn">Save Panel</button>
-            <button type="button" id="cancelBtn" class="cancel-btn" onclick="cancelEdit()">Cancel Edit</button>
-        </form>
+    <!-- Add Form -->
+    <div class="card">
+      <h3><i class="fas fa-plus-circle"></i> Add New PC Panel</h3>
+      <div class="form-group">
+        <label>Panel Name</label>
+        <input type="text" id="panelTitle" placeholder="e.g. DUSTU AIMKILL">
+      </div>
+      <div class="form-group">
+        <label>Image URL (Optional)</label>
+        <input type="text" id="panelImg" placeholder="https://i.ibb.co/...">
+      </div>
+      <div class="form-group">
+        <label>Custom Buy Link (Optional, leave blank for WhatsApp)</label>
+        <input type="text" id="panelLink" placeholder="https://discord.com/...">
+      </div>
+
+      <h4 style="color:#00cc66; margin-bottom:10px;">Pricing Packages / Durations:</h4>
+      <div id="packagesWrapper">
+        <!-- Default one empty row -->
+        <div class="pkg-container">
+          <button class="remove-pkg" onclick="this.parentElement.remove()">X</button>
+          <div class="pkg-row">
+            <div class="form-group"><label>Duration (যেমন: 1 Day)</label><input type="text" class="p-dur" placeholder="1 Day" value="1 Day"></div>
+            <div class="form-group"><label>Old Price (Fake)</label><input type="number" class="p-old" placeholder="150" value="150"></div>
+            <div class="form-group"><label>Sell Price (Customer)</label><input type="number" class="p-sell" placeholder="100" value="100"></div>
+            <div class="form-group"><label>Buy Price (Admin Secret)</label><input type="number" class="p-buy" placeholder="50" value="50"></div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="add-pkg-btn" onclick="addPackageRow()">+ Add Another Duration</button>
+      <button class="btn-submit" onclick="savePanel()">Save PC Panel</button>
     </div>
 
-    <div class="item-list" id="itemList"></div>
+    <!-- Existing List -->
+    <div class="card">
+      <h3><i class="fas fa-list"></i> Existing PC Panels</h3>
+      <table id="panelTable">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Packages (Admin View)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, push, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
-            authDomain: "bangla-ff-admin.firebaseapp.com",
-            databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bangla-ff-admin"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+      authDomain: "bangla-ff-admin.firebaseapp.com",
+      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bangla-ff-admin",
+      storageBucket: "bangla-ff-admin.firebasestorage.app",
+      messagingSenderId: "295013484465",
+      appId: "1:295013484465:web:b6bc2a949e239095761f90"
+    };
 
-        // Form Submit
-        document.getElementById('addForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const editId = document.getElementById('edit_id').value;
-            
-            const data = {
-                title: document.getElementById('title').value,
-                image: document.getElementById('image').value,
-                old_price: document.getElementById('old_price').value,
-                sell_price: document.getElementById('sell_price').value,
-                buy_price: document.getElementById('buy_price').value || "N/A",
-                buy_link: document.getElementById('buy_link').value
-            };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-            if(editId) {
-                await update(ref(db, `pc_panels/${editId}`), data);
-                alert("Updated Successfully!");
-            } else {
-                data.timestamp = Date.now();
-                await set(push(ref(db, 'pc_panels')), data);
-                alert("Added Successfully!");
-            }
-            cancelEdit();
-        });
+    window.addPackageRow = function() {
+      const wrapper = document.getElementById('packagesWrapper');
+      const html = `
+        <div class="pkg-container">
+          <button class="remove-pkg" onclick="this.parentElement.remove()">X</button>
+          <div class="pkg-row">
+            <div class="form-group"><label>Duration</label><input type="text" class="p-dur" placeholder="e.g. 7 Days"></div>
+            <div class="form-group"><label>Old Price</label><input type="number" class="p-old" placeholder="300"></div>
+            <div class="form-group"><label>Sell Price</label><input type="number" class="p-sell" placeholder="250"></div>
+            <div class="form-group"><label>Buy Price (Secret)</label><input type="number" class="p-buy" placeholder="100"></div>
+          </div>
+        </div>
+      `;
+      wrapper.insertAdjacentHTML('beforeend', html);
+    };
 
-        // Load Items
-        onValue(ref(db, 'pc_panels'), (snapshot) => {
-            const list = document.getElementById('itemList');
-            list.innerHTML = '';
-            snapshot.forEach((child) => {
-                const item = child.val();
-                list.innerHTML += `
-                    <div class="item-card">
-                        <div class="buy-price-tag">Bought at: ${item.buy_price || 'N/A'}</div>
-                        <img src="${item.image}">
-                        <h3>${item.title}</h3>
-                        <p>Sell: <span style="color:#9d00ff; font-weight:bold;">${item.sell_price}</span> <del style="color:#555; font-size:12px;">${item.old_price}</del></p>
-                        <div class="item-actions">
-                            <button class="btn-edit" onclick="editItem('${child.key}')">Edit</button>
-                            <button class="btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
-                        </div>
-                    </div>
-                `;
+    window.savePanel = function() {
+      const title = document.getElementById('panelTitle').value;
+      const img = document.getElementById('panelImg').value;
+      const link = document.getElementById('panelLink').value;
+
+      if(!title) { alert("Panel Name is required!"); return; }
+
+      let packages = [];
+      document.querySelectorAll('.pkg-container').forEach(pkg => {
+        let dur = pkg.querySelector('.p-dur').value;
+        let oldP = pkg.querySelector('.p-old').value;
+        let sellP = pkg.querySelector('.p-sell').value;
+        let buyP = pkg.querySelector('.p-buy').value;
+
+        if(dur && sellP) {
+          packages.push({
+            duration: dur,
+            old_price: Number(oldP) || 0,
+            sell_price: Number(sellP) || 0,
+            buy_price: Number(buyP) || 0
+          });
+        }
+      });
+
+      if(packages.length === 0) { alert("Please add at least one valid package with Duration and Sell Price!"); return; }
+
+      const data = { title, image: img, buy_link: link, packages, timestamp: Date.now() };
+
+      push(ref(db, 'pc_panels'), data).then(() => {
+        alert("PC Panel Saved Successfully!");
+        document.getElementById('panelTitle').value = '';
+        document.getElementById('panelImg').value = '';
+        document.getElementById('panelLink').value = '';
+      });
+    };
+
+    onValue(ref(db, 'pc_panels'), (snapshot) => {
+      const tbody = document.querySelector('#panelTable tbody');
+      tbody.innerHTML = '';
+      if(snapshot.exists()){
+        const data = snapshot.val();
+        Object.keys(data).reverse().forEach(key => {
+          const item = data[key];
+          let pkgsHtml = '';
+          if(item.packages) {
+            item.packages.forEach(p => {
+              pkgsHtml += `<span class="pkg-tag">${p.duration}: Sell ৳${p.sell_price} | Buy ৳${p.buy_price}</span> `;
             });
+          }
+
+          tbody.innerHTML += `
+            <tr>
+              <td><img src="${item.image || 'https://i.ibb.co/L8r1pXw/logo.png'}"></td>
+              <td>${item.title}</td>
+              <td>${pkgsHtml}</td>
+              <td><button class="btn-del" onclick="deletePanel('${key}')"><i class="fas fa-trash"></i></button></td>
+            </tr>
+          `;
         });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4">No panels found.</td></tr>';
+      }
+    });
 
-        // Fetch single item for edit
-        window.editItem = (id) => {
-            onValue(ref(db, `pc_panels/${id}`), (snapshot) => {
-                const item = snapshot.val();
-                document.getElementById('edit_id').value = id;
-                document.getElementById('title').value = item.title;
-                document.getElementById('image').value = item.image;
-                document.getElementById('old_price').value = item.old_price;
-                document.getElementById('sell_price').value = item.sell_price;
-                document.getElementById('buy_price').value = item.buy_price || '';
-                document.getElementById('buy_link').value = item.buy_link;
-                
-                document.getElementById('submitBtn').innerText = "Update Panel";
-                document.getElementById('submitBtn').style.background = "#e6b800";
-                document.getElementById('cancelBtn').style.display = "block";
-                window.scrollTo(0,0);
-            }, { onlyOnce: true });
-        };
-
-        window.cancelEdit = () => {
-            document.getElementById('addForm').reset();
-            document.getElementById('edit_id').value = "";
-            document.getElementById('submitBtn').innerText = "Save Panel";
-            document.getElementById('submitBtn').style.background = "#9d00ff";
-            document.getElementById('cancelBtn').style.display = "none";
-        };
-
-        window.deleteItem = (key) => { if(confirm("Are you sure?")) remove(ref(db, `pc_panels/${key}`)); };
-    </script>
+    window.deletePanel = function(key) {
+      if(confirm("Are you sure you want to delete this panel?")) {
+        remove(ref(db, `pc_panels/${key}`));
+      }
+    };
+  </script>
 </body>
 </html>
