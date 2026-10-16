@@ -3,109 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Free Panel - BANGLA FF</title>
+    <title>Manage Free Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
         body { background-color: #05020a; color: #fff; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px; border: 1px solid #2a113d; border-radius: 8px; cursor: pointer; }
         
-        #mouse-glow {
-            position: fixed; width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255, 0, 102, 0.4); filter: blur(20px);
-            pointer-events: none; transform: translate(-50%, -50%); z-index: 9999;
-        }
-
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #2a113d; padding-bottom: 15px; }
-        .back-btn { background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px; border: 1px solid #2a113d; border-radius: 8px; font-weight: 600; cursor: pointer; }
-        .back-btn:hover { background: #9d00ff; border-color: #9d00ff; }
-
         .form-container { background: #11071a; border: 1px solid #2a113d; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .input-group { display: flex; flex-direction: column; gap: 8px; }
-        .input-group label { font-size: 16px; color: #ff0066; font-weight: 600; display:flex; justify-content:space-between;}
-        .input-group input { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 12px; border-radius: 8px; outline: none; cursor: text; }
-        .input-group input:focus { border-color: #9d00ff; }
+        .input-group label { color: #ff0066; font-weight: 600; }
+        .input-group input { background: #05020a; border: 1px solid #2a113d; color: #fff; padding: 12px; border-radius: 8px; outline: none; cursor: text;}
         
-        /* Inner Toggle */
-        .toggle-mini { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #aaa; font-weight: normal; }
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2a113d; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #ff0066; }
-        input:checked + .slider:before { transform: translateX(16px); }
-
-        .submit-btn { background: #ff0066; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.3s; }
-        .submit-btn:hover { background: #d60055; transform: translateY(-2px); }
+        .submit-btn { background: #ff0066; color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; }
+        .cancel-btn { background: #555; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; display: none; }
 
         .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .item-card { background: #11071a; border: 1px solid #2a113d; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .item-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .item-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
         .item-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .action-btn { flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
-        .btn-delete { background: #ff0033; color: white; }
+        .btn-edit { background: #e6b800; color: #000; flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+        .btn-delete { background: #ff0033; color: white; flex: 1; padding: 8px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="mouse-glow"></div>
 
     <div class="header">
-        <h1>Manage <span style="color:#ff0066;">Free Panel</span></h1>
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <h1>Manage <span style="color:#ff0066;">Free Module</span></h1>
+        <a href="index.html" class="back-btn">Back to Dashboard</a>
     </div>
 
     <div class="form-container">
         <form id="addForm">
+            <input type="hidden" id="edit_id"> <!-- Hidden ID for Edit Mode -->
             <div class="form-grid">
                 <div class="input-group">
-                    <label>Panel Title</label>
-                    <input type="text" id="title" placeholder="e.g. Free Aimbot Panel" required>
-                </div>
-                <div class="input-group">
-                    <label>Version</label>
-                    <input type="text" id="version" placeholder="e.g. V1.5" required>
+                    <label>Box Title (e.g. Free Aimbot)</label>
+                    <input type="text" id="title" required>
                 </div>
                 <div class="input-group">
                     <label>Image URL</label>
-                    <input type="url" id="image" placeholder="Image Link" required>
+                    <input type="url" id="image" required>
                 </div>
                 <div class="input-group">
-                    <label>Download Link</label>
-                    <input type="url" id="download" placeholder="Download Link" required>
+                    <label>Button Text (e.g. Download Script)</label>
+                    <input type="text" id="btn_text" placeholder="Download" value="Download" required>
                 </div>
-                
-                <!-- Optional Video URL with Toggle -->
                 <div class="input-group">
-                    <label>
-                        YouTube Video URL 
-                        <div class="toggle-mini">
-                            <span>Enable?</span>
-                            <label class="switch">
-                                <input type="checkbox" id="yt_toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </label>
-                    <input type="url" id="yt_link" placeholder="YouTube Link (Optional)">
-                </div>
-
-                <!-- Optional Skip Link with Toggle -->
-                <div class="input-group">
-                    <label>
-                        How to Skip Link 
-                        <div class="toggle-mini">
-                            <span>Enable?</span>
-                            <label class="switch">
-                                <input type="checkbox" id="skip_toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </label>
-                    <input type="url" id="skip_link" placeholder="Skip Link (Optional)">
+                    <label>Button Link</label>
+                    <input type="url" id="download" required>
                 </div>
             </div>
-            <button type="submit" class="submit-btn"><i class="fas fa-plus"></i> Add Free Panel</button>
+            <button type="submit" id="submitBtn" class="submit-btn">Save Item</button>
+            <button type="button" id="cancelBtn" class="cancel-btn" onclick="cancelEdit()">Cancel Edit</button>
         </form>
     </div>
 
@@ -113,60 +66,43 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
             authDomain: "bangla-ff-admin.firebaseapp.com",
             databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bangla-ff-admin",
-            storageBucket: "bangla-ff-admin.firebasestorage.app",
-            messagingSenderId: "295013484465",
-            appId: "1:295013484465:web:b6bc2a949e239095761f90"
+            projectId: "bangla-ff-admin"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const auth = getAuth(app);
 
-        document.addEventListener('mousemove', (e) => {
-            const glow = document.getElementById('mouse-glow');
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
-        });
-
-        onAuthStateChanged(auth, (user) => { if(!user) window.location.href = "index.html"; });
-
-        // Add Free Panel
+        // Form Submit (Add or Edit)
         document.getElementById('addForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.innerHTML = "Adding...";
-
+            const editId = document.getElementById('edit_id').value;
+            
             const data = {
                 title: document.getElementById('title').value,
-                version: document.getElementById('version').value,
                 image: document.getElementById('image').value,
-                download: document.getElementById('download').value,
-                yt_link: document.getElementById('yt_link').value,
-                yt_enabled: document.getElementById('yt_toggle').checked,
-                skip_link: document.getElementById('skip_link').value,
-                skip_enabled: document.getElementById('skip_toggle').checked,
-                timestamp: Date.now()
+                btn_text: document.getElementById('btn_text').value || "Download",
+                download: document.getElementById('download').value
             };
 
-            const newRef = push(ref(db, 'free_panels'));
-            await set(newRef, data);
-            
-            e.target.reset();
-            document.getElementById('yt_toggle').checked = true;
-            document.getElementById('skip_toggle').checked = true;
-            btn.innerHTML = '<i class="fas fa-plus"></i> Add Free Panel';
-            alert("Added Successfully!");
+            if(editId) {
+                // Update Existing
+                await update(ref(db, `free_panels/${editId}`), data);
+                alert("Updated Successfully!");
+            } else {
+                // Add New
+                data.timestamp = Date.now();
+                await set(push(ref(db, 'free_panels')), data);
+                alert("Added Successfully!");
+            }
+            cancelEdit();
         });
 
-        // Load Panels
+        // Load Items
         onValue(ref(db, 'free_panels'), (snapshot) => {
             const list = document.getElementById('itemList');
             list.innerHTML = '';
@@ -174,23 +110,41 @@
                 const item = child.val();
                 list.innerHTML += `
                     <div class="item-card">
-                        <img src="${item.image}" alt="Panel">
+                        <img src="${item.image}">
                         <h3>${item.title}</h3>
-                        <p style="color:#ff0066">Version: ${item.version}</p>
-                        <p style="font-size:14px; color:#aaa;">Video: ${item.yt_enabled ? '<span style="color:lime">ON</span>' : '<span style="color:red">OFF</span>'}</p>
-                        <p style="font-size:14px; color:#aaa;">Skip Link: ${item.skip_enabled ? '<span style="color:lime">ON</span>' : '<span style="color:red">OFF</span>'}</p>
+                        <p style="color:#aaa; font-size:14px;">Button: <b>${item.btn_text || 'Download'}</b></p>
                         <div class="item-actions">
-                            <button class="action-btn btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
+                            <button class="btn-edit" onclick="editItem('${child.key}', '${item.title}', '${item.image}', '${item.btn_text || 'Download'}', '${item.download}')">Edit</button>
+                            <button class="btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
                         </div>
                     </div>
                 `;
             });
         });
 
+        window.editItem = (id, title, image, btn_text, download) => {
+            document.getElementById('edit_id').value = id;
+            document.getElementById('title').value = title;
+            document.getElementById('image').value = image;
+            document.getElementById('btn_text').value = btn_text;
+            document.getElementById('download').value = download;
+            
+            document.getElementById('submitBtn').innerText = "Update Item";
+            document.getElementById('submitBtn').style.background = "#e6b800";
+            document.getElementById('cancelBtn').style.display = "block";
+            window.scrollTo(0,0);
+        };
+
+        window.cancelEdit = () => {
+            document.getElementById('addForm').reset();
+            document.getElementById('edit_id').value = "";
+            document.getElementById('submitBtn').innerText = "Save Item";
+            document.getElementById('submitBtn').style.background = "#ff0066";
+            document.getElementById('cancelBtn').style.display = "none";
+        };
+
         window.deleteItem = (key) => {
-            if(confirm("Are you sure you want to delete this panel?")){
-                remove(ref(db, `free_panels/${key}`));
-            }
+            if(confirm("Are you sure?")) remove(ref(db, `free_panels/${key}`));
         };
     </script>
 </body>
