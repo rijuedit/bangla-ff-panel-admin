@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Bypass - Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #05020a;
+      --card: #11071a;
+      --border: #2a113d;
+      --pink: #ff0066;
+      --purple: #9d00ff;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .admin-header {
+      background: rgba(17, 7, 26, 0.9);
+      border-bottom: 2px solid var(--purple);
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .back-btn:hover {
+      background: rgba(157,0,255,0.1);
+      border-color: var(--purple);
+    }
+    .page-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    /* ── FORM CONTAINER ── */
+    .form-container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .admin-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 0 30px rgba(157,0,255,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-group input {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-family: var(--mono);
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+    .form-group input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 15px rgba(157,0,255,0.2);
+    }
+
+    .btn-save {
+      width: 100%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+    .btn-save:hover {
+      box-shadow: 0 0 25px rgba(255,0,102,0.4);
+      transform: translateY(-2px);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #10b981;
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      z-index: 1000;
+      opacity: 0;
+      transition: 0.35s cubic-bezier(.2,.9,.3,1);
+      box-shadow: 0 8px 30px rgba(16,185,129,0.4);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="admin-header">
+    <div class="header-left">
+      <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i> Dashboard</a>
+      <h2 class="page-title">Manage Free Bypass</h2>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <div class="admin-card">
+      <form id="bypassForm">
+        
+        <div class="form-group">
+          <label><i class='bx bx-lock-alt'></i> RAR Password</label>
+          <input type="text" id="passInput" placeholder="e.g. 1" required>
+        </div>
+
+        <div class="form-group">
+          <label><i class='bx bxl-youtube'></i> YouTube Video URL (Embed Link)</label>
+          <input type="url" id="videoInput" placeholder="https://www.youtube.com/embed/VIDEO_ID" required>
+        </div>
+
+        <div class="form-group">
+          <label><i class='bx bx-skip-next-circle'></i> How To Skip Link</label>
+          <input type="url" id="skipInput" placeholder="https://your-skip-link.com">
+        </div>
+
+        <div class="form-group">
+          <label><i class='bx bx-cube-alt'></i> Emulator Bypass Download Link</label>
+          <input type="url" id="emuLinkInput" placeholder="https://mediafire.com/...">
+        </div>
+
+        <div class="form-group">
+          <label><i class='bx bx-wifi-off'></i> Proxy Disconnect Download Link</label>
+          <input type="url" id="proxyLinkInput" placeholder="https://mediafire.com/...">
+        </div>
+
+        <button type="submit" class="btn-save">
+          <i class='bx bx-save'></i> Save Changes
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✅ Changes Saved Successfully!</div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  
+  <script>
+    // ⚠️ আপনার Firebase Config এখানে বসান
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // Data Load on Page Load
+    db.ref('free_bypass').once('value').then((snap) => {
+      const data = snap.val();
+      if(data) {
+        document.getElementById('passInput').value = data.password || '';
+        document.getElementById('videoInput').value = data.video_url || '';
+        document.getElementById('skipInput').value = data.how_to_skip || '';
+        document.getElementById('emuLinkInput').value = data.emulator_link || '';
+        document.getElementById('proxyLinkInput').value = data.proxy_link || '';
+      }
+    });
+
+    // Handle Form Submit
+    document.getElementById('bypassForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const newData = {
+        password: document.getElementById('passInput').value,
+        video_url: document.getElementById('videoInput').value,
+        how_to_skip: document.getElementById('skipInput').value,
+        emulator_link: document.getElementById('emuLinkInput').value,
+        proxy_link: document.getElementById('proxyLinkInput').value
+      };
+
+      // Save to Firebase
+      db.ref('free_bypass').set(newData).then(() => {
+        showToast();
+      }).catch((error) => {
+        alert("Error saving data: " + error.message);
+      });
+    });
+
+    // Toast Function
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
