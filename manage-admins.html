@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    :root { --bg: #05020a; --card: #11071a; --border: #2a113d; --pink: #ff0066; --purple: #9d00ff; --text: #e2e8f0; --muted: #94a3b8; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    
+    .admin-header { background: rgba(17, 7, 26, 0.9); border-bottom: 2px solid var(--purple); padding: 16px 30px; display: flex; align-items: center; gap: 15px; }
+    .back-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .page-title { font-size: 18px; font-weight: 900; color: #fff; }
+
+    .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+    
+    .btn-row { display: flex; gap: 15px; margin-bottom: 30px; }
+    .btn-add { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: 800; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-add.super { background: #10b981; }
+    .btn-add.normal { background: #3b82f6; }
+
+    .section-title { font-size: 16px; font-weight: 800; color: #facc15; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    .section-title.normal { color: #3b82f6; margin-top: 30px; }
+    
+    .admin-list { display: flex; flex-direction: column; gap: 10px; }
+    .admin-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .admin-info h4 { font-size: 15px; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .admin-info p { font-size: 12px; color: var(--muted); }
+    
+    .action-btns { display: flex; gap: 10px; }
+    .btn-perm { background: rgba(157,0,255,0.15); border: 1px solid var(--purple); color: var(--purple); padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    .btn-remove { background: rgba(239,68,68,0.15); border: 1px solid #ef4444; color: #ef4444; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+    /* ── PERMISSION MODAL ── */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal.active { display: flex; }
+    .modal-box { background: var(--card); border: 2px solid var(--purple); border-radius: 16px; width: 100%; max-width: 400px; padding: 24px; position: relative; }
+    .close-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; }
+    .modal-box h3 { color: #fff; margin-bottom: 5px; font-size: 18px; }
+    .modal-email { color: var(--purple); font-size: 13px; margin-bottom: 20px; font-weight: 700; }
+    
+    .perm-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .perm-row span { color: #fff; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    
+    /* Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--purple); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .btn-save-perm { width: 100%; background: #10b981; color: #fff; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <header class="admin-header">
+    <a href="index.html" class="back-btn"><i class='bx bx-arrow-back'></i></a>
+    <h2 class="page-title">Admin Management</h2>
+  </header>
+
+  <div class="container">
+    <div class="btn-row">
+      <button class="btn-add super" onclick="addAdmin('super')"><i class='bx bx-plus'></i> Add Super Admin</button>
+      <button class="btn-add normal" onclick="addAdmin('normal')"><i class='bx bx-plus'></i> Add Normal Admin</button>
+    </div>
+
+    <h3 class="section-title"><i class='bx bxs-crown'></i> Super Admins</h3>
+    <div class="admin-list" id="superList"></div>
+
+    <h3 class="section-title normal"><i class='bx bx-wrench'></i> Normal Admins</h3>
+    <div class="admin-list" id="normalList"></div>
+  </div>
+
+  <!-- Permission Modal -->
+  <div class="modal" id="permModal">
+    <div class="modal-box">
+      <button class="close-btn" onclick="closeModal()"><i class='bx bx-x'></i></button>
+      <h3><i class='bx bx-cog'></i> Permissions</h3>
+      <div class="modal-email" id="modalEmail">user@gmail.com</div>
+
+      <div class="perm-row"><span><i class='bx bx-desktop'></i> PC Panels</span>
+        <label class="switch"><input type="checkbox" id="perm-pc"><span class="slider"></span></label>
+      </div>
+      <div class="perm-row"><span><i class='bx bx-mobile-alt'></i> Mobile Panels</span>
+        <label class="switch"><input type="checkbox" id="perm-mobile"><span class="slider"></span></label>
+      </div>
+      <div class="perm-row"><span><i class='bx bx-shield-quarter'></i> Free Bypass</span>
+        <label class="switch"><input type="checkbox" id="perm-bypass"><span class="slider"></span></label>
+      </div>
+      <div class="perm-row"><span><i class='bx bx-game'></i> Emulator</span>
+        <label class="switch"><input type="checkbox" id="perm-emulator"><span class="slider"></span></label>
+      </div>
+      <div class="perm-row" style="border:none;"><span><i class='bx bxl-android'></i> Free Fire APK</span>
+        <label class="switch"><input type="checkbox" id="perm-apk"><span class="slider"></span></label>
+      </div>
+
+      <button class="btn-save-perm" onclick="savePermissions()"><i class='bx bx-save'></i> Save Permissions</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+      authDomain: "bangla-ff-admin.firebaseapp.com",
+      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bangla-ff-admin",
+      storageBucket: "bangla-ff-admin.firebasestorage.app",
+      messagingSenderId: "295013484465",
+      appId: "1:295013484465:web:b6bc2a949e239095761f90"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+    let currentEmailUser = "";
+
+    // Auth Protection
+    auth.onAuthStateChanged(user => {
+      if (!user) window.location.href = 'index.html';
+      currentEmailUser = user.email;
+    });
+
+    function loadAdmins() {
+      db.ref('admins').on('value', snap => {
+        const data = snap.val() || {};
+        const superList = document.getElementById('superList');
+        const normalList = document.getElementById('normalList');
+        superList.innerHTML = ''; normalList.innerHTML = '';
+
+        // Super Admins
+        if(data.super) {
+          Object.keys(data.super).forEach(key => {
+            const email = key.replace(/,/g, '.');
+            const isMe = email === currentEmailUser;
+            superList.innerHTML += `
+              <div class="admin-box">
+                <div class="admin-info">
+                  <h4><i class='bx bxs-crown' style="color:#facc15"></i> ${email}</h4>
+                  <p>Super Admin ${isMe ? '(You)' : ''}</p>
+                </div>
+                ${!isMe ? `<button class="btn-remove" onclick="removeAdmin('super', '${key}')"><i class='bx bx-trash'></i> Remove</button>` : `<span style="color:#facc15; font-size:12px;"><i class='bx bxs-lock'></i> You</span>`}
+              </div>
+            `;
+          });
+        }
+
+        // Normal Admins
+        if(data.normal) {
+          Object.keys(data.normal).forEach(key => {
+            const email = key.replace(/,/g, '.');
+            const perms = data.normal[key].permissions || {};
+            normalList.innerHTML += `
+              <div class="admin-box">
+                <div class="admin-info">
+                  <h4><i class='bx bx-user' style="color:#3b82f6"></i> ${email}</h4>
+                  <p>Normal Admin</p>
+                </div>
+                <div class="action-btns">
+                  <button class="btn-perm" onclick='openPermModal("${key}", ${JSON.stringify(perms)})'><i class='bx bx-cog'></i> Permissions</button>
+                  <button class="btn-remove" onclick="removeAdmin('normal', '${key}')"><i class='bx bx-trash'></i> Remove</button>
+                </div>
+              </div>
+            `;
+          });
+        }
+      });
+    }
+
+    function addAdmin(role) {
+      const email = prompt("Enter the Gmail address of the new " + role + " admin:");
+      if (email && email.includes('@')) {
+        const key = email.replace(/\./g, ',');
+        const data = role === 'super' ? true : { permissions: { pc:false, mobile:false, bypass:false, emulator:false, apk:false } };
+        db.ref(`admins/${role}/${key}`).set(data);
+      }
+    }
+
+    function removeAdmin(role, key) {
+      if (confirm("Are you sure you want to remove this admin?")) {
+        db.ref(`admins/${role}/${key}`).remove();
+      }
+    }
+
+    /* Modal Logic */
+    let selectedNormalKey = "";
+    function openPermModal(key, perms) {
+      selectedNormalKey = key;
+      document.getElementById('modalEmail').textContent = key.replace(/,/g, '.');
+      document.getElementById('perm-pc').checked = perms.pc || false;
+      document.getElementById('perm-mobile').checked = perms.mobile || false;
+      document.getElementById('perm-bypass').checked = perms.bypass || false;
+      document.getElementById('perm-emulator').checked = perms.emulator || false;
+      document.getElementById('perm-apk').checked = perms.apk || false;
+      document.getElementById('permModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('permModal').classList.remove('active');
+    }
+
+    function savePermissions() {
+      const updatedPerms = {
+        pc: document.getElementById('perm-pc').checked,
+        mobile: document.getElementById('perm-mobile').checked,
+        bypass: document.getElementById('perm-bypass').checked,
+        emulator: document.getElementById('perm-emulator').checked,
+        apk: document.getElementById('perm-apk').checked
+      };
+      db.ref(`admins/normal/${selectedNormalKey}/permissions`).set(updatedPerms).then(() => {
+        closeModal();
+      });
+    }
+
+    loadAdmins();
+  </script>
+</body>
+</html>
