@@ -33,12 +33,13 @@
             height: 100vh;
             position: fixed;
             padding: 20px;
+            z-index: 100;
         }
 
-        .sidebar h2 { color: var(--neon-pink); font-size: 1.2rem; margin-bottom: 30px; text-align: center; }
+        .sidebar h2 { color: var(--neon-pink); font-size: 1.2rem; margin-bottom: 30px; text-align: center; font-weight: 800; }
 
         .nav-links { list-style: none; padding: 0; }
-        .nav-links li { margin-bottom: 15px; }
+        .nav-links li { margin-bottom: 12px; }
         .nav-links a {
             color: var(--text-gray);
             text-decoration: none;
@@ -48,11 +49,24 @@
             padding: 12px;
             border-radius: 8px;
             transition: 0.3s;
+            font-size: 0.9rem;
         }
         .nav-links a:hover, .nav-links a.active {
             background: rgba(157, 0, 255, 0.1);
             color: white;
             border-left: 3px solid var(--neon-purple);
+        }
+
+        .visit-site {
+            margin-top: 20px;
+            padding: 12px;
+            background: var(--neon-green);
+            color: black !important;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            display: block;
         }
 
         /* Main Content */
@@ -62,12 +76,8 @@
             width: calc(100% - 260px);
         }
 
-        .header-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
+        .header-box { margin-bottom: 30px; }
+        .header-box h1 { font-size: 1.8rem; font-weight: 800; }
 
         /* Settings Card */
         .settings-card {
@@ -76,20 +86,18 @@
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
         }
 
         .settings-card h3 {
-            grid-column: 1 / -1;
-            margin: 0 0 10px 0;
+            margin: 0 0 20px 0;
             color: var(--neon-purple);
             font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
         /* Form Controls */
         .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
@@ -105,7 +113,7 @@
         .form-group input:focus { border-color: var(--neon-pink); }
 
         .btn-save-settings {
-            grid-column: 1 / -1;
+            width: 100%;
             background: var(--neon-purple);
             color: white;
             border: none;
@@ -113,11 +121,10 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
+            margin-top: 10px;
         }
-        .btn-save-settings:hover { background: #7b00cc; }
 
-        /* Add Emulator Form */
+        /* Add Emulator Card */
         .add-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -138,26 +145,23 @@
             margin-top: 10px;
         }
 
-        /* Item Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .item-card {
+        /* Table Style */
+        .table-container {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
-        .item-name { font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; color: #fff; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase; }
 
-        .btn-delete { background: #dc3545; color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; }
+        .btn-delete {
+            background: #dc3545; color: white; border: none;
+            padding: 8px 15px; border-radius: 5px; cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -173,6 +177,7 @@
             <li><a href="manage-emulator.html" class="active"><i class="fas fa-gamepad"></i> Manage Emulator</a></li>
             <li><a href="manage-admins.html"><i class="fas fa-user-shield"></i> Admin Users</a></li>
         </ul>
+        <a href="https://rijuedit.github.io/BANGLA-FF-PANEL/index.html" target="_blank" class="visit-site">Visit Site</a>
     </div>
 
     <div class="main-content">
@@ -180,39 +185,52 @@
             <h1>Manage Emulator</h1>
         </div>
 
-        <!-- Global Page Settings (Video & RAR Pass) -->
+        <!-- Settings Card -->
         <div class="settings-card">
             <h3><i class="fas fa-cog"></i> Emulator Page Settings (Optional)</h3>
-            <div class="form-group">
-                <label>YouTube Video Link (Optional)</label>
-                <input type="text" id="page-yt-link" placeholder="https://youtube.com/watch?v=...">
-            </div>
-            <div class="form-group">
-                <label>RAR Password (Optional)</label>
-                <input type="text" id="page-rar-pass" placeholder="e.g. 1">
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>YouTube Video Link (Optional)</label>
+                    <input type="text" id="page-yt-link" placeholder="https://youtube.com/watch?v=...">
+                </div>
+                <div class="form-group">
+                    <label>RAR Password (Optional)</label>
+                    <input type="text" id="page-rar-pass" placeholder="e.g. 1">
+                </div>
             </div>
             <button class="btn-save-settings" id="btn-save-settings">Save Page Settings</button>
         </div>
 
-        <!-- Add Emulator Form -->
+        <!-- Add Card -->
         <div class="add-card">
-            <h3 style="margin-bottom: 20px;">Add New Emulator</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <h3 style="margin-bottom: 20px; color: var(--neon-pink);">Add New Emulator</h3>
+            <div class="settings-grid">
                 <div class="form-group">
                     <label>Emulator Name</label>
                     <input type="text" id="emu-name" placeholder="e.g. MSI EMULATOR">
                 </div>
                 <div class="form-group">
                     <label>Download Link</label>
-                    <input type="text" id="emu-link" placeholder="Download URL">
+                    <input type="text" id="emu-link" placeholder="https://mediafire.com/...">
                 </div>
             </div>
             <button class="btn-add" id="btn-add">Add Emulator</button>
         </div>
 
-        <!-- Emulator List -->
-        <div class="grid" id="emulator-list">
-            <!-- Data from Firebase -->
+        <!-- List -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Emulator Name</th>
+                        <th>Download Link</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="emu-table-body">
+                    <!-- Data -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -233,34 +251,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- Handle Page Settings ---
-        const pageYtInput = document.getElementById('page-yt-link');
-        const pageRarInput = document.getElementById('page-rar-pass');
+        // --- Save Page Settings ---
         const btnSaveSettings = document.getElementById('btn-save-settings');
+        btnSaveSettings.onclick = () => {
+            const yt = document.getElementById('page-yt-link').value.trim();
+            const rar = document.getElementById('page-rar-pass').value.trim();
+            
+            set(ref(db, 'page_settings/emulator'), {
+                yt_link: yt,
+                rar_password: rar
+            }).then(() => alert("Settings Saved Successfully!"))
+              .catch(err => alert("Error: " + err.message));
+        };
 
-        // Load existing settings
-        get(ref(db, 'page_settings/emulator')).then(snapshot => {
-            if(snapshot.exists()){
-                const data = snapshot.val();
-                pageYtInput.value = data.yt_link || '';
-                pageRarInput.value = data.rar_password || '';
+        // Load Settings
+        get(ref(db, 'page_settings/emulator')).then(snap => {
+            if(snap.exists()){
+                document.getElementById('page-yt-link').value = snap.val().yt_link || '';
+                document.getElementById('page-rar-pass').value = snap.val().rar_password || '';
             }
         });
 
-        btnSaveSettings.onclick = () => {
-            set(ref(db, 'page_settings/emulator'), {
-                yt_link: pageYtInput.value.trim(),
-                rar_password: pageRarInput.value.trim()
-            }).then(() => alert("Page Settings Updated!"));
-        };
-
-        // --- Handle Emulator Items ---
-        const emuList = document.getElementById('emulator-list');
+        // --- Add Emulator ---
         const btnAdd = document.getElementById('btn-add');
-
         btnAdd.onclick = () => {
-            const name = document.getElementById('emu-name').value;
-            const link = document.getElementById('emu-link').value;
+            const name = document.getElementById('emu-name').value.trim();
+            const link = document.getElementById('emu-link').value.trim();
 
             if(!name || !link) return alert("Please fill Name and Link!");
 
@@ -272,25 +288,29 @@
                 alert("Emulator Added!");
                 document.getElementById('emu-name').value = '';
                 document.getElementById('emu-link').value = '';
-            });
+            }).catch(err => alert("Error: " + err.message));
         };
 
+        // --- Load List ---
         onValue(ref(db, 'emulators'), (snapshot) => {
-            emuList.innerHTML = '';
+            const tbody = document.getElementById('emu-table-body');
+            tbody.innerHTML = '';
             snapshot.forEach((child) => {
                 const data = child.val();
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                card.innerHTML = `
-                    <span class="item-name"><i class="fas fa-cube" style="color:var(--neon-purple); margin-right:10px;"></i> ${data.title}</span>
-                    <button class="btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold;">${data.title}</td>
+                    <td style="color:var(--text-gray); font-size:0.8rem;">${data.download}</td>
+                    <td style="text-align: right;">
+                        <button class="btn-delete" onclick="deleteItem('${child.key}')">Delete</button>
+                    </td>
                 `;
-                emuList.appendChild(card);
+                tbody.appendChild(tr);
             });
         });
 
         window.deleteItem = (key) => {
-            if(confirm("Are you sure?")) remove(ref(db, `emulators/${key}`));
+            if(confirm("Delete this emulator?")) remove(ref(db, `emulators/${key}`));
         };
     </script>
 </body>
