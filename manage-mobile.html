@@ -42,8 +42,8 @@
         /* Popup Modals UI */
         .modal-content { background-color: #11071a; border: 1px solid #9d00ff; border-radius: 12px; color: white; }
         .modal-header, .modal-footer { border-color: #2a113d; }
-        .form-control { background-color: #05020a; border: 1px solid #2a113d; color: white; }
-        .form-control:focus { background-color: #0c0514; border-color: #9d00ff; color: white; box-shadow: none; }
+        .form-control, .form-select { background-color: #05020a; border: 1px solid #2a113d; color: white; }
+        .form-control:focus, .form-select:focus { background-color: #0c0514; border-color: #9d00ff; color: white; box-shadow: none; }
         .form-label { color: #a385bd; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
 
         /* Popup Price Boxes */
@@ -92,12 +92,10 @@
         </div>
 
         <!-- 📦 Mobile Product Grid Boxes -->
-        <div id="productGrid" class="product-grid">
-            <!-- Data will load here via JS -->
-        </div>
+        <div id="productGrid" class="product-grid"></div>
     </div>
 
-    <!-- 📌 Product Detail Popup (বক্সে চাপ দিলে পপ-আপ) -->
+    <!-- 📌 Product Detail Popup -->
     <div class="modal fade" id="productDetailModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -106,9 +104,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 
-                <div class="modal-body" id="detailPackages" style="max-height: 60vh; overflow-y: auto;">
-                    <!-- Packages detail will load here -->
-                </div>
+                <div class="modal-body" id="detailPackages" style="max-height: 60vh; overflow-y: auto;"></div>
                 
                 <div class="modal-footer" style="justify-content: space-between;">
                     <div>
@@ -192,14 +188,13 @@
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
-        const dbRef = database.ref('mobile_panels'); // Database path for Mobile Panels
+        const dbRef = database.ref('mobile_panels');
 
         let allProductsData = {};
         const detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
         const formModal = new bootstrap.Modal(document.getElementById('addProductModal'));
         const linkModal = new bootstrap.Modal(document.getElementById('globalLinkModal'));
 
-        // 1. Load Products & Display Box Cards
         function loadProducts() {
             dbRef.on('value', (snapshot) => {
                 const grid = document.getElementById('productGrid');
@@ -227,7 +222,6 @@
             });
         }
 
-        // 2. Open Product Details Popup
         function openProductDetail(id) {
             const product = allProductsData[id];
             const pName = product.name || product.title || product.panelName || 'Unnamed Panel';
@@ -235,7 +229,6 @@
             document.getElementById('detailModalTitle').innerText = pName;
             
             let packagesHTML = '<div style="display: flex; flex-direction: column; gap: 15px;">';
-            
             const pkgs = product.packages || product.packageList || [];
             if (pkgs.length > 0) {
                 pkgs.forEach(pkg => {
@@ -266,19 +259,17 @@
                     </div>`;
                 });
             } else {
-                packagesHTML += `<div class="text-center text-danger p-3">No packages available for this panel.</div>`;
+                packagesHTML += `<div class="text-center text-danger p-3">No packages available.</div>`;
             }
             packagesHTML += '</div>';
             
             document.getElementById('detailPackages').innerHTML = packagesHTML;
             
-            // Edit Button Handler
             document.getElementById('btnEdit').onclick = () => {
                 detailModal.hide();
                 openEditModal(id);
             };
             
-            // Delete Button Handler
             document.getElementById('btnDelete').onclick = () => {
                 if(confirm("Are you sure you want to delete this product?")) {
                     dbRef.child(id).remove().then(() => {
@@ -290,7 +281,6 @@
             detailModal.show();
         }
 
-        // 3. Open Add Product Modal
         function openAddModal() {
             document.getElementById('formModalTitle').innerText = "Add New Product";
             document.getElementById('productId').value = '';
@@ -301,7 +291,6 @@
             formModal.show();
         }
 
-        // 4. Open Edit Product Modal
         function openEditModal(id) {
             const product = allProductsData[id];
             const pName = product.name || product.title || '';
@@ -322,14 +311,35 @@
             formModal.show();
         }
 
-        // 5. Package Input Row Helper
-        function addPackageRow(duration = '', oldP = '', newP = '', resellP = '') {
+        function parseDurationStr(str) {
+            if (!str) return { num: '1', unit: 'Days' };
+            if (str.toLowerCase().includes('lifetime')) return { num: '', unit: 'Lifetime' };
+            const parts = str.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                return { num: parts[0], unit: parts[1] };
+            }
+            return { num: parts[0] || '1', unit: 'Days' };
+        }
+
+        // 🌟 🔥 Package Row with Number + Select Options (Hours, Days, Months, Years, Lifetime)
+        function addPackageRow(durationStr = '', oldP = '', newP = '', resellP = '') {
+            const parsed = parseDurationStr(durationStr);
             const div = document.createElement('div');
             div.className = 'row g-2 mb-2 package-row align-items-end';
+            
             div.innerHTML = `
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label class="form-label" style="font-size:11px;">Duration</label>
-                    <input type="text" class="form-control pkg-duration" value="${duration}" placeholder="e.g. 7 Days">
+                    <div class="d-flex gap-1">
+                        <input type="number" class="form-control pkg-dur-num" value="${parsed.num}" placeholder="Qty" style="width: 75px;" ${parsed.unit === 'Lifetime' ? 'disabled' : ''}>
+                        <select class="form-select pkg-dur-unit" onchange="toggleQtyInput(this)">
+                            <option value="Hours" ${parsed.unit.toLowerCase().includes('hour') ? 'selected' : ''}>Hours</option>
+                            <option value="Days" ${parsed.unit.toLowerCase().includes('day') ? 'selected' : ''}>Days</option>
+                            <option value="Months" ${parsed.unit.toLowerCase().includes('month') ? 'selected' : ''}>Months</option>
+                            <option value="Years" ${parsed.unit.toLowerCase().includes('year') ? 'selected' : ''}>Years</option>
+                            <option value="Lifetime" ${parsed.unit.toLowerCase().includes('lifetime') ? 'selected' : ''}>Lifetime</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label" style="font-size:11px;">Old Price</label>
@@ -339,7 +349,7 @@
                     <label class="form-label" style="font-size:11px;">Sale Price</label>
                     <input type="number" class="form-control pkg-new" value="${newP}" placeholder="৳">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label" style="font-size:11px;">Buy Price</label>
                     <input type="number" class="form-control pkg-resell" value="${resellP}" placeholder="৳">
                 </div>
@@ -352,7 +362,17 @@
             document.getElementById('packagesContainer').appendChild(div);
         }
 
-        // 6. Save Product to Firebase
+        function toggleQtyInput(selectElem) {
+            const numInput = selectElem.parentElement.querySelector('.pkg-dur-num');
+            if (selectElem.value === 'Lifetime') {
+                numInput.value = '';
+                numInput.disabled = true;
+            } else {
+                numInput.disabled = false;
+                if (!numInput.value) numInput.value = '1';
+            }
+        }
+
         function saveProduct() {
             const id = document.getElementById('productId').value;
             const name = document.getElementById('productName').value;
@@ -361,10 +381,13 @@
             const packageRows = document.querySelectorAll('.package-row');
             let packages = [];
             packageRows.forEach(row => {
-                const duration = row.querySelector('.pkg-duration').value;
+                const num = row.querySelector('.pkg-dur-num').value;
+                const unit = row.querySelector('.pkg-dur-unit').value;
+                const duration = (unit === 'Lifetime') ? 'Lifetime' : `${num || 1} ${unit}`;
                 const oldPrice = row.querySelector('.pkg-old').value;
                 const newPrice = row.querySelector('.pkg-new').value;
                 const resellPrice = row.querySelector('.pkg-resell').value;
+                
                 if(duration) {
                     packages.push({ duration, oldPrice, newPrice, resellPrice });
                 }
@@ -379,17 +402,12 @@
             };
 
             if(id) {
-                dbRef.child(id).update(productData).then(() => {
-                    formModal.hide();
-                });
+                dbRef.child(id).update(productData).then(() => formModal.hide());
             } else {
-                dbRef.push(productData).then(() => {
-                    formModal.hide();
-                });
+                dbRef.push(productData).then(() => formModal.hide());
             }
         }
 
-        // 7. Global Buy Link Handler
         function openGlobalLinkModal() {
             database.ref('global_buy_link/mobile').once('value').then(snapshot => {
                 document.getElementById('globalBuyLinkInput').value = snapshot.val() || '';
@@ -405,7 +423,6 @@
             });
         }
 
-        // Load Products on startup
         window.onload = loadProducts;
     </script>
 </body>
