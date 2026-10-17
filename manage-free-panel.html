@@ -1,253 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Free Panel - BANGLA FF</title>
+    <title>Admin - Manage Free Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; cursor: default; }
-        body { background-color: #05020a; color: #fff; padding: 30px; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #05020a; color: #fff; padding: 30px 5%; }
         
-        #mouse-glow {
-            position: fixed; width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255, 0, 102, 0.4); filter: blur(20px);
-            pointer-events: none; transform: translate(-50%, -50%); z-index: 9999;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .btn-back { background: #11071a; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; border: 1px solid #2a113d; font-size: 13px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media(max-width:850px){ .grid { grid-template-columns: 1fr; } }
 
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; border-bottom: 1px solid #2a113d; padding-bottom: 15px;
-        }
-        .header h1 { font-size: 26px; }
-        .header h1 span { color: #ff0066; }
-        .back-btn {
-            background: #11071a; color: #fff; text-decoration: none; padding: 10px 20px;
-            border: 1px solid #2a113d; border-radius: 8px; font-weight: 600; transition: 0.3s;
-        }
-        .back-btn:hover { background: #ff0066; border-color: #ff0066; }
+        .card { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 20px; }
+        .card-title { font-size: 16px; font-weight: 700; color: #ff0066; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        .section-title { font-size: 20px; color: #fff; margin-bottom: 15px; border-left: 3px solid #ff0066; padding-left: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-size: 12px; color: #aaa; margin-bottom: 6px; display: block; }
+        input[type="text"] { width: 100%; background: #080410; border: 1px solid #2a113d; padding: 10px; border-radius: 6px; color: #fff; font-size: 13px; }
+        
+        .toggle-group { display: flex; align-items: center; justify-content: space-between; background: #080410; padding: 10px 12px; border-radius: 6px; border: 1px solid #2a113d; margin-bottom: 15px; }
+        .toggle-group label { margin: 0; }
 
-        .form-container {
-            background: #11071a; border: 1px solid #2a113d; padding: 25px;
-            border-radius: 12px; margin-bottom: 40px;
-        }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; }
-        .input-group.full { grid-column: 1 / -1; }
-        .input-group label {
-            font-size: 15px; color: #ff0066; font-weight: 600;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .input-group input {
-            background: #05020a; border: 1px solid #2a113d; color: #fff;
-            padding: 12px; border-radius: 8px; outline: none; font-size: 15px; cursor: text;
-        }
-        .input-group input:focus { border-color: #ff0066; }
-
-        .submit-btn {
-            background: #ff0066; color: #fff; border: none; padding: 14px;
-            border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;
-            width: 100%; margin-top: 20px; transition: 0.3s;
-        }
-        .submit-btn:hover { background: #d60055; transform: translateY(-2px); }
-        .btn-update { background: #9d00ff; }
-        .btn-update:hover { background: #7a00cc; }
-        .cancel-btn { background: #333; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; display: none; font-weight: 600; }
-
-        .item-list { display: flex; flex-direction: column; gap: 15px; }
-        .item-card {
-            background: #11071a; border: 1px solid #2a113d; padding: 15px 20px;
-            border-radius: 12px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .item-info h3 { font-size: 18px; color: #fff; margin-bottom: 5px; }
-        .item-info p { font-size: 13px; color: #aaa; }
-        .item-actions { display: flex; gap: 10px; }
-        .btn-edit { background: #e6b800; color: #000; padding: 8px 15px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
-        .btn-delete { background: #ff0033; color: white; padding: 8px 15px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+        .btn-save { background: linear-gradient(135deg, #9d00ff, #ff0066); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; font-size: 13px; }
+        
+        .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; background: #080410; padding: 10px 15px; border-radius: 6px; border: 1px solid #2a113d; }
+        .btn-del { background: #ff0055; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div id="mouse-glow"></div>
 
     <div class="header">
-        <h1>Manage <span style="color:#ff0066;">Free Panel</span></h1>
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <h2>Manage Free Panel</h2>
+        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
     </div>
 
-    <!-- 1. PAGE SETTINGS (Global Video, Skip Link, Password) -->
-    <h2 class="section-title">Page Top Settings (Global)</h2>
-    <div class="form-container">
-        <form id="settingsForm">
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>Main YouTube Video Link (Leave empty to hide)</label>
-                    <input type="url" id="global_yt" placeholder="https://youtube.com/...">
-                </div>
-                <div class="input-group">
-                    <label>How To Skip Link (Leave empty to hide)</label>
-                    <input type="url" id="global_skip" placeholder="https://link.com/skip">
-                </div>
-                <div class="input-group full">
-                    <label>RAR Password (Leave empty to hide)</label>
-                    <input type="text" id="global_pass" placeholder="e.g. BFF2024">
-                </div>
+    <div class="grid">
+        <!-- Page Settings Card -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-cog"></i> Page & Video Settings</div>
+            
+            <div class="form-group">
+                <label>YouTube / Drive Video URL</label>
+                <input type="text" id="videoUrl" placeholder="https://youtube.com/watch?v=...">
             </div>
-            <button type="submit" id="settingsBtn" class="submit-btn btn-update"><i class="fas fa-save"></i> Update Page Settings</button>
-        </form>
-    </div>
 
-    <!-- 2. ADD NEW PRODUCT/ITEM -->
-    <h2 class="section-title">Add Downloadable Items</h2>
-    <div class="form-container">
-        <form id="addForm">
-            <input type="hidden" id="edit_id">
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>Item Name</label>
-                    <input type="text" id="title" placeholder="e.g. Free Aimbot Script" required>
-                </div>
-                <div class="input-group">
-                    <label>Button Text</label>
-                    <input type="text" id="btn_text" placeholder="e.g. Download" value="Download" required>
-                </div>
-                <div class="input-group full">
-                    <label>Download Link</label>
-                    <input type="url" id="download" placeholder="Download Link" required>
-                </div>
+            <div class="toggle-group">
+                <label>Enable Video</label>
+                <input type="checkbox" id="videoToggle" checked>
             </div>
-            <button type="submit" id="submitBtn" class="submit-btn"><i class="fas fa-plus"></i> Add Item</button>
-            <button type="button" id="cancelBtn" class="cancel-btn" onclick="cancelEdit()">Cancel Edit</button>
-        </form>
+
+            <div class="form-group">
+                <label>How to Skip Link</label>
+                <input type="text" id="skipUrl" placeholder="https://youtube.com/watch?v=howtoskip">
+            </div>
+
+            <div class="toggle-group">
+                <label>Enable How to Skip Button</label>
+                <input type="checkbox" id="skipToggle" checked>
+            </div>
+
+            <div class="form-group">
+                <label>RAR Password</label>
+                <input type="text" id="rarPass" value="1">
+            </div>
+
+            <button class="btn-save" onclick="savePageSettings()"><i class="fas fa-save"></i> Save Settings</button>
+        </div>
+
+        <!-- Add Free Panel Items Card -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-plus-circle"></i> Add Free Panel Link</div>
+            
+            <div class="form-group">
+                <label>Panel Title</label>
+                <input type="text" id="itemTitle" placeholder="e.g. Free Panel OB55 V1">
+            </div>
+
+            <div class="form-group">
+                <label>Download Link</label>
+                <input type="text" id="itemDownload" placeholder="https://mediafire.com/...">
+            </div>
+
+            <button class="btn-save" onclick="addItem()"><i class="fas fa-plus"></i> Add Item</button>
+
+            <div class="item-list" id="itemList"></div>
+        </div>
     </div>
 
-    <!-- 3. ITEMS LIST -->
-    <h2 class="section-title">Items List</h2>
-    <div class="item-list" id="itemList">
-        <div style="text-align: center; color: #555; padding: 20px;">No items added yet</div>
-    </div>
+    <script>
+        const firebaseConfig = { databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getDatabase, ref, push, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
-            authDomain: "bangla-ff-admin.firebaseapp.com",
-            databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bangla-ff-admin"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-
-        document.addEventListener('mousemove', (e) => {
-            const glow = document.getElementById('mouse-glow');
-            glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
+        // Load Settings
+        db.ref('page_settings/free_panel').on('value', s => {
+            const data = s.val() || {};
+            document.getElementById('videoUrl').value = data.video_url || '';
+            document.getElementById('videoToggle').checked = data.video_enabled !== false;
+            document.getElementById('skipUrl').value = data.how_to_skip || '';
+            document.getElementById('skipToggle').checked = data.skip_enabled !== false;
+            document.getElementById('rarPass').value = data.rar_password || '1';
         });
 
-        onAuthStateChanged(auth, (user) => { if (!user) window.location.href = 'index.html'; });
-
-        // Load Global Page Settings
-        onValue(ref(db, 'page_settings/free_panel'), (snapshot) => {
-            if(snapshot.exists()) {
-                const data = snapshot.val();
-                document.getElementById('global_yt').value = data.yt_link || '';
-                document.getElementById('global_skip').value = data.skip_link || '';
-                document.getElementById('global_pass').value = data.rar_password || '';
-            }
-        });
-
-        // Save Global Page Settings
-        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('settingsBtn');
-            btn.innerHTML = 'Updating...';
-            const data = {
-                yt_link: document.getElementById('global_yt').value.trim(),
-                skip_link: document.getElementById('global_skip').value.trim(),
-                rar_password: document.getElementById('global_pass').value.trim()
-            };
-            await update(ref(db, 'page_settings/free_panel'), data);
-            btn.innerHTML = '<i class="fas fa-check"></i> Updated Successfully';
-            setTimeout(() => btn.innerHTML = '<i class="fas fa-save"></i> Update Page Settings', 2000);
-        });
-
-        // Add / Update Individual Items
-        document.getElementById('addForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            const editId = document.getElementById('edit_id').value;
-            btn.innerHTML = 'Saving...';
-
-            const data = {
-                title: document.getElementById('title').value.trim(),
-                btn_text: document.getElementById('btn_text').value.trim() || 'Download',
-                download: document.getElementById('download').value.trim()
+        // Save Settings
+        function savePageSettings() {
+            const obj = {
+                video_url: document.getElementById('videoUrl').value.trim(),
+                video_enabled: document.getElementById('videoToggle').checked,
+                how_to_skip: document.getElementById('skipUrl').value.trim(),
+                skip_enabled: document.getElementById('skipToggle').checked,
+                rar_password: document.getElementById('rarPass').value.trim()
             };
 
-            if (editId) {
-                await update(ref(db, `free_panels/${editId}`), data);
-            } else {
-                data.timestamp = Date.now();
-                await set(push(ref(db, 'free_panels')), data);
-            }
-            cancelEdit();
-        });
+            db.ref('page_settings/free_panel').set(obj).then(() => {
+                db.ref('page_settings/free-panel').set(obj);
+                alert('Page Settings Saved Successfully!');
+            });
+        }
 
-        // Load Items List
-        onValue(ref(db, 'free_panels'), (snapshot) => {
+        // Add Item
+        function addItem() {
+            const title = document.getElementById('itemTitle').value.trim();
+            const download = document.getElementById('itemDownload').value.trim();
+            if (!title || !download) return alert('Enter Title and Download Link');
+
+            db.ref('free_panels').push({
+                title: title,
+                download: download,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                document.getElementById('itemTitle').value = '';
+                document.getElementById('itemDownload').value = '';
+            });
+        }
+
+        // Load Items
+        db.ref('free_panels').on('value', s => {
             const list = document.getElementById('itemList');
             list.innerHTML = '';
-            if (!snapshot.exists()) {
-                list.innerHTML = '<div style="text-align: center; color: #555; padding: 20px;">No items added yet</div>';
-                return;
-            }
-            snapshot.forEach((child) => {
-                const item = child.val();
-                const key = child.key;
+            s.forEach(c => {
+                const item = c.val();
                 list.innerHTML += `
-                    <div class="item-card">
-                        <div class="item-info">
-                            <h3>${item.title}</h3>
-                            <p>Button: <b>${item.btn_text || 'Download'}</b> | Link: ${item.download}</p>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn-edit" onclick='editItem(${JSON.stringify(key)}, ${JSON.stringify(item)})'>Edit</button>
-                            <button class="btn-delete" onclick="deleteItem('${key}')">Delete</button>
-                        </div>
+                    <div class="item-row">
+                        <span>${item.title}</span>
+                        <button class="btn-del" onclick="db.ref('free_panels/${c.key}').remove()">Delete</button>
                     </div>
                 `;
             });
         });
-
-        window.editItem = (id, item) => {
-            document.getElementById('edit_id').value = id;
-            document.getElementById('title').value = item.title || '';
-            document.getElementById('btn_text').value = item.btn_text || 'Download';
-            document.getElementById('download').value = item.download || '';
-            
-            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Item';
-            document.getElementById('submitBtn').style.background = '#e6b800';
-            document.getElementById('cancelBtn').style.display = 'block';
-            window.scrollTo({ top: 500, behavior: 'smooth' });
-        };
-
-        window.cancelEdit = () => {
-            document.getElementById('addForm').reset();
-            document.getElementById('edit_id').value = '';
-            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-plus"></i> Add Item';
-            document.getElementById('submitBtn').style.background = '#ff0066';
-            document.getElementById('cancelBtn').style.display = 'none';
-        };
-
-        window.deleteItem = (key) => {
-            if (confirm('Delete this item?')) remove(ref(db, `free_panels/${key}`));
-        };
     </script>
 </body>
 </html>
