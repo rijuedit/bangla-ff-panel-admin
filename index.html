@@ -469,7 +469,8 @@
             <div class="form-group">
                 <label>Icon Type</label>
                 <select id="edit_icon_type">
-                    <option value="icon">FontAwesome Icon Class</option>
+                    <option value="icon">FontAwesome Icon Class (e.g. fas fa-desktop)</option>
+                    <option value="emoji">Direct Emoji / Text (যেমন: 💻, 🔥)</option>
                     <option value="image">Image Logo URL</option>
                 </select>
             </div>
@@ -537,7 +538,7 @@
                 .catch((e) => alert('Error: ' + e.message));
         });
 
-        // Default Data Initialization (The 6 core boxes)
+        // Default Data Initialization
         const defaultBoxes = {
             free_panel: { title: "Free Panel", iconType: "icon", iconValue: "fas fa-laptop-code", manageLink: "manage-free-panel.html" },
             free_bypass: { title: "Free Bypass", iconType: "icon", iconValue: "fas fa-shield-virus", manageLink: "manage-bypass.html" },
@@ -556,37 +557,9 @@
             renderGrid();
         });
 
-        // Fetch Categories & AUTO-RECOVERY LOGIC
+        // Fetch Categories
         onValue(ref(db, 'site_settings/categories'), (snapshot) => {
-            let currentData = snapshot.val() || {};
-            let missingBoxes = {};
-            let needsDbUpdate = false;
-
-            // Check if any default box is missing or corrupted
-            for (const [key, defaultData] of Object.entries(defaultBoxes)) {
-                if (!currentData[key]) {
-                    missingBoxes[key] = defaultData; // Bring missing box back
-                    needsDbUpdate = true;
-                } else {
-                    // Fix if icons or links were empty
-                    if (!currentData[key].iconValue) {
-                        currentData[key].iconType = defaultData.iconType;
-                        currentData[key].iconValue = defaultData.iconValue;
-                        needsDbUpdate = true;
-                    }
-                    if (!currentData[key].manageLink) {
-                        currentData[key].manageLink = defaultData.manageLink;
-                        needsDbUpdate = true;
-                    }
-                }
-            }
-
-            if (needsDbUpdate) {
-                // Update Firebase silently to fix it permanently
-                update(ref(db, 'site_settings/categories'), { ...currentData, ...missingBoxes });
-            }
-
-            categoriesData = { ...currentData, ...missingBoxes };
+            categoriesData = snapshot.val() || defaultBoxes;
             renderGrid();
         });
 
@@ -603,10 +576,15 @@
                 const safeManageLink = data.manageLink || '#';
 
                 let iconHtml = '';
-                if (data.iconType === 'image' && data.iconValue) {
-                    iconHtml = `<img src="${data.iconValue}" alt="icon">`;
+                const val = data.iconValue || '';
+                
+                // Smart Icon Rendering (Supports Images, Emojis, and FontAwesome)
+                if (data.iconType === 'image' && val) {
+                    iconHtml = `<img src="${val}" alt="icon">`;
+                } else if (data.iconType === 'emoji' || (!val.includes('fa-') && !val.startsWith('http'))) {
+                    iconHtml = `<span style="font-size: 30px; display: inline-block; line-height: 1;">${val || '📦'}</span>`;
                 } else {
-                    iconHtml = `<i class="${data.iconValue}"></i>`;
+                    iconHtml = `<i class="${val}"></i>`;
                 }
 
                 const card = document.createElement('div');
@@ -672,18 +650,29 @@
         const typeSelect = document.getElementById('edit_icon_type');
         const iconLabel = document.getElementById('icon_val_label');
         function updateIconLabel() {
-            iconLabel.innerText = typeSelect.value === 'icon' ? 'Icon Class (e.g. fas fa-desktop)' : 'Image Logo URL';
+            const val = typeSelect.value;
+            if (val === 'icon') iconLabel.innerText = 'Icon Class (e.g. fas fa-desktop)';
+            else if (val === 'emoji') iconLabel.innerText = 'Emoji or Text (e.g. 💻, 🔥)';
+            else iconLabel.innerText = 'Image Logo URL';
         }
         typeSelect.addEventListener('change', updateIconLabel);
 
         // Save Button Handler
         document.getElementById('saveCategoryBtn').addEventListener('click', () => {
             const id = document.getElementById('edit_category_id').value;
+            let type = document.getElementById('edit_icon_type').value;
+            const val = document.getElementById('edit_icon_value').value.trim();
+
+            // Auto-detect emoji if user forgets to change type
+            if (type === 'icon' && val && !val.includes('fa-') && !val.startsWith('http')) {
+                type = 'emoji';
+            }
+
             const data = {
                 title: document.getElementById('edit_title').value,
                 manageLink: document.getElementById('edit_manage_link').value,
-                iconType: document.getElementById('edit_icon_type').value,
-                iconValue: document.getElementById('edit_icon_value').value
+                iconType: type,
+                iconValue: val
             };
 
             if (id === "NEW") {
@@ -699,7 +688,7 @@
             const id = document.getElementById('edit_category_id').value;
             if (confirm("Are you sure you want to delete this box?")) {
                 remove(ref(db, `site_settings/categories/${id}`));
-                remove(ref(db, `site_visibility/${id}`)); // Cleanup visibility
+                remove(ref(db, `site_visibility/${id}`)); 
                 closeModal();
             }
         });
