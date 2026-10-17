@@ -257,7 +257,7 @@
         .status-on { color: var(--green-glow); }
         .status-off { color: var(--neon-pink); }
 
-        /* Discord Button Extra Style */
+        /* Discord & Action Buttons */
         .discord-btn {
             background: #5865F2;
             border: none;
@@ -271,6 +271,24 @@
         .discord-btn:hover {
             background: #4752C4;
             box-shadow: 0 0 15px rgba(88, 101, 242, 0.4);
+        }
+
+        .add-new-btn {
+            background: var(--neon-pink);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .add-new-btn:hover {
+            background: #ff3385;
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.5);
         }
 
         /* Edit Box Modal */
@@ -323,7 +341,7 @@
 
         .modal-footer {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-top: 25px;
         }
 
@@ -346,6 +364,23 @@
             flex: 1;
             border-radius: 8px;
             cursor: pointer;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: 1px solid #ff3333;
+            color: #ff3333;
+            padding: 12px;
+            flex: 1;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #ff3333;
+            color: white;
         }
     </style>
 </head>
@@ -387,7 +422,7 @@
             <h1>Overview <span>Dashboard</span></h1>
         </div>
 
-        <!-- Global Discord Settings Box (New Addition) -->
+        <!-- Global Discord Settings Box -->
         <div class="card" style="margin-bottom: 30px; border-color: #5865F2;">
             <h3 class="card-title" style="color: #5865F2; display: flex; align-items: center; gap: 10px; font-size: 18px; margin-bottom: 8px;">
                 <i class="fab fa-discord"></i> Global Discord Settings
@@ -401,126 +436,34 @@
             </div>
         </div>
 
-        <div class="grid">
-            <!-- Free Panel -->
-            <div class="card" id="card_free_panel">
-                <div class="card-icon" id="icon_free_panel"><i class="fas fa-laptop-code"></i></div>
-                <h3 class="card-title" id="title_free_panel">Free Panel</h3>
-                <div class="btn-group">
-                    <a href="manage-free-panel.html" class="btn btn-manage">Manage Items</a>
-                    <button class="btn btn-edit" onclick="openEditModal('free_panel')">Edit Box</button>
-                </div>
-                <div class="visibility-control">
-                    <span>Visibility:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="vis_free_panel">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="status-label" id="lbl_free_panel">OFF</span>
-                </div>
-            </div>
+        <!-- Dynamic Category Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; color: var(--neon-purple);">Website Categories</h2>
+            <button class="add-new-btn" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Add New Box
+            </button>
+        </div>
 
-            <!-- Free Bypass -->
-            <div class="card" id="card_free_bypass">
-                <div class="card-icon" id="icon_free_bypass"><i class="fas fa-shield-virus"></i></div>
-                <h3 class="card-title" id="title_free_bypass">Free Bypass</h3>
-                <div class="btn-group">
-                    <a href="manage-bypass.html" class="btn btn-manage">Manage Items</a>
-                    <button class="btn btn-edit" onclick="openEditModal('free_bypass')">Edit Box</button>
-                </div>
-                <div class="visibility-control">
-                    <span>Visibility:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="vis_free_bypass">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="status-label" id="lbl_free_bypass">OFF</span>
-                </div>
-            </div>
-
-            <!-- Emulator -->
-            <div class="card" id="card_emulator">
-                <div class="card-icon" id="icon_emulator"><i class="fas fa-microchip"></i></div>
-                <h3 class="card-title" id="title_emulator">Emulator</h3>
-                <div class="btn-group">
-                    <a href="manage-emulator.html" class="btn btn-manage">Manage Items</a>
-                    <button class="btn btn-edit" onclick="openEditModal('emulator')">Edit Box</button>
-                </div>
-                <div class="visibility-control">
-                    <span>Visibility:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="vis_emulator">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="status-label" id="lbl_emulator">OFF</span>
-                </div>
-            </div>
-
-            <!-- Paid PC -->
-            <div class="card" id="card_pc_panel">
-                <div class="card-icon" id="icon_pc_panel"><i class="fas fa-desktop"></i></div>
-                <h3 class="card-title" id="title_pc_panel">Paid PC Panels</h3>
-                <div class="btn-group">
-                    <a href="manage-pc.html" class="btn btn-manage">Manage Items</a>
-                    <button class="btn btn-edit" onclick="openEditModal('pc_panel')">Edit Box</button>
-                </div>
-                <div class="visibility-control">
-                    <span>Visibility:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="vis_pc_panel">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="status-label" id="lbl_pc_panel">OFF</span>
-                </div>
-            </div>
-
-            <!-- Paid Mobile -->
-            <div class="card" id="card_mobile_panel">
-                <div class="card-icon" id="icon_mobile_panel"><i class="fas fa-mobile-alt"></i></div>
-                <h3 class="card-title" id="title_mobile_panel">Paid Mobile Panels</h3>
-                <div class="btn-group">
-                    <a href="manage-mobile.html" class="btn btn-manage">Manage Items</a>
-                    <button class="btn btn-edit" onclick="openEditModal('mobile_panel')">Edit Box</button>
-                </div>
-                <div class="visibility-control">
-                    <span>Visibility:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="vis_mobile_panel">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="status-label" id="lbl_mobile_panel">OFF</span>
-                </div>
-            </div>
-
-            <!-- Free Fire APK -->
-            <div class="card" id="card_apk">
-                <div class="card-icon" id="icon_apk"><i class="fas fa-mobile"></i></div>
-                <h3 class="card-title" id="title_apk">Free Fire APK</h3>
-                <div class="btn-group">
-                    <a href="manage-apk.html" class="btn btn-manage">Manage Items</a>
-                    <button class="btn btn-edit" onclick="openEditModal('apk')">Edit Box</button>
-                </div>
-                <div class="visibility-control">
-                    <span>Visibility:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="vis_apk">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="status-label" id="lbl_apk">OFF</span>
-                </div>
-            </div>
+        <!-- Dynamic Grid -->
+        <div class="grid" id="dynamic_grid">
+            <!-- Items will load here dynamically via Firebase -->
         </div>
     </div>
 
-    <!-- Edit Category Box Modal -->
+    <!-- Add/Edit Category Box Modal -->
     <div class="modal-overlay" id="editModal">
         <div class="modal">
-            <h2>Edit Category Box</h2>
+            <h2 id="modal_title">Edit Category Box</h2>
             <input type="hidden" id="edit_category_id">
             
             <div class="form-group">
                 <label>Category Title</label>
                 <input type="text" id="edit_title" placeholder="e.g. Paid PC Panel">
+            </div>
+
+            <div class="form-group">
+                <label>Manage Page Link <small style="color: #666;">(যে পেজে যাবে)</small></label>
+                <input type="text" id="edit_manage_link" placeholder="e.g. manage-new.html">
             </div>
 
             <div class="form-group">
@@ -537,6 +480,7 @@
             </div>
 
             <div class="modal-footer">
+                <button class="delete-btn" id="deleteCategoryBtn" style="display: none;">Delete</button>
                 <button class="cancel-btn" onclick="closeModal()">Cancel</button>
                 <button class="save-btn" id="saveCategoryBtn">Save Changes</button>
             </div>
@@ -545,7 +489,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, get, set, update, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -579,81 +523,124 @@
             signOut(auth).then(() => window.location.href = 'login.html');
         });
 
-        // ==========================================
-        // NEW: Global Discord Settings Logic
-        // ==========================================
+        // Global Discord Settings
         const discordInput = document.getElementById('discordInput');
         const saveDiscordBtn = document.getElementById('saveDiscordBtn');
-
-        // Fetch link on page load
         onValue(ref(db, 'global_settings/discord_link'), (snapshot) => {
-            if (snapshot.exists()) {
-                discordInput.value = snapshot.val();
-            }
+            if (snapshot.exists()) discordInput.value = snapshot.val();
         });
-
-        // Save new link
         saveDiscordBtn.addEventListener('click', () => {
             const link = discordInput.value.trim();
             if (!link) return alert('Please enter a valid Discord link!');
-            
             set(ref(db, 'global_settings/discord_link'), link)
                 .then(() => alert('Discord link updated globally!'))
-                .catch((e) => alert('Error updating link: ' + e.message));
-        });
-        // ==========================================
-
-        // Visibility Toggles
-        const visibilityKeys = ['free_panel', 'free_bypass', 'emulator', 'apk', 'pc_panel', 'mobile_panel'];
-        visibilityKeys.forEach(key => {
-            const el = document.getElementById(`vis_${key}`);
-            const lbl = document.getElementById(`lbl_${key}`);
-            
-            onValue(ref(db, `site_visibility/${key}`), (snapshot) => {
-                const val = snapshot.exists() ? snapshot.val() : true;
-                el.checked = val;
-                lbl.textContent = val ? 'ON' : 'OFF';
-                lbl.className = val ? 'status-label status-on' : 'status-label status-off';
-            });
-
-            el.addEventListener('change', () => {
-                set(ref(db, `site_visibility/${key}`), el.checked);
-            });
+                .catch((e) => alert('Error: ' + e.message));
         });
 
-        // Real-time Edit Box Sync
-        visibilityKeys.forEach(catId => {
-            onValue(ref(db, `site_settings/categories/${catId}`), (s) => {
-                if(s.exists()){
-                    const data = s.val();
-                    if(data.title) document.getElementById(`title_${catId}`).innerText = data.title;
-                    const iconDiv = document.getElementById(`icon_${catId}`);
-                    if(data.iconType === 'icon' && data.iconValue){
-                        iconDiv.innerHTML = `<i class="${data.iconValue}"></i>`;
-                    } else if(data.iconType === 'image' && data.iconValue) {
-                        iconDiv.innerHTML = `<img src="${data.iconValue}">`;
-                    }
-                }
-            });
+        // Default Data Initialization (if database is empty)
+        const defaultBoxes = {
+            free_panel: { title: "Free Panel", iconType: "icon", iconValue: "fas fa-laptop-code", manageLink: "manage-free-panel.html" },
+            free_bypass: { title: "Free Bypass", iconType: "icon", iconValue: "fas fa-shield-virus", manageLink: "manage-bypass.html" },
+            emulator: { title: "Emulator", iconType: "icon", iconValue: "fas fa-microchip", manageLink: "manage-emulator.html" },
+            pc_panel: { title: "Paid PC Panels", iconType: "icon", iconValue: "fas fa-desktop", manageLink: "manage-pc.html" },
+            mobile_panel: { title: "Paid Mobile Panels", iconType: "icon", iconValue: "fas fa-mobile-alt", manageLink: "manage-mobile.html" },
+            apk: { title: "Free Fire APK", iconType: "icon", iconValue: "fas fa-mobile", manageLink: "manage-apk.html" }
+        };
+
+        let visibilityState = {};
+        let categoriesData = {};
+
+        // Fetch Visibility State globally
+        onValue(ref(db, 'site_visibility'), (snapshot) => {
+            visibilityState = snapshot.val() || {};
+            renderGrid();
         });
 
-        // Edit Modal Handlers
-        window.openEditModal = function(catId) {
-            document.getElementById('edit_category_id').value = catId;
-            get(ref(db, `site_settings/categories/${catId}`)).then(snapshot => {
-                if(snapshot.exists()){
-                    const data = snapshot.val();
-                    document.getElementById('edit_title').value = data.title || "";
-                    document.getElementById('edit_icon_type').value = data.iconType || "icon";
-                    document.getElementById('edit_icon_value').value = data.iconValue || "";
+        // Fetch Categories & Render Dynamically
+        onValue(ref(db, 'site_settings/categories'), (snapshot) => {
+            if (!snapshot.exists()) {
+                set(ref(db, 'site_settings/categories'), defaultBoxes);
+            } else {
+                categoriesData = snapshot.val();
+                renderGrid();
+            }
+        });
+
+        function renderGrid() {
+            const grid = document.getElementById('dynamic_grid');
+            grid.innerHTML = '';
+
+            for (const [key, data] of Object.entries(categoriesData)) {
+                const isVis = visibilityState[key] !== false; // Default true if not defined
+                const visText = isVis ? 'ON' : 'OFF';
+                const visClass = isVis ? 'status-on' : 'status-off';
+                const checkedAttr = isVis ? 'checked' : '';
+                
+                // For old databases without manageLink, fallback to default if available
+                const fallbackLink = defaultBoxes[key] ? defaultBoxes[key].manageLink : '#';
+                const safeManageLink = data.manageLink || fallbackLink;
+
+                let iconHtml = '';
+                if (data.iconType === 'image' && data.iconValue) {
+                    iconHtml = `<img src="${data.iconValue}" alt="icon">`;
                 } else {
-                    document.getElementById('edit_title').value = "";
-                    document.getElementById('edit_icon_type').value = "icon";
-                    document.getElementById('edit_icon_value').value = "";
+                    iconHtml = `<i class="${data.iconValue || 'fas fa-box'}"></i>`;
                 }
-                document.getElementById('editModal').style.display = 'flex';
-                updateIconLabel();
-            });
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-icon">${iconHtml}</div>
+                    <h3 class="card-title">${data.title}</h3>
+                    <div class="btn-group">
+                        <a href="${safeManageLink}" class="btn btn-manage">Manage Items</a>
+                        <button class="btn btn-edit" onclick="openEditModal('${key}')">Edit Box</button>
+                    </div>
+                    <div class="visibility-control">
+                        <span>Visibility:</span>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleVis('${key}', this.checked)" ${checkedAttr}>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="status-label ${visClass}">${visText}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        window.toggleVis = function(key, isChecked) {
+            set(ref(db, `site_visibility/${key}`), isChecked);
+        };
+
+        // Modal Controls
+        window.openAddModal = function() {
+            document.getElementById('modal_title').innerText = "Add New Category Box";
+            document.getElementById('edit_category_id').value = "NEW";
+            document.getElementById('edit_title').value = "";
+            document.getElementById('edit_manage_link').value = "";
+            document.getElementById('edit_icon_type').value = "icon";
+            document.getElementById('edit_icon_value').value = "";
+            
+            document.getElementById('deleteCategoryBtn').style.display = "none";
+            document.getElementById('editModal').style.display = 'flex';
+            updateIconLabel();
+        };
+
+        window.openEditModal = function(key) {
+            const data = categoriesData[key];
+            if (!data) return;
+
+            document.getElementById('modal_title').innerText = "Edit Category Box";
+            document.getElementById('edit_category_id').value = key;
+            document.getElementById('edit_title').value = data.title || "";
+            document.getElementById('edit_manage_link').value = data.manageLink || "";
+            document.getElementById('edit_icon_type').value = data.iconType || "icon";
+            document.getElementById('edit_icon_value').value = data.iconValue || "";
+            
+            document.getElementById('deleteCategoryBtn').style.display = "block";
+            document.getElementById('editModal').style.display = 'flex';
+            updateIconLabel();
         };
 
         window.closeModal = function() {
@@ -667,17 +654,32 @@
         }
         typeSelect.addEventListener('change', updateIconLabel);
 
+        // Save Button Handler
         document.getElementById('saveCategoryBtn').addEventListener('click', () => {
-            const catId = document.getElementById('edit_category_id').value;
+            const id = document.getElementById('edit_category_id').value;
             const data = {
                 title: document.getElementById('edit_title').value,
+                manageLink: document.getElementById('edit_manage_link').value,
                 iconType: document.getElementById('edit_icon_type').value,
                 iconValue: document.getElementById('edit_icon_value').value
             };
 
-            update(ref(db, `site_settings/categories/${catId}`), data).then(() => {
+            if (id === "NEW") {
+                const newRef = push(ref(db, 'site_settings/categories'));
+                set(newRef, data).then(() => closeModal());
+            } else {
+                update(ref(db, `site_settings/categories/${id}`), data).then(() => closeModal());
+            }
+        });
+
+        // Delete Button Handler
+        document.getElementById('deleteCategoryBtn').addEventListener('click', () => {
+            const id = document.getElementById('edit_category_id').value;
+            if (confirm("Are you sure you want to delete this box?")) {
+                remove(ref(db, `site_settings/categories/${id}`));
+                remove(ref(db, `site_visibility/${id}`)); // Cleanup visibility
                 closeModal();
-            });
+            }
         });
     </script>
 </body>
