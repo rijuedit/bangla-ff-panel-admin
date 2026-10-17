@@ -26,46 +26,34 @@
         /* Main Content */
         .main-content { margin-left: 250px; padding: 30px; }
 
-        /* Buttons (Fixed Overlap Issue) */
+        /* Buttons */
         .btn-purple { background: #9d00ff; color: white; border: none; font-weight: 600; padding: 8px 18px; border-radius: 6px; font-size: 14px; }
         .btn-purple:hover { background: #7a00cc; color: white; }
         .btn-pink { background: #ff0066; color: white; border: none; font-weight: 600; padding: 8px 18px; border-radius: 6px; font-size: 14px; }
         .btn-pink:hover { background: #cc0052; color: white; }
 
-        /* Table Design */
-        .table-container { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 20px; overflow-x: auto; margin-top: 20px; }
-        .custom-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        .custom-table th { color: #a385bd; font-size: 12px; text-transform: uppercase; padding: 10px 15px; border-bottom: 1px solid #2a113d; font-weight: 600; }
-        .custom-table td { background: #0c0514; padding: 15px; vertical-align: middle; border-top: 1px solid #2a113d; border-bottom: 1px solid #2a113d; }
-        .custom-table td:first-child { border-left: 1px solid #2a113d; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-        .custom-table td:last-child { border-right: 1px solid #2a113d; border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+        /* 🔥 PRODUCT GRID (বক্স ডিজাইন) 🔥 */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+        .product-card { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; }
+        .product-card:hover { border-color: #9d00ff; transform: translateY(-5px); box-shadow: 0 5px 15px rgba(157, 0, 255, 0.2); }
+        .product-img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; border: 1px solid #9d00ff; }
+        .product-name { color: #ffffff; font-size: 16px; font-weight: bold; text-transform: uppercase; }
 
-        /* Action Buttons in Table */
-        .btn-action { width: 32px; height: 32px; border-radius: 6px; border: none; display: inline-flex; justify-content: center; align-items: center; margin: 0 3px; color: white; }
-        .btn-edit { background: #ffaa00; }
-        .btn-delete { background: #ff0066; }
-
-        /* 🔥 NEW PACKAGE CARDS DESIGN 🔥 */
-        .pkg-wrapper { display: flex; flex-wrap: wrap; gap: 12px; }
-        .pkg-card { background: #11071a; border: 1px solid #2a113d; border-radius: 8px; padding: 10px; flex: 1; min-width: 220px; max-width: 280px; }
-        .pkg-title { color: #00cc66; font-size: 13px; font-weight: bold; text-align: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed #2a113d; text-transform: uppercase; }
-        .pkg-prices { display: flex; gap: 6px; justify-content: space-between; }
-        
-        .p-box { background: #05020a; border: 1px solid #3d1c56; border-radius: 5px; padding: 6px; text-align: center; flex: 1; }
-        .p-val { display: block; font-size: 13px; font-weight: bold; color: #ffffff; }
-        .p-label { display: block; font-size: 9px; color: #a385bd; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* Price Colors */
-        .p-box.old .p-val { color: #ff0066; text-decoration: line-through; }
-        .p-box.sale .p-val { color: #00cc66; }
-        .p-box.buy .p-val { color: #9d00ff; }
-        
-        /* Modal UI */
+        /* Modal / Popup UI */
         .modal-content { background-color: #11071a; border: 1px solid #9d00ff; border-radius: 12px; color: white; }
         .modal-header, .modal-footer { border-color: #2a113d; }
         .form-control { background-color: #05020a; border: 1px solid #2a113d; color: white; }
         .form-control:focus { background-color: #0c0514; border-color: #9d00ff; color: white; box-shadow: none; }
         .form-label { color: #a385bd; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+
+        /* Popup Price Boxes */
+        .p-box-container { display: flex; gap: 10px; justify-content: space-between; margin-top: 10px; }
+        .p-box { flex: 1; text-align: center; background: #05020a; padding: 8px; border-radius: 6px; border: 1px solid #3d1c56; }
+        .p-val { font-weight: bold; display: block; font-size: 15px; }
+        .p-label { color: #a385bd; font-size: 10px; text-transform: uppercase; }
+        .p-box.old .p-val { color: #ff0066; text-decoration: line-through; }
+        .p-box.sale .p-val { color: #00cc66; }
+        .p-box.buy .p-val { color: #9d00ff; }
     </style>
 </head>
 <body>
@@ -87,50 +75,95 @@
     <!-- Main Content -->
     <div class="main-content">
         
-        <!-- Header Section (Buttons Overlap Fixed Here) -->
-        <div class="d-flex justify-content-between align-items-start mb-4">
+        <!-- Header (Buttons side-by-side gap fixed) -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="text-white mb-0" style="font-weight: 700;">
                 <i class="fa-solid fa-desktop text-white me-2"></i> PC Panels
             </h3>
             
-            <!-- ✅ বাটন দুটোকে Flex Column দিয়ে আলাদা করা হয়েছে -->
-            <div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-end;">
-                <button class="btn-purple" data-bs-toggle="modal" data-bs-target="#globalLinkModal">
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-purple" onclick="openGlobalLinkModal()">
                     <i class="fa-solid fa-link"></i> Global Buy Link
                 </button>
-                <button class="btn-pink" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <button class="btn-pink" onclick="openAddModal()">
                     <i class="fa-solid fa-plus"></i> Add Product
                 </button>
             </div>
         </div>
 
-        <!-- Table Section -->
-        <div class="table-container">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th width="10%">IMAGE</th>
-                        <th width="20%">PANEL NAME</th>
-                        <th width="60%">AVAILABLE PACKAGES</th>
-                        <th width="10%">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody">
-                    <!-- JavaScript দিয়ে ডাটাবেস থেকে প্রোডাক্ট এখানে আসবে -->
-                </tbody>
-            </table>
+        <!-- 📦 Product Grid (এখানে বক্সগুলো শো করবে) -->
+        <div id="productGrid" class="product-grid">
+            <!-- Data will be loaded here via JS -->
         </div>
     </div>
 
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 📌 Product Detail Popup (বক্সে ক্লিক করলে যা আসবে) -->
+    <div class="modal fade" id="productDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalTitle" style="font-weight: bold; color: #fff;">Product Name</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body" id="detailPackages" style="max-height: 60vh; overflow-y: auto;">
+                    <!-- Packages will be injected here -->
+                </div>
+                
+                <!-- Edit & Delete Buttons inside Popup -->
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <div>
+                        <button id="btnEdit" class="btn" style="background: #ffaa00; color: #000; font-weight: bold; margin-right: 5px;">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button id="btnDelete" class="btn" style="background: #ff0066; color: #fff; font-weight: bold;">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Firebase SDK (v8 Compat) -->
+    <!-- 📌 Add / Edit Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="formModalTitle">Add New Product</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="productId">
+                    <div class="mb-3">
+                        <label class="form-label">Panel Name</label>
+                        <input type="text" id="productName" class="form-control" placeholder="Enter Panel Name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image URL</label>
+                        <input type="text" id="productImage" class="form-control" placeholder="Enter Image URL">
+                    </div>
+                    
+                    <h6 class="text-white mt-4 border-bottom border-secondary pb-2">Packages</h6>
+                    <div id="packagesContainer"></div>
+                    <button type="button" class="btn btn-sm btn-purple mt-2" onclick="addPackageRow()">+ Add Package</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-pink" onclick="saveProduct()">Save Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & Firebase Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ⚠️ আপনার আগের Firebase Config কোডটি ঠিক এখানে বসাবেন ⚠️
+        // ⚠️ আপনার ফায়ারবেস কনফিগ এখানে বসান ⚠️
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -141,80 +174,189 @@
             appId: "YOUR_APP_ID"
         };
         
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
+        const dbRef = database.ref('pc_panels'); // Database Path
 
-        // Load Products in Table
+        let allProductsData = {};
+        const detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+        const formModal = new bootstrap.Modal(document.getElementById('addProductModal'));
+
+        // ১. প্রোডাক্ট লোড করে বক্স (Grid) তৈরি করা
         function loadProducts() {
-            const productsRef = database.ref('pc_panels');
-            productsRef.on('value', (snapshot) => {
-                const tbody = document.getElementById('productsTableBody');
-                tbody.innerHTML = '';
+            dbRef.on('value', (snapshot) => {
+                const grid = document.getElementById('productGrid');
+                grid.innerHTML = '';
+                allProductsData = {};
                 
                 snapshot.forEach((childSnapshot) => {
                     const id = childSnapshot.key;
                     const product = childSnapshot.val();
+                    allProductsData[id] = product;
                     
-                    // ✅ প্যাকেজ বক্সের নতুন ডিজাইন লজিক
-                    let packagesHTML = '<div class="pkg-wrapper">';
-                    if (product.packages && product.packages.length > 0) {
-                        product.packages.forEach(pkg => {
-                            packagesHTML += `
-                            <div class="pkg-card">
-                                <div class="pkg-title">${pkg.duration}</div>
-                                <div class="pkg-prices">
-                                    <div class="p-box old">
-                                        <span class="p-val">৳${pkg.oldPrice || 0}</span>
-                                        <span class="p-label">Old Price</span>
-                                    </div>
-                                    <div class="p-box sale">
-                                        <span class="p-val">৳${pkg.newPrice || 0}</span>
-                                        <span class="p-label">Sale</span>
-                                    </div>
-                                    <div class="p-box buy">
-                                        <span class="p-val">৳${pkg.resellPrice || 0}</span>
-                                        <span class="p-label">Buy</span>
-                                    </div>
-                                </div>
-                            </div>`;
-                        });
-                    } else {
-                        packagesHTML += `<span style="color:#ff0066; font-size:13px;">No packages found</span>`;
-                    }
-                    packagesHTML += '</div>';
-
-                    // টেবিল রো তৈরি করা
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>
-                            <img src="${product.imageUrl || 'https://via.placeholder.com/60'}" 
-                                 style="width: 60px; height: 60px; border-radius: 8px; border: 1px solid #9d00ff; object-fit: cover;">
-                        </td>
-                        <td style="font-weight: bold; color: #ffffff;">${product.name || 'Unnamed Panel'}</td>
-                        <td>${packagesHTML}</td>
-                        <td>
-                            <button class="btn-action btn-edit" onclick="editProduct('${id}')"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteProduct('${id}')"><i class="fa-solid fa-trash"></i></button>
-                        </td>
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.onclick = () => openProductDetail(id); // বক্সে ক্লিক করলে পপ-আপ ওপেন হবে
+                    
+                    card.innerHTML = `
+                        <img src="${product.imageUrl || 'https://via.placeholder.com/150'}" class="product-img" alt="Panel">
+                        <div class="product-name">${product.name || 'Unnamed Panel'}</div>
                     `;
-                    tbody.appendChild(tr);
+                    grid.appendChild(card);
                 });
             });
         }
 
-        // Delete Logic
-        function deleteProduct(id) {
-            if (confirm("Are you sure you want to delete this panel?")) {
-                database.ref('pc_panels/' + id).remove()
-                .then(() => alert("Product deleted successfully!"))
-                .catch(err => alert("Error: " + err.message));
+        // ২. বক্সে ক্লিক করলে পপ-আপ (Details) ওপেন করা
+        function openProductDetail(id) {
+            const product = allProductsData[id];
+            document.getElementById('detailModalTitle').innerText = product.name || "Panel Details";
+            
+            let packagesHTML = '<div style="display: flex; flex-direction: column; gap: 15px;">';
+            
+            if (product.packages && product.packages.length > 0) {
+                product.packages.forEach(pkg => {
+                    packagesHTML += `
+                    <div style="background: #0c0514; border: 1px solid #2a113d; padding: 12px; border-radius: 8px;">
+                        <div style="color: #00cc66; text-align: center; font-weight: bold; border-bottom: 1px dashed #2a113d; padding-bottom: 8px; font-size: 15px;">
+                            <i class="fa-regular fa-clock"></i> ${pkg.duration}
+                        </div>
+                        <div class="p-box-container">
+                            <div class="p-box old">
+                                <span class="p-val">৳${pkg.oldPrice || 0}</span>
+                                <span class="p-label">Old Price</span>
+                            </div>
+                            <div class="p-box sale">
+                                <span class="p-val">৳${pkg.newPrice || 0}</span>
+                                <span class="p-label">Sale</span>
+                            </div>
+                            <div class="p-box buy">
+                                <span class="p-val">৳${pkg.resellPrice || 0}</span>
+                                <span class="p-label">Buy</span>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                packagesHTML += `<div class="text-center text-danger">No packages available for this panel.</div>`;
+            }
+            packagesHTML += '</div>';
+            
+            document.getElementById('detailPackages').innerHTML = packagesHTML;
+            
+            // পপ-আপের ভেতরে এডিট বাটন
+            document.getElementById('btnEdit').onclick = () => {
+                detailModal.hide();
+                openEditModal(id);
+            };
+            
+            // পপ-আপের ভেতরে ডিলিট বাটন
+            document.getElementById('btnDelete').onclick = () => {
+                if(confirm("Are you sure you want to delete this product?")) {
+                    dbRef.child(id).remove().then(() => {
+                        detailModal.hide();
+                    });
+                }
+            };
+            
+            detailModal.show();
+        }
+
+        // ৩. Add Product Modal ওপেন করা
+        function openAddModal() {
+            document.getElementById('formModalTitle').innerText = "Add New Product";
+            document.getElementById('productId').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('productImage').value = '';
+            document.getElementById('packagesContainer').innerHTML = '';
+            addPackageRow();
+            formModal.show();
+        }
+
+        // ৪. Edit Product Modal ওপেন করা (পপ-আপ থেকে)
+        function openEditModal(id) {
+            const product = allProductsData[id];
+            document.getElementById('formModalTitle').innerText = "Edit Product";
+            document.getElementById('productId').value = id;
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productImage').value = product.imageUrl;
+            
+            document.getElementById('packagesContainer').innerHTML = '';
+            if(product.packages) {
+                product.packages.forEach(pkg => addPackageRow(pkg.duration, pkg.oldPrice, pkg.newPrice, pkg.resellPrice));
+            }
+            formModal.show();
+        }
+
+        // ৫. প্যাকেজ ইনপুট রো যোগ করা
+        function addPackageRow(duration = '', oldP = '', newP = '', resellP = '') {
+            const div = document.createElement('div');
+            div.className = 'row g-2 mb-2 package-row align-items-end';
+            div.innerHTML = `
+                <div class="col-md-3">
+                    <label class="form-label" style="font-size:11px;">Duration</label>
+                    <input type="text" class="form-control pkg-duration" value="${duration}" placeholder="e.g. 7 Days">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" style="font-size:11px;">Old Price</label>
+                    <input type="number" class="form-control pkg-old" value="${oldP}" placeholder="৳">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" style="font-size:11px;">Sale Price</label>
+                    <input type="number" class="form-control pkg-new" value="${newP}" placeholder="৳">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" style="font-size:11px;">Buy Price</label>
+                    <input type="number" class="form-control pkg-resell" value="${resellP}" placeholder="৳">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger w-100" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `;
+            document.getElementById('packagesContainer').appendChild(div);
+        }
+
+        // ৬. ডাটাবেসে সেভ করা (Add / Edit)
+        function saveProduct() {
+            const id = document.getElementById('productId').value;
+            const name = document.getElementById('productName').value;
+            const imageUrl = document.getElementById('productImage').value;
+            
+            const packageRows = document.querySelectorAll('.package-row');
+            let packages = [];
+            packageRows.forEach(row => {
+                const duration = row.querySelector('.pkg-duration').value;
+                const oldPrice = row.querySelector('.pkg-old').value;
+                const newPrice = row.querySelector('.pkg-new').value;
+                const resellPrice = row.querySelector('.pkg-resell').value;
+                if(duration) {
+                    packages.push({ duration, oldPrice, newPrice, resellPrice });
+                }
+            });
+
+            const productData = { name, imageUrl, packages };
+
+            if(id) {
+                dbRef.child(id).update(productData).then(() => {
+                    formModal.hide();
+                });
+            } else {
+                dbRef.push(productData).then(() => {
+                    formModal.hide();
+                });
             }
         }
 
-        // পেজ লোড হলে ডাটা আনা শুরু করবে
+        // Global Link Modal Placeholder function (If needed)
+        function openGlobalLinkModal() {
+            alert("Global Link System Placeholder (Please implement your link logic here)");
+        }
+
+        // পেজ লোড হলে ডাটা আনা শুরু হবে
         window.onload = loadProducts;
     </script>
 </body>
