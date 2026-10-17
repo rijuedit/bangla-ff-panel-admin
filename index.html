@@ -537,7 +537,7 @@
                 .catch((e) => alert('Error: ' + e.message));
         });
 
-        // Default Data Initialization (if database is empty)
+        // Default Data Initialization (The 6 core boxes)
         const defaultBoxes = {
             free_panel: { title: "Free Panel", iconType: "icon", iconValue: "fas fa-laptop-code", manageLink: "manage-free-panel.html" },
             free_bypass: { title: "Free Bypass", iconType: "icon", iconValue: "fas fa-shield-virus", manageLink: "manage-bypass.html" },
@@ -556,14 +556,38 @@
             renderGrid();
         });
 
-        // Fetch Categories & Render Dynamically
+        // Fetch Categories & AUTO-RECOVERY LOGIC
         onValue(ref(db, 'site_settings/categories'), (snapshot) => {
-            if (!snapshot.exists()) {
-                set(ref(db, 'site_settings/categories'), defaultBoxes);
-            } else {
-                categoriesData = snapshot.val();
-                renderGrid();
+            let currentData = snapshot.val() || {};
+            let missingBoxes = {};
+            let needsDbUpdate = false;
+
+            // Check if any default box is missing or corrupted
+            for (const [key, defaultData] of Object.entries(defaultBoxes)) {
+                if (!currentData[key]) {
+                    missingBoxes[key] = defaultData; // Bring missing box back
+                    needsDbUpdate = true;
+                } else {
+                    // Fix if icons or links were empty
+                    if (!currentData[key].iconValue) {
+                        currentData[key].iconType = defaultData.iconType;
+                        currentData[key].iconValue = defaultData.iconValue;
+                        needsDbUpdate = true;
+                    }
+                    if (!currentData[key].manageLink) {
+                        currentData[key].manageLink = defaultData.manageLink;
+                        needsDbUpdate = true;
+                    }
+                }
             }
+
+            if (needsDbUpdate) {
+                // Update Firebase silently to fix it permanently
+                update(ref(db, 'site_settings/categories'), { ...currentData, ...missingBoxes });
+            }
+
+            categoriesData = { ...currentData, ...missingBoxes };
+            renderGrid();
         });
 
         function renderGrid() {
@@ -571,20 +595,18 @@
             grid.innerHTML = '';
 
             for (const [key, data] of Object.entries(categoriesData)) {
-                const isVis = visibilityState[key] !== false; // Default true if not defined
+                const isVis = visibilityState[key] !== false; 
                 const visText = isVis ? 'ON' : 'OFF';
                 const visClass = isVis ? 'status-on' : 'status-off';
                 const checkedAttr = isVis ? 'checked' : '';
                 
-                // For old databases without manageLink, fallback to default if available
-                const fallbackLink = defaultBoxes[key] ? defaultBoxes[key].manageLink : '#';
-                const safeManageLink = data.manageLink || fallbackLink;
+                const safeManageLink = data.manageLink || '#';
 
                 let iconHtml = '';
                 if (data.iconType === 'image' && data.iconValue) {
                     iconHtml = `<img src="${data.iconValue}" alt="icon">`;
                 } else {
-                    iconHtml = `<i class="${data.iconValue || 'fas fa-box'}"></i>`;
+                    iconHtml = `<i class="${data.iconValue}"></i>`;
                 }
 
                 const card = document.createElement('div');
