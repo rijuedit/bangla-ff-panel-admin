@@ -12,7 +12,8 @@
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; }
     
     .header { max-width: 700px; margin: 0 auto 30px; display: flex; align-items: center; gap: 15px; }
-    .back-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; text-decoration: none; }
+    .back-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+    .back-btn:hover { background: rgba(157,0,255,0.2); border-color: var(--purple); }
     
     .card { max-width: 700px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
     .form-group { margin-bottom: 20px; }
@@ -20,10 +21,12 @@
     .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
     
-    input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; outline: none; font-size: 14px; }
-    input:focus { border-color: var(--purple); }
+    input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; outline: none; font-size: 14px; transition: 0.3s; }
+    input:focus { border-color: var(--purple); box-shadow: 0 0 10px rgba(157, 0, 255, 0.3); }
     
-    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin-top: 10px; }
+    .btn-save { width: 100%; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; margin-top: 10px; transition: 0.3s; }
+    .btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     
     /* Toggle Switch */
     .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -53,7 +56,7 @@
       <!-- Mandatory -->
       <div class="form-group">
         <div class="label-row"><label><i class='bx bx-download'></i> Download Link</label></div>
-        <input type="url" id="apkLinkInput" placeholder="https://mediafire.com/..." required>
+        <input type="text" id="apkLinkInput" placeholder="https://mediafire.com/..." required>
       </div>
 
       <!-- Optional with Toggle -->
@@ -62,7 +65,7 @@
           <label><i class='bx bxl-youtube'></i> YouTube Video URL</label>
           <label class="switch" title="Enable/Disable Video"><input type="checkbox" id="videoToggle" checked><span class="slider"></span></label>
         </div>
-        <input type="url" id="videoInput" placeholder="Optional: https://www.youtube.com/embed/VIDEO_ID">
+        <input type="text" id="videoInput" placeholder="Optional: https://www.youtube.com/embed/VIDEO_ID">
       </div>
 
       <!-- Optional with Toggle -->
@@ -71,10 +74,10 @@
           <label><i class='bx bx-skip-next-circle'></i> How To Skip Link</label>
           <label class="switch" title="Enable/Disable Skip Link"><input type="checkbox" id="skipToggle" checked><span class="slider"></span></label>
         </div>
-        <input type="url" id="skipInput" placeholder="Optional: https://your-skip-link.com">
+        <input type="text" id="skipInput" placeholder="Optional: https://your-skip-link.com">
       </div>
 
-      <button type="submit" class="btn-save"><i class='bx bx-save'></i> Save Changes</button>
+      <button type="submit" class="btn-save" id="btnSave"><i class='bx bx-save'></i> Save Changes</button>
     </form>
   </div>
 
@@ -93,31 +96,71 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    const apkNameInput = document.getElementById('apkNameInput');
+    const apkLinkInput = document.getElementById('apkLinkInput');
+    const videoInput = document.getElementById('videoInput');
+    const videoToggle = document.getElementById('videoToggle');
+    const skipInput = document.getElementById('skipInput');
+    const skipToggle = document.getElementById('skipToggle');
+    const btnSave = document.getElementById('btnSave');
+
+    // Load Existing Settings
     db.ref('ff_apk_page').once('value').then((snap) => {
       const data = snap.val();
       if(data) {
-        document.getElementById('apkNameInput').value = data.apk_name || '';
-        document.getElementById('apkLinkInput').value = data.download_link || '';
-        
-        document.getElementById('videoInput').value = data.video_url || '';
-        document.getElementById('videoToggle').checked = data.video_enabled !== false; // Default true
-        
-        document.getElementById('skipInput').value = data.how_to_skip || '';
-        document.getElementById('skipToggle').checked = data.skip_enabled !== false;
+        apkNameInput.value = data.apk_name || '';
+        apkLinkInput.value = data.download_link || '';
+        videoInput.value = data.video_url || '';
+        videoToggle.checked = data.video_enabled !== false;
+        skipInput.value = data.how_to_skip || '';
+        skipToggle.checked = data.skip_enabled !== false;
       }
+    }).catch(err => {
+      console.error("Load Error:", err);
     });
 
+    // Form Submit Listener
     document.getElementById('apkForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      db.ref('ff_apk_page').set({
-        apk_name: document.getElementById('apkNameInput').value,
-        download_link: document.getElementById('apkLinkInput').value,
-        video_url: document.getElementById('videoInput').value,
-        video_enabled: document.getElementById('videoToggle').checked,
-        how_to_skip: document.getElementById('skipInput').value,
-        skip_enabled: document.getElementById('skipToggle').checked
-      }).then(() => {
-        alert("✅ Changes Saved Successfully!");
+      
+      btnSave.disabled = true;
+      btnSave.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Saving Changes...";
+
+      const payload = {
+        apk_name: apkNameInput.value.trim(),
+        download_link: apkLinkInput.value.trim(),
+        video_url: videoInput.value.trim(),
+        video_enabled: videoToggle.checked,
+        how_to_skip: skipInput.value.trim(),
+        skip_enabled: skipToggle.checked,
+        updated_at: Date.now()
+      };
+
+      // Save to ff_apk_page node
+      db.ref('ff_apk_page').set(payload)
+      .then(() => {
+        // Dual-write to page_settings & apks for standardized user pages
+        return Promise.all([
+          db.ref('page_settings/apk').set({
+            yt_link: payload.video_url,
+            rar_password: ""
+          }),
+          db.ref('apks/default_apk').set({
+            title: payload.apk_name,
+            download: payload.download_link,
+            timestamp: payload.updated_at
+          })
+        ]);
+      })
+      .then(() => {
+        alert("✅ Free Fire APK Settings Saved Successfully!");
+      })
+      .catch((error) => {
+        alert("❌ Error Saving Data: " + error.message);
+      })
+      .finally(() => {
+        btnSave.disabled = false;
+        btnSave.innerHTML = "<i class='bx bx-save'></i> Save Changes";
       });
     });
   </script>
