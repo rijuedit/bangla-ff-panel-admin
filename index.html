@@ -135,7 +135,7 @@
         }
 
         .header {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
@@ -257,6 +257,22 @@
         .status-on { color: var(--green-glow); }
         .status-off { color: var(--neon-pink); }
 
+        /* Discord Button Extra Style */
+        .discord-btn {
+            background: #5865F2;
+            border: none;
+            color: white;
+            padding: 0 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .discord-btn:hover {
+            background: #4752C4;
+            box-shadow: 0 0 15px rgba(88, 101, 242, 0.4);
+        }
+
         /* Edit Box Modal */
         .modal-overlay {
             position: fixed;
@@ -369,6 +385,20 @@
     <div class="main-content">
         <div class="header">
             <h1>Overview <span>Dashboard</span></h1>
+        </div>
+
+        <!-- Global Discord Settings Box (New Addition) -->
+        <div class="card" style="margin-bottom: 30px; border-color: #5865F2;">
+            <h3 class="card-title" style="color: #5865F2; display: flex; align-items: center; gap: 10px; font-size: 18px; margin-bottom: 8px;">
+                <i class="fab fa-discord"></i> Global Discord Settings
+            </h3>
+            <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">
+                Update the Discord link here and it will change automatically across all pages of your main website.
+            </p>
+            <div style="display: flex; gap: 15px;">
+                <input type="text" id="discordInput" placeholder="https://discord.gg/yourlink" style="flex: 1; padding: 12px; background: #0c0514; border: 1px solid var(--border-color); color: white; border-radius: 8px; outline: none;">
+                <button id="saveDiscordBtn" class="discord-btn">Save Link</button>
+            </div>
         </div>
 
         <div class="grid">
@@ -548,6 +578,30 @@
             e.preventDefault();
             signOut(auth).then(() => window.location.href = 'login.html');
         });
+
+        // ==========================================
+        // NEW: Global Discord Settings Logic
+        // ==========================================
+        const discordInput = document.getElementById('discordInput');
+        const saveDiscordBtn = document.getElementById('saveDiscordBtn');
+
+        // Fetch link on page load
+        onValue(ref(db, 'global_settings/discord_link'), (snapshot) => {
+            if (snapshot.exists()) {
+                discordInput.value = snapshot.val();
+            }
+        });
+
+        // Save new link
+        saveDiscordBtn.addEventListener('click', () => {
+            const link = discordInput.value.trim();
+            if (!link) return alert('Please enter a valid Discord link!');
+            
+            set(ref(db, 'global_settings/discord_link'), link)
+                .then(() => alert('Discord link updated globally!'))
+                .catch((e) => alert('Error updating link: ' + e.message));
+        });
+        // ==========================================
 
         // Visibility Toggles
         const visibilityKeys = ['free_panel', 'free_bypass', 'emulator', 'apk', 'pc_panel', 'mobile_panel'];
