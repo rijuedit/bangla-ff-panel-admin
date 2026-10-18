@@ -21,21 +21,23 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); }
 
+        /* Navbar Matches Header Style - FIXED LINK TO index.html to PREVENT 404 */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 30px; background: rgba(12, 5, 20, 0.95);
             border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000;
         }
-        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; }
-        .nav-brand img { width: 45px; height: 45px; border-radius: 8px; border: 1px solid var(--neon-purple); object-fit: cover; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; cursor: pointer; }
+        .nav-brand img { width: 42px; height: 42px; border-radius: 8px; border: 1px solid var(--neon-purple); object-fit: cover; }
         .brand-text { display: flex; flex-direction: column; }
         .brand-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700; color: #ffffff; letter-spacing: 1px; }
         .brand-subtitle { font-size: 0.8rem; color: var(--neon-pink); font-weight: 700; letter-spacing: 2px; }
         
         .nav-actions { display: flex; gap: 15px; }
-        .btn-nav { background: #11071a; color: #ffffff; padding: 8px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-color); }
+        .btn-nav { background: #11071a; color: #ffffff; padding: 8px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-color); transition: 0.3s; }
+        .btn-nav:hover { border-color: var(--neon-purple); background: #1a0b2e; }
 
-        .action-bar { display: flex; gap: 15px; padding: 40px 20px 20px; max-width: 1200px; margin: 0 auto; }
+        .action-bar { display: flex; gap: 15px; padding: 30px 20px 20px; max-width: 1200px; margin: 0 auto; }
         .btn-neon {
             background: rgba(157, 0, 255, 0.2); border: 1px solid var(--neon-purple);
             color: white; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
@@ -58,16 +60,17 @@
 </head>
 <body>
 
+    <!-- Header linking to index.html (Prevents 404 error) -->
     <header class="navbar">
-        <a href="dashboard.html" class="nav-brand">
-            <img src="logo.png" alt="Logo">
+        <a href="index.html" class="nav-brand">
+            <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/42/9d00ff/ffffff?text=FF'">
             <div class="brand-text">
                 <span class="brand-title">ADMIN PANEL</span>
                 <span class="brand-subtitle">MANAGE PC PANELS</span>
             </div>
         </a>
         <div class="nav-actions">
-            <a href="dashboard.html" class="btn-nav"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            <a href="index.html" class="btn-nav"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
     </header>
 
@@ -76,7 +79,9 @@
         <button class="btn-neon" style="border-color: var(--neon-green);" onclick="openVideoModal()"><i class="fas fa-video"></i> Set PC Setup Video</button>
     </div>
 
-    <div class="products-grid" id="adminGrid"></div>
+    <div class="products-grid" id="adminGrid">
+        <p style="text-align:center; grid-column: 1/-1; color: var(--text-dim);"><i class="fas fa-spinner fa-spin"></i> Scanning Database for PC Panels...</p>
+    </div>
 
     <!-- Product Modal -->
     <div id="prodModal" class="modal">
@@ -127,12 +132,19 @@
 
         let currentEditId = null;
 
+        // Smart Scanner to fetch products from all possible DB paths
         function loadAdminProducts() {
-            db.ref('products/pc').on('value', snapshot => {
-                const grid = document.getElementById('adminGrid');
+            const grid = document.getElementById('adminGrid');
+
+            function renderAdminGrid(snap) {
                 grid.innerHTML = '';
-                snapshot.forEach(child => {
+                let count = 0;
+                snap.forEach(child => {
                     const p = child.val();
+                    if(!p || typeof p !== 'object') return;
+                    if(child.key === 'mobile' || child.key === 'free') return; // skip other categories
+
+                    count++;
                     const key = child.key;
                     const card = document.createElement('div');
                     card.className = 'product-card';
@@ -140,10 +152,29 @@
                     card.innerHTML = `
                         <img src="${p.image || p.img || 'logo.png'}" class="product-img" onerror="this.src='logo.png'">
                         <div style="font-weight:bold; color:var(--neon-purple); font-size: 1.2rem;">${p.name || p.title || 'PC Panel'}</div>
-                        <div style="font-size:0.9rem; color:var(--text-dim); margin-top:10px; background:#11071a; padding:5px; border-radius:5px;">Click to Edit</div>
+                        <div style="font-size:0.9rem; color:var(--text-dim); margin-top:10px; background:#11071a; padding:5px; border-radius:5px;"><i class="fas fa-edit"></i> Click to Edit</div>
                     `;
                     grid.appendChild(card);
                 });
+
+                if(count === 0) {
+                    grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--text-dim);">No PC panels found in Database. Click "Add New PC Panel" above to create one.</p>';
+                }
+            }
+
+            // Check 'products/pc' first, if empty check 'products'
+            db.ref('products/pc').on('value', snapshot => {
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    renderAdminGrid(snapshot);
+                } else {
+                    db.ref('products').once('value', snap2 => {
+                        if (snap2.exists() && snap2.hasChildren()) {
+                            renderAdminGrid(snap2);
+                        } else {
+                            grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--text-dim);">No PC panels found. Click "Add New PC Panel" above to add one.</p>';
+                        }
+                    });
+                }
             });
         }
 
@@ -198,10 +229,10 @@
             if (p.packages) {
                 Object.values(p.packages).forEach(pkg => {
                     const price = pkg.price || pkg.salePrice || pkg.newPrice || pkg.buyPrice || 0;
-                    addPkgRow(pkg.qty, pkg.unit, price);
+                    addPkgRow(pkg.qty || 1, pkg.unit || 'Days', price);
                 });
             } else {
-                addPkgRow();
+                addPkgRow(1, 'Days', p.price || p.salePrice || 100);
             }
             document.getElementById('prodModal').style.display = 'flex';
         }
@@ -222,11 +253,14 @@
 
             const data = { name, image, packages };
             
-            // Save under products/pc for instant sync
+            // Saves to both DB structures so user site never misses it
             if (currentEditId) {
                 db.ref(`products/pc/${currentEditId}`).set(data);
+                db.ref(`products/${currentEditId}`).set(data);
             } else {
-                db.ref('products/pc').push(data);
+                const newKey = db.ref('products/pc').push().key;
+                db.ref(`products/pc/${newKey}`).set(data);
+                db.ref(`products/${newKey}`).set(data);
             }
             closeProdModal();
         }
