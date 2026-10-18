@@ -3,344 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage PC Panels - Admin</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>Manage PC Panels - BANGLA FF ADMIN</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        :root {
-            --bg-dark: #05020a;
-            --bg-card: #0c0514;
-            --neon-purple: #9d00ff;
-            --neon-pink: #ff0066;
-            --neon-green: #00cc66;
-            --text-main: #ffffff;
-            --text-dim: #b3b3b3;
-            --border-color: #2a113d;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); }
 
+        body {
+            background-color: #0a0512;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Header / Navbar */
         .navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 30px; background: rgba(12, 5, 20, 0.95);
-            border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000;
+            background: #140924;
+            border-bottom: 2px solid #2a113d;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
-        .brand-text { display: flex; flex-direction: column; }
-        .brand-title { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
-        .brand-subtitle { font-size: 0.8rem; color: var(--neon-pink); font-weight: 700; letter-spacing: 2px; }
-        .btn-nav {
-            background: #11071a; color: #fff; padding: 8px 20px; border-radius: 6px;
-            text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px;
-            border: 1px solid var(--border-color); transition: 0.3s;
-        }
-        .btn-nav:hover { border-color: var(--neon-purple); background: #1a0b2e; }
 
-        .action-bar { display: flex; gap: 15px; padding: 30px 20px 20px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
-        .btn-neon {
-            background: rgba(157, 0, 255, 0.2); border: 1px solid var(--neon-purple);
-            color: white; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
         }
-        .btn-neon:hover { background: var(--neon-purple); box-shadow: 0 0 10px var(--neon-purple); }
 
-        .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
+        .nav-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #a855f7;
         }
-        .product-card {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
-            padding: 25px 20px; text-align: center; cursor: pointer; transition: 0.3s;
-        }
-        .product-card:hover { border-color: var(--neon-purple); transform: translateY(-5px); }
-        .product-img { width: 100px; height: 100px; object-fit: contain; margin-bottom: 15px; }
 
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 2, 10, 0.95); z-index: 2000; justify-content: center; align-items: center; padding: 20px;
+        .brand-text h1 {
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
-        .modal-content {
-            background: var(--bg-card); border: 1px solid var(--neon-purple);
-            width: 100%; max-width: 560px; border-radius: 15px; padding: 25px; max-height: 90vh; overflow-y: auto;
-        }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 5px; color: var(--text-dim); font-size: 0.95rem; }
-        .input-group input, .input-group select {
-            width: 100%; padding: 12px; background: #1a0b2e; border: 1px solid var(--border-color);
-            color: white; border-radius: 8px; outline: none; font-size: 1rem;
-        }
-        .price-row { display: flex; gap: 15px; }
-        .price-row .input-group { flex: 1; }
 
-        .pkg-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-        .pkg-row input, .pkg-row select {
-            background: #1a0b2e !important; border: 1px solid var(--border-color) !important;
-            color: #fff !important; padding: 10px !important; border-radius: 6px !important; outline: none !important;
+        .brand-text span {
+            font-size: 0.75rem;
+            color: #a855f7;
+            font-weight: 600;
+            display: block;
         }
-        .btn-del-pkg {
-            background: var(--neon-pink); border: none; color: white;
-            padding: 10px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: #1a0b2e;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid #2a113d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: #a855f7;
+            background: #251042;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+
+        .nav-btn.discord {
+            background: #5865F2;
+            border-color: #5865F2;
+        }
+
+        .nav-btn.discord:hover {
+            background: #4752C4;
+            box-shadow: 0 0 10px rgba(88, 101, 242, 0.4);
+        }
+
+        /* Container & Header Actions */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #a855f7;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: #140924;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #2a113d;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #1a0b2e;
+            color: #00f2fe;
+            border-color: #00f2fe;
+            transform: translateX(-3px);
+        }
+
+        /* Section Cards */
+        .admin-card {
+            background: #140924;
+            border: 1px solid #2a113d;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .admin-card h2 {
+            font-size: 1.3rem;
+            color: #00f2fe;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #1a0b2e;
+            border: 1px solid #2a113d;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #a855f7;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #a855f7, #6b21a8);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2a113d;
+        }
+
+        th {
+            background: #1a0b2e;
+            color: #a855f7;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 0.9rem;
+        }
+
+        .thumb-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #2a113d;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background: #00f2fe;
+            color: #0a0512;
+        }
+
+        .btn-delete {
+            background: #ff4d4d;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 5, 18, 0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: #140924;
+            border: 1px solid #2a113d;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #2a113d;
+            padding-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #ff4d4d;
+        }
+
+        .pkg-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .pkg-row input {
+            flex: 1;
         }
     </style>
 </head>
 <body>
 
-<header class="navbar">
-    <div class="brand-text">
-        <span class="brand-title">ADMIN PANEL</span>
-        <span class="brand-subtitle">MANAGE PC PANELS</span>
-    </div>
-    <a href="index.html" class="btn-nav"><i class="fas fa-home"></i> Back to Dashboard</a>
-</header>
-
-<div class="action-bar">
-    <button class="btn-neon" onclick="openProductModal()"><i class="fas fa-plus"></i> Add New PC Panel</button>
-    <button class="btn-neon" style="border-color: var(--neon-green);" onclick="openVideoModal()"><i class="fas fa-video"></i> Set PC Setup Video</button>
-</div>
-
-<div class="products-grid" id="adminGrid">
-    <p style="text-align:center; grid-column:1/-1; color:var(--text-dim);"><i class="fas fa-spinner fa-spin"></i> Loading PC Panels...</p>
-</div>
-
-<!-- Add / Edit Product Modal -->
-<div id="prodModal" class="modal">
-    <div class="modal-content">
-        <h3 id="modalTitle" style="color:var(--neon-purple); margin-bottom:15px; font-family:'Orbitron';">Add PC Product</h3>
-
-        <div class="input-group">
-            <label>Product Name</label>
-            <input type="text" id="pName" placeholder="e.g. ULTRA PC PANEL">
-        </div>
-        <div class="input-group">
-            <label>Image URL</label>
-            <input type="text" id="pImg" placeholder="https://...">
-        </div>
-        <div class="price-row">
-            <div class="input-group">
-                <label>Old Price (৳)</label>
-                <input type="number" id="pOldPrice" placeholder="e.g. 500">
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <a href="index.html" class="nav-brand">
+            <img src="logo.png" alt="Logo" class="nav-logo" onerror="this.style.display='none'">
+            <div class="brand-text">
+                <h1>BANGLA FF PANEL</h1>
+                <span>PREMIUM CORP (ADMIN)</span>
             </div>
-            <div class="input-group">
-                <label>Sale Price (৳)</label>
-                <input type="number" id="pSalePrice" placeholder="e.g. 300">
+        </a>
+        <div class="nav-actions">
+            <a href="index.html" class="nav-btn"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="https://discord.gg/ZBjSWaF7u" target="_blank" class="nav-btn discord"><i class="fab fa-discord"></i> Discord</a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Back Link to Admin Main -->
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+        <!-- Setup Video Admin Card -->
+        <div class="admin-card">
+            <h2><i class="fas fa-video"></i> PC Setup Video Tutorial Link</h2>
+            <div class="grid-2">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>YouTube / Google Drive Video Link</label>
+                    <input type="url" id="pcVideoInput" class="form-control" placeholder="Paste YouTube or Google Drive embed link">
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn-action" onclick="saveVideoUrl()"><i class="fas fa-save"></i> Save Video Link</button>
+                </div>
             </div>
         </div>
-        <div class="input-group">
-            <label>Download / Key Link</label>
-            <input type="text" id="pLink" placeholder="https://mediafire.com/...">
-        </div>
 
-        <h4 style="margin:15px 0 10px; color:var(--neon-green);">Packages</h4>
-        <div id="pkgContainer"></div>
-        <button class="btn-neon" style="font-size:0.85rem; margin-bottom:15px; padding:8px 15px;" onclick="addPkgRow()">
-            <i class="fas fa-plus"></i> Add Package Row
-        </button>
+        <!-- Product Management Card -->
+        <div class="admin-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2><i class="fas fa-desktop"></i> Manage PC Panels</h2>
+                <button class="btn-action" onclick="openProductModal()"><i class="fas fa-plus"></i> Add New Product</button>
+            </div>
 
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn-neon" style="flex:1; background:var(--neon-purple);" onclick="saveProduct()">Save Product</button>
-            <button class="btn-neon" style="flex:1; border-color:var(--neon-pink);" onclick="closeProdModal()">Cancel</button>
-        </div>
-        <button id="deleteBtn" class="btn-neon" style="width:100%; margin-top:12px; border-color:var(--neon-pink); display:none;" onclick="deleteProduct()">
-            <i class="fas fa-trash"></i> Delete Product
-        </button>
-    </div>
-</div>
-
-<!-- Video Modal -->
-<div id="videoModal" class="modal">
-    <div class="modal-content">
-        <h3 style="color:var(--neon-green); margin-bottom:15px; font-family:'Orbitron';">Set PC Setup Video</h3>
-        <div class="input-group">
-            <label>YouTube or Google Drive Link</label>
-            <input type="text" id="videoUrl" placeholder="https://youtube.com/watch?v=... or Drive link">
-        </div>
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <button class="btn-neon" style="flex:1; background:var(--neon-green); color:#000;" onclick="saveVideo()">Save Video</button>
-            <button class="btn-neon" style="flex:1; border-color:var(--neon-pink);" onclick="closeVideoModal()">Cancel</button>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Old Price</th>
+                            <th>Sale Price</th>
+                            <th>Buy Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #888;">Loading Products...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<script>
-    const firebaseConfig = { databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    let currentEditId = null;
+    <!-- Product Add/Edit Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalHeaderTitle">Add New PC Panel</h3>
+                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="editKey">
+                
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="pName" class="form-control" placeholder="e.g. VIP PC Panel Injector" required>
+                </div>
 
-    function isProduct(obj) {
-        return obj && typeof obj === 'object' && (obj.name || obj.title || obj.image || obj.img || obj.packages || obj.price || obj.salePrice);
-    }
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="url" id="pImage" class="form-control" placeholder="Direct Image URL (e.g. Imgur/Discord link)" required>
+                </div>
 
-    function getSafePrice(item) {
-        if (!item) return 0;
-        const keys = ['salePrice', 'price', 'newPrice', 'buyPrice', 'resellPrice', 'value'];
-        for (const k of keys) {
-            if (item[k] != null && parseInt(item[k]) > 0) return parseInt(item[k]);
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Old Price (৳) (পুরোনো দাম)</label>
+                        <input type="number" id="pOldPrice" class="form-control" placeholder="e.g. 1500">
+                    </div>
+                    <div class="form-group">
+                        <label>Sale Price (৳) (বিক্রি দাম)</label>
+                        <input type="number" id="pSalePrice" class="form-control" placeholder="e.g. 1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Buy Price (৳) (কিনার দাম)</label>
+                        <input type="number" id="pBuyPrice" class="form-control" placeholder="e.g. 700">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Download Link / Key Access</label>
+                    <input type="url" id="pDownloadLink" class="form-control" placeholder="Link for panel download or key generator">
+                </div>
+
+                <div class="form-group">
+                    <label>Package Durations & Pricing (Optional)</label>
+                    <div class="pkg-row">
+                        <input type="text" value="1 Hour" class="form-control" readonly style="max-width: 120px;">
+                        <input type="number" id="pkg_1h" class="form-control" placeholder="Price for 1 Hour">
+                    </div>
+                    <div class="pkg-row">
+                        <input type="text" value="1 Day" class="form-control" readonly style="max-width: 120px;">
+                        <input type="number" id="pkg_1d" class="form-control" placeholder="Price for 1 Day">
+                    </div>
+                    <div class="pkg-row">
+                        <input type="text" value="7 Days" class="form-control" readonly style="max-width: 120px;">
+                        <input type="number" id="pkg_7d" class="form-control" placeholder="Price for 7 Days">
+                    </div>
+                    <div class="pkg-row">
+                        <input type="text" value="30 Days" class="form-control" readonly style="max-width: 120px;">
+                        <input type="number" id="pkg_30d" class="form-control" placeholder="Price for 30 Days">
+                    </div>
+                    <div class="pkg-row">
+                        <input type="text" value="Lifetime" class="form-control" readonly style="max-width: 120px;">
+                        <input type="number" id="pkg_life" class="form-control" placeholder="Price for Lifetime">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-action" style="width: 100%; margin-top: 10px; justify-content: center;">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let pcProducts = {};
+
+        // Fetch Setup Video Setting
+        database.ref('settings/video_pc').on('value', snapshot => {
+            const val = snapshot.val();
+            if (val) {
+                document.getElementById('pcVideoInput').value = val;
+            }
+        });
+
+        function saveVideoUrl() {
+            const videoUrl = document.getElementById('pcVideoInput').value.trim();
+            database.ref('settings/video_pc').set(videoUrl)
+                .then(() => alert('PC Setup Video URL saved successfully!'))
+                .catch(err => alert('Error saving video URL: ' + err.message));
         }
-        return 0;
-    }
 
-    function loadAdminProducts() {
-        const grid = document.getElementById('adminGrid');
+        // Fetch Products from node 'pc_panels'
+        database.ref('pc_panels').on('value', snapshot => {
+            pcProducts = snapshot.val() || {};
+            const tbody = document.getElementById('productTableBody');
+            tbody.innerHTML = '';
 
-        // শুধু products/pc থেকে লোড (সঠিক পাথ)
-        db.ref('products/pc').on('value', snap => {
-            grid.innerHTML = '';
-            if (!snap.exists() || !snap.hasChildren()) {
-                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:var(--text-dim);">No PC panels found. Click "Add New PC Panel" to add one.</p>';
+            const keys = Object.keys(pcProducts);
+            if (keys.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #888;">No PC Panels Added Yet.</td></tr>';
                 return;
             }
 
-            let count = 0;
-            snap.forEach(child => {
-                const p = child.val();
-                if (!isProduct(p)) return;
-                count++;
-                const key = child.key;
-                const name = p.name || p.title || 'PC Panel';
-                const img = p.image || p.img || 'logo.png';
-                const saleP = getSafePrice(p);
-                const oldP = parseInt(p.oldPrice || p.originalPrice || 0) || 0;
+            keys.forEach(key => {
+                const item = pcProducts[key];
+                const tr = document.createElement('tr');
 
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.onclick = () => editProduct(key, p);
-                card.innerHTML = `
-                    <img src="${img}" class="product-img" onerror="this.src='logo.png'">
-                    <div style="font-weight:bold; color:var(--neon-purple); font-size:1.2rem; margin-bottom:6px;">${name}</div>
-                    <div style="color:var(--neon-green); font-weight:bold; font-size:1.1rem;">
-                        ৳${saleP}
-                        ${oldP > saleP ? `<span style="text-decoration:line-through; color:var(--text-dim); font-size:0.85rem; margin-left:6px;">৳${oldP}</span>` : ''}
-                    </div>
-                    <div style="font-size:0.85rem; color:var(--text-dim); margin-top:10px; background:#11071a; padding:6px; border-radius:5px;">
-                        <i class="fas fa-edit"></i> Click to Edit
-                    </div>
+                tr.innerHTML = `
+                    <td><img src="${item.image || 'https://via.placeholder.com/45'}" class="thumb-img" onerror="this.src='https://via.placeholder.com/45'"></td>
+                    <td><strong>${item.name || 'N/A'}</strong></td>
+                    <td>${item.oldPrice ? '৳' + item.oldPrice : '-'}</td>
+                    <td style="color:#00f2fe; font-weight:bold;">৳${item.salePrice || item.price || 0}</td>
+                    <td style="color:#a855f7;">${item.buyPrice ? '৳' + item.buyPrice : '-'}</td>
+                    <td>
+                        <button class="btn-sm btn-edit" onclick="editProduct('${key}')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn-sm btn-delete" onclick="deleteProduct('${key}')"><i class="fas fa-trash"></i> Delete</button>
+                    </td>
                 `;
-                grid.appendChild(card);
+                tbody.appendChild(tr);
             });
+        });
 
-            if (count === 0) {
-                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:var(--text-dim);">No PC panels found. Click "Add New PC Panel" to add one.</p>';
+        // Modal Handlers
+        function openProductModal() {
+            document.getElementById('editKey').value = '';
+            document.getElementById('productForm').reset();
+            document.getElementById('modalHeaderTitle').innerText = 'Add New PC Panel';
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        function editProduct(key) {
+            const item = pcProducts[key];
+            if (!item) return;
+
+            document.getElementById('editKey').value = key;
+            document.getElementById('pName').value = item.name || '';
+            document.getElementById('pImage').value = item.image || '';
+            document.getElementById('pOldPrice').value = item.oldPrice || '';
+            document.getElementById('pSalePrice').value = item.salePrice || item.price || '';
+            document.getElementById('pBuyPrice').value = item.buyPrice || '';
+            document.getElementById('pDownloadLink').value = item.downloadLink || '';
+
+            // Load package pricing if exists
+            const pkgs = item.packages || {};
+            document.getElementById('pkg_1h').value = pkgs['1 Hour'] || '';
+            document.getElementById('pkg_1d').value = pkgs['1 Day'] || '';
+            document.getElementById('pkg_7d').value = pkgs['7 Days'] || '';
+            document.getElementById('pkg_30d').value = pkgs['30 Days'] || '';
+            document.getElementById('pkg_life').value = pkgs['Lifetime'] || '';
+
+            document.getElementById('modalHeaderTitle').innerText = 'Edit PC Panel';
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const editKey = document.getElementById('editKey').value;
+
+            const packages = {};
+            if (document.getElementById('pkg_1h').value) packages['1 Hour'] = document.getElementById('pkg_1h').value;
+            if (document.getElementById('pkg_1d').value) packages['1 Day'] = document.getElementById('pkg_1d').value;
+            if (document.getElementById('pkg_7d').value) packages['7 Days'] = document.getElementById('pkg_7d').value;
+            if (document.getElementById('pkg_30d').value) packages['30 Days'] = document.getElementById('pkg_30d').value;
+            if (document.getElementById('pkg_life').value) packages['Lifetime'] = document.getElementById('pkg_life').value;
+
+            const payload = {
+                name: document.getElementById('pName').value,
+                image: document.getElementById('pImage').value,
+                oldPrice: document.getElementById('pOldPrice').value,
+                salePrice: document.getElementById('pSalePrice').value,
+                buyPrice: document.getElementById('pBuyPrice').value,
+                downloadLink: document.getElementById('pDownloadLink').value,
+                packages: packages,
+                updatedAt: new Date().toISOString()
+            };
+
+            const ref = editKey ? database.ref('pc_panels/' + editKey) : database.ref('pc_panels').push();
+
+            ref.set(payload)
+                .then(() => {
+                    alert('Product saved successfully!');
+                    closeProductModal();
+                })
+                .catch(err => alert('Error saving product: ' + err.message));
+        }
+
+        function deleteProduct(key) {
+            if (confirm('Are you sure you want to delete this PC panel?')) {
+                database.ref('pc_panels/' + key).remove()
+                    .then(() => alert('Product deleted!'))
+                    .catch(err => alert('Error deleting product: ' + err.message));
             }
-        });
-    }
-
-    function openProductModal() {
-        currentEditId = null;
-        document.getElementById('modalTitle').innerText = 'Add PC Product';
-        document.getElementById('pName').value = '';
-        document.getElementById('pImg').value = '';
-        document.getElementById('pOldPrice').value = '';
-        document.getElementById('pSalePrice').value = '';
-        document.getElementById('pLink').value = '';
-        document.getElementById('pkgContainer').innerHTML = '';
-        document.getElementById('deleteBtn').style.display = 'none';
-        addPkgRow();
-        document.getElementById('prodModal').style.display = 'flex';
-    }
-
-    function closeProdModal() {
-        document.getElementById('prodModal').style.display = 'none';
-    }
-
-    function addPkgRow(qty = 1, unit = 'Days', price = 100) {
-        const div = document.createElement('div');
-        div.className = 'pkg-row';
-        div.innerHTML = `
-            <input type="number" class="pkg-qty" value="${qty}" style="width:80px;" ${unit === 'Lifetime' ? 'disabled' : ''}>
-            <select class="pkg-unit" onchange="toggleQty(this)" style="width:110px;">
-                <option value="Hours" ${unit === 'Hours' ? 'selected' : ''}>Hours</option>
-                <option value="Days" ${unit === 'Days' ? 'selected' : ''}>Days</option>
-                <option value="Months" ${unit === 'Months' ? 'selected' : ''}>Months</option>
-                <option value="Years" ${unit === 'Years' ? 'selected' : ''}>Years</option>
-                <option value="Lifetime" ${unit === 'Lifetime' ? 'selected' : ''}>Lifetime</option>
-            </select>
-            <input type="number" class="pkg-price" value="${price}" placeholder="Price ৳" style="flex:1;">
-            <button class="btn-del-pkg" onclick="this.parentElement.remove()">X</button>
-        `;
-        document.getElementById('pkgContainer').appendChild(div);
-    }
-
-    function toggleQty(sel) {
-        const qty = sel.parentElement.querySelector('.pkg-qty');
-        if (sel.value === 'Lifetime') { qty.value = 1; qty.disabled = true; }
-        else qty.disabled = false;
-    }
-
-    function editProduct(id, p) {
-        currentEditId = id;
-        document.getElementById('modalTitle').innerText = 'Edit PC Product';
-        document.getElementById('pName').value = p.name || p.title || '';
-        document.getElementById('pImg').value = p.image || p.img || '';
-        document.getElementById('pOldPrice').value = p.oldPrice || p.originalPrice || '';
-        document.getElementById('pSalePrice').value = p.salePrice || p.price || '';
-        document.getElementById('pLink').value = p.link || p.downloadLink || '';
-        document.getElementById('deleteBtn').style.display = 'block';
-
-        const box = document.getElementById('pkgContainer');
-        box.innerHTML = '';
-        if (p.packages) {
-            Object.values(p.packages).forEach(pkg => {
-                addPkgRow(pkg.qty || 1, pkg.unit || 'Days', getSafePrice(pkg));
-            });
-        } else {
-            addPkgRow(1, 'Days', getSafePrice(p) || 100);
         }
-        document.getElementById('prodModal').style.display = 'flex';
-    }
-
-    function saveProduct() {
-        const name = document.getElementById('pName').value.trim();
-        if (!name) return alert('Product Name দিন');
-
-        const image = document.getElementById('pImg').value.trim();
-        const oldPrice = parseInt(document.getElementById('pOldPrice').value) || 0;
-        const salePrice = parseInt(document.getElementById('pSalePrice').value) || 0;
-        const link = document.getElementById('pLink').value.trim();
-
-        const packages = {};
-        document.querySelectorAll('.pkg-row').forEach((row, i) => {
-            const qty = parseInt(row.querySelector('.pkg-qty').value) || 1;
-            const unit = row.querySelector('.pkg-unit').value;
-            const price = parseInt(row.querySelector('.pkg-price').value) || salePrice || 0;
-            packages['pkg_' + i] = { qty, unit, price };
-        });
-
-        const data = {
-            name, image, oldPrice, salePrice, price: salePrice, link, packages
-        };
-
-        if (currentEditId) {
-            db.ref('products/pc/' + currentEditId).set(data);
-        } else {
-            db.ref('products/pc').push(data);
-        }
-        closeProdModal();
-    }
-
-    function deleteProduct() {
-        if (!currentEditId) return;
-        if (!confirm('এই প্রোডাক্ট ডিলিট করবেন?')) return;
-        db.ref('products/pc/' + currentEditId).remove();
-        closeProdModal();
-    }
-
-    function openVideoModal() {
-        db.ref('settings/video_pc').once('value', s => {
-            const v = s.val();
-            if (v && v.url) document.getElementById('videoUrl').value = v.url;
-        });
-        document.getElementById('videoModal').style.display = 'flex';
-    }
-    function closeVideoModal() { document.getElementById('videoModal').style.display = 'none'; }
-    function saveVideo() {
-        const url = document.getElementById('videoUrl').value.trim();
-        db.ref('settings/video_pc').set({ url });
-        alert('Video Saved!');
-        closeVideoModal();
-    }
-
-    loadAdminProducts();
-</script>
+    </script>
 </body>
 </html>
