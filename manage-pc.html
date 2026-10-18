@@ -186,7 +186,7 @@
             border: 2px solid #ff007f;
             border-radius: 16px;
             width: 100%;
-            max-width: 520px;
+            max-width: 540px;
             max-height: 90vh;
             overflow-y: auto;
             padding: 24px;
@@ -222,19 +222,30 @@
             font-weight: 600;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
         .grid-3 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
         }
         @media (max-width: 600px) {
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
         }
+
+        /* Package Headers & Rows */
+        .pkg-header-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding-left: 108px;
+        }
+        .pkg-header-cell {
+            flex: 1;
+            text-align: center;
+        }
+        .pkg-header-cell.sale { color: #00ff7f; }
+        .pkg-header-cell.old { color: #aaa; }
 
         .pkg-row {
             display: flex;
@@ -243,14 +254,15 @@
             align-items: center;
         }
         .pkg-row .pkg-label {
-            max-width: 110px;
+            min-width: 100px;
+            max-width: 100px;
             background: #1a0b2e;
             border: 1px solid #2a113d;
             border-radius: 8px;
-            padding: 10px;
+            padding: 10px 6px;
             color: #ccc;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.82rem;
+            font-weight: 700;
             text-align: center;
         }
 
@@ -299,6 +311,7 @@
 </head>
 <body>
 
+    <!-- Header / Navbar -->
     <header class="navbar">
         <a href="index.html" class="nav-brand">
             <h1>BANGLA FF PANEL</h1>
@@ -313,7 +326,7 @@
     <div class="container">
         <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
 
-        <!-- Video Setting -->
+        <!-- Setup Video Tutorial -->
         <div class="admin-card">
             <h2><i class="fas fa-video"></i> PC Setup Video Tutorial Link</h2>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
@@ -322,7 +335,7 @@
             </div>
         </div>
 
-        <!-- Products -->
+        <!-- Manage PC Panels -->
         <div class="admin-card">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <h2><i class="fas fa-desktop"></i> Manage PC Panels</h2>
@@ -335,7 +348,7 @@
         </div>
     </div>
 
-    <!-- Action Popup (Edit / Delete) -->
+    <!-- Action Popup Modal (Edit / Delete) -->
     <div class="modal-overlay" id="actionModal">
         <div class="modal-card" style="max-width:380px; text-align:center;">
             <button class="modal-close" onclick="closeActionModal()">&times;</button>
@@ -387,34 +400,38 @@
                     <input type="url" id="pDownload" class="form-control" placeholder="Download or key link">
                 </div>
 
+                <!-- Package Durations (Sale Price FIRST, Old Price SECOND) -->
                 <div class="form-group">
                     <label>Package Durations & Prices</label>
-                    <p style="font-size:0.75rem; color:#888; margin-bottom:8px;">প্রতিটি প্যাকেজের Old Price এবং Sale Price আলাদা দিন</p>
+                    
+                    <div class="pkg-header-row">
+                        <div class="pkg-header-cell sale">Sale Price (বিক্রি দাম) *</div>
+                        <div class="pkg-header-cell old">Old Price (পুরোনো/কাটা)</div>
+                    </div>
 
-                    <!-- Package rows: duration | old_price | sell_price -->
                     <div class="pkg-row">
                         <div class="pkg-label">1 Days</div>
-                        <input type="number" id="old_1d" class="form-control" placeholder="Old">
-                        <input type="number" id="sell_1d" class="form-control" placeholder="Sale">
+                        <input type="number" id="sell_1d" class="form-control" placeholder="Sale Price (৳)">
+                        <input type="number" id="old_1d" class="form-control" placeholder="Old Price (৳)">
                     </div>
                     <div class="pkg-row">
                         <div class="pkg-label">7 Days</div>
-                        <input type="number" id="old_7d" class="form-control" placeholder="Old">
-                        <input type="number" id="sell_7d" class="form-control" placeholder="Sale">
+                        <input type="number" id="sell_7d" class="form-control" placeholder="Sale Price (৳)">
+                        <input type="number" id="old_7d" class="form-control" placeholder="Old Price (৳)">
                     </div>
                     <div class="pkg-row">
                         <div class="pkg-label">1 Months</div>
-                        <input type="number" id="old_1m" class="form-control" placeholder="Old">
-                        <input type="number" id="sell_1m" class="form-control" placeholder="Sale">
+                        <input type="number" id="sell_1m" class="form-control" placeholder="Sale Price (৳)">
+                        <input type="number" id="old_1m" class="form-control" placeholder="Old Price (৳)">
                     </div>
                     <div class="pkg-row">
                         <div class="pkg-label">Lifetime</div>
-                        <input type="number" id="old_life" class="form-control" placeholder="Old">
-                        <input type="number" id="sell_life" class="form-control" placeholder="Sale">
+                        <input type="number" id="sell_life" class="form-control" placeholder="Sale Price (৳)">
+                        <input type="number" id="old_life" class="form-control" placeholder="Old Price (৳)">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-add" style="width:100%; justify-content:center; margin-top:8px;">
+                <button type="submit" class="btn-add" style="width:100%; justify-content:center; margin-top:10px;">
                     <i class="fas fa-save"></i> Save Product
                 </button>
             </form>
@@ -423,7 +440,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set, push, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
@@ -441,7 +458,7 @@
         let pcProducts = {};
         let activeKey = null;
 
-        // ===== Video =====
+        // Video URL
         onValue(ref(db, 'settings/video_pc'), (snap) => {
             if (snap.val()) document.getElementById('pcVideoInput').value = snap.val();
         });
@@ -453,7 +470,7 @@
                 .catch(e => alert('Error: ' + e.message));
         };
 
-        // ===== Load Products as BOXES =====
+        // Load Products as Boxes
         onValue(ref(db, 'pc_panels'), (snap) => {
             pcProducts = snap.val() || {};
             const grid = document.getElementById('productGrid');
@@ -482,7 +499,7 @@
             });
         });
 
-        // ===== Action Modal =====
+        // Action Modal
         window.openActionModal = (key) => {
             activeKey = key;
             const item = pcProducts[key];
@@ -508,7 +525,7 @@
             }
         };
 
-        // ===== Add / Edit Form =====
+        // Form Handlers
         window.openAddModal = () => {
             document.getElementById('editKey').value = '';
             document.getElementById('productForm').reset();
@@ -519,6 +536,45 @@
         window.closeProductModal = () => {
             document.getElementById('productModal').style.display = 'none';
         };
+
+        // Smart populate logic to fix misplaced values
+        function populatePkgRow(durationMatch, sellId, oldId, pkgs) {
+            let sellVal = '';
+            let oldVal = '';
+
+            if (Array.isArray(pkgs)) {
+                pkgs.forEach(pkg => {
+                    if (!pkg) return;
+                    let d = (pkg.duration || pkg.name || pkg.title || '').toLowerCase();
+                    if (d.includes(durationMatch)) {
+                        sellVal = pkg.sell_price || pkg.salePrice || pkg.price || pkg.val || '';
+                        oldVal = pkg.old_price || pkg.oldPrice || pkg.old || '';
+                    }
+                });
+            } else if (typeof pkgs === 'object' && pkgs !== null) {
+                Object.keys(pkgs).forEach(key => {
+                    let d = key.toLowerCase();
+                    if (d.includes(durationMatch)) {
+                        let val = pkgs[key];
+                        if (typeof val === 'object' && val !== null) {
+                            sellVal = val.sell_price || val.salePrice || val.price || '';
+                            oldVal = val.old_price || val.oldPrice || val.old || '';
+                        } else {
+                            sellVal = val; // Single scalar price = Sale Price
+                        }
+                    }
+                });
+            }
+
+            // HEURISTIC FIX: If sell price is empty but old price has a value, move it to sell price!
+            if (!sellVal && oldVal) {
+                sellVal = oldVal;
+                oldVal = '';
+            }
+
+            document.getElementById(sellId).value = sellVal;
+            document.getElementById(oldId).value = oldVal;
+        }
 
         function editProduct(key) {
             const item = pcProducts[key];
@@ -532,35 +588,12 @@
             document.getElementById('pBuyPrice').value = item.buy_price || item.buyPrice || '';
             document.getElementById('pDownload').value = item.downloadLink || item.download || '';
 
-            // Clear package fields first
-            ['1d','7d','1m','life'].forEach(id => {
-                document.getElementById('old_' + id).value = '';
-                document.getElementById('sell_' + id).value = '';
-            });
+            const pkgs = item.packages || item.package || item.prices || [];
 
-            // Load packages (supports both Array and old Object format)
-            const pkgs = item.packages || [];
-            if (Array.isArray(pkgs)) {
-                pkgs.forEach(pkg => {
-                    const d = (pkg.duration || '').toLowerCase();
-                    const oldP = pkg.old_price || pkg.oldPrice || '';
-                    const sellP = pkg.sell_price || pkg.salePrice || pkg.price || '';
-
-                    if (d.includes('1 day') || d === '1 days') {
-                        document.getElementById('old_1d').value = oldP;
-                        document.getElementById('sell_1d').value = sellP;
-                    } else if (d.includes('7 day')) {
-                        document.getElementById('old_7d').value = oldP;
-                        document.getElementById('sell_7d').value = sellP;
-                    } else if (d.includes('month')) {
-                        document.getElementById('old_1m').value = oldP;
-                        document.getElementById('sell_1m').value = sellP;
-                    } else if (d.includes('life')) {
-                        document.getElementById('old_life').value = oldP;
-                        document.getElementById('sell_life').value = sellP;
-                    }
-                });
-            }
+            populatePkgRow('1 day', 'sell_1d', 'old_1d', pkgs);
+            populatePkgRow('7 day', 'sell_7d', 'old_7d', pkgs);
+            populatePkgRow('month', 'sell_1m', 'old_1m', pkgs);
+            populatePkgRow('life', 'sell_life', 'old_life', pkgs);
 
             document.getElementById('formTitle').innerText = 'Edit PC Panel';
             document.getElementById('productModal').style.display = 'flex';
@@ -570,25 +603,25 @@
             e.preventDefault();
             const editKey = document.getElementById('editKey').value;
 
-            // Build packages as ARRAY (exact format user page expects)
             const packages = [];
 
-            const addPkg = (duration, oldId, sellId) => {
+            const addPkg = (duration, sellId, oldId) => {
                 const sell = document.getElementById(sellId).value.trim();
-                if (sell !== '') {
-                    const old = document.getElementById(oldId).value.trim();
+                const old = document.getElementById(oldId).value.trim();
+
+                if (sell !== '' || old !== '') {
                     packages.push({
                         duration: duration,
-                        old_price: old || '',
-                        sell_price: sell
+                        sell_price: sell || old,
+                        old_price: old && sell ? old : ''
                     });
                 }
             };
 
-            addPkg('1 Days', 'old_1d', 'sell_1d');
-            addPkg('7 Days', 'old_7d', 'sell_7d');
-            addPkg('1 Months', 'old_1m', 'sell_1m');
-            addPkg('Lifetime', 'old_life', 'sell_life');
+            addPkg('1 Days', 'sell_1d', 'old_1d');
+            addPkg('7 Days', 'sell_7d', 'old_7d');
+            addPkg('1 Months', 'sell_1m', 'old_1m');
+            addPkg('Lifetime', 'sell_life', 'old_life');
 
             const payload = {
                 title: document.getElementById('pTitle').value.trim(),
