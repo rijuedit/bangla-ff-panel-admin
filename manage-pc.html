@@ -58,17 +58,17 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
+    <!-- Sidebar (404 Fixed) -->
     <div class="sidebar">
         <div class="sidebar-logo">OXI ADMIN</div>
         <nav class="nav flex-column">
-            <a class="nav-link" href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
             <a class="nav-link active" href="manage-pc.html"><i class="fa-solid fa-desktop"></i> Manage PC Panel</a>
             <a class="nav-link" href="manage-mobile.html"><i class="fa-solid fa-mobile-screen"></i> Manage Mobile Panel</a>
             <a class="nav-link" href="manage-free-panel.html"><i class="fa-solid fa-gift"></i> Manage Free Panel</a>
-            <a class="nav-link" href="manage-free-bypass.html"><i class="fa-solid fa-bolt"></i> Manage Free Bypass</a>
+            <a class="nav-link" href="manage-bypass.html"><i class="fa-solid fa-bolt"></i> Manage Free Bypass</a>
             <a class="nav-link" href="manage-emulator.html"><i class="fa-solid fa-gamepad"></i> Manage Emulator</a>
-            <a class="nav-link" href="admin-users.html"><i class="fa-solid fa-users"></i> Admin Users</a>
+            <a class="nav-link" href="manage-admins.html"><i class="fa-solid fa-users"></i> Admin Users</a>
         </nav>
     </div>
 
@@ -311,7 +311,6 @@
             formModal.show();
         }
 
-        // Helper to parse duration string like "7 Days" or "Lifetime"
         function parseDurationStr(str) {
             if (!str) return { num: '1', unit: 'Days' };
             if (str.toLowerCase().includes('lifetime')) return { num: '', unit: 'Lifetime' };
@@ -322,7 +321,6 @@
             return { num: parts[0] || '1', unit: 'Days' };
         }
 
-        // 🌟 🔥 Package Row with Number + Select Options (Hours, Days, Months, Years, Lifetime)
         function addPackageRow(durationStr = '', oldP = '', newP = '', resellP = '') {
             const parsed = parseDurationStr(durationStr);
             const div = document.createElement('div');
