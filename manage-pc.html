@@ -12,10 +12,11 @@
 
         body {
             background: #07030b;
-            color: #fff;
+            color: #ffffff;
             min-height: 100vh;
         }
 
+        /* Navbar */
         .navbar {
             background: #0d0614;
             padding: 14px 28px;
@@ -44,7 +45,7 @@
         .nav-actions { display: flex; gap: 10px; }
         .nav-btn {
             background: #140821;
-            color: #fff;
+            color: #ffffff;
             padding: 8px 14px;
             border-radius: 6px;
             text-decoration: none;
@@ -68,7 +69,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #fff;
+            color: #ffffff;
             text-decoration: none;
             font-weight: 700;
             margin-bottom: 22px;
@@ -99,19 +100,20 @@
 
         .form-control {
             width: 100%;
-            background: #1a0b2e;
+            background: #140821;
             border: 1px solid #2a113d;
             border-radius: 8px;
             padding: 11px 14px;
-            color: #fff;
+            color: #ffffff;
             font-size: 0.95rem;
             outline: none;
+            transition: 0.3s;
         }
         .form-control:focus { border-color: #ff007f; }
 
         .btn-add {
             background: linear-gradient(90deg, #d500f9, #ff007f);
-            color: #fff;
+            color: #ffffff;
             border: none;
             padding: 10px 18px;
             border-radius: 8px;
@@ -124,51 +126,90 @@
         }
         .btn-add:hover { box-shadow: 0 0 15px rgba(255,0,127,0.5); }
 
-        /* Product Box Grid */
+        /* Product Cards Grid */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
             margin-top: 18px;
         }
 
-        .product-box {
+        .product-card {
             background: #11071a;
             border: 1.5px solid #2a113d;
             border-radius: 12px;
             padding: 14px;
-            text-align: center;
-            cursor: pointer;
+            display: flex;
+            flex-direction: column;
             transition: 0.3s;
         }
-        .product-box:hover {
+
+        .product-card:hover {
             border-color: #ff007f;
-            box-shadow: 0 0 18px rgba(255,0,127,0.3);
+            box-shadow: 0 0 18px rgba(255,0,127,0.25);
             transform: translateY(-4px);
         }
 
-        .product-box-img {
+        .product-card-img {
             width: 100%;
-            height: 140px;
+            height: 145px;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border: 1px solid #2a113d;
         }
 
-        .product-box-name {
+        .product-card-title {
             font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 6px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 14px;
+            color: #ffffff;
         }
 
-        .click-hint {
-            font-size: 0.72rem;
-            color: #ff007f;
-            font-weight: 600;
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
         }
 
-        /* Modals */
+        .btn-card-edit {
+            flex: 1;
+            background: #00f2fe;
+            color: #000000;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+        .btn-card-edit:hover { box-shadow: 0 0 10px rgba(0, 242, 254, 0.5); }
+
+        .btn-card-delete {
+            flex: 1;
+            background: #ff4d4d;
+            color: #ffffff;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+        .btn-card-delete:hover { box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); }
+
+        /* Modal Overlay (Matching Image 11) */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -186,7 +227,7 @@
             border: 2px solid #ff007f;
             border-radius: 16px;
             width: 100%;
-            max-width: 540px;
+            max-width: 520px;
             max-height: 90vh;
             overflow-y: auto;
             padding: 24px;
@@ -199,9 +240,10 @@
             top: 14px; right: 14px;
             background: transparent;
             border: none;
-            color: #888;
-            font-size: 1.3rem;
+            color: #ffffff;
+            font-size: 1.2rem;
             cursor: pointer;
+            transition: 0.3s;
         }
         .modal-close:hover { color: #ff007f; }
 
@@ -217,94 +259,66 @@
         .form-group label {
             display: block;
             font-size: 0.82rem;
-            color: #aaa;
-            margin-bottom: 5px;
+            color: #ffffff;
+            margin-bottom: 6px;
             font-weight: 600;
         }
 
         .grid-3 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
         @media (max-width: 600px) {
             .grid-3 { grid-template-columns: 1fr; }
         }
 
-        /* Package Headers & Rows */
-        .pkg-header-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 6px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            padding-left: 108px;
-        }
-        .pkg-header-cell {
-            flex: 1;
-            text-align: center;
-        }
-        .pkg-header-cell.sale { color: #00ff7f; }
-        .pkg-header-cell.old { color: #aaa; }
-
+        /* Package Rows matching Image 11 */
         .pkg-row {
             display: flex;
             gap: 8px;
             margin-bottom: 8px;
             align-items: center;
         }
-        .pkg-row .pkg-label {
-            min-width: 100px;
-            max-width: 100px;
-            background: #1a0b2e;
+
+        .pkg-badge {
+            min-width: 90px;
+            max-width: 90px;
+            background: #140821;
             border: 1px solid #2a113d;
             border-radius: 8px;
-            padding: 10px 6px;
-            color: #ccc;
+            padding: 10px 4px;
+            color: #ffffff;
             font-size: 0.82rem;
-            font-weight: 700;
+            font-weight: 800;
             text-align: center;
         }
 
-        .action-btns {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .btn-save-submit {
+            background: linear-gradient(90deg, #d500f9, #ff007f);
+            color: #ffffff;
+            border: none;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
             margin-top: 10px;
-        }
-        .btn-edit-action {
-            background: #00f2fe;
-            color: #000;
-            border: none;
-            padding: 13px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             gap: 8px;
+            transition: 0.3s;
         }
-        .btn-delete-action {
-            background: #ff4d4d;
-            color: #fff;
-            border: none;
-            padding: 13px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+        .btn-save-submit:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
         }
 
         .empty-msg {
             grid-column: 1/-1;
             text-align: center;
-            color: #888;
+            color: #888888;
             padding: 30px;
         }
     </style>
@@ -326,7 +340,7 @@
     <div class="container">
         <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
 
-        <!-- Setup Video Tutorial -->
+        <!-- Setup Video Admin Card -->
         <div class="admin-card">
             <h2><i class="fas fa-video"></i> PC Setup Video Tutorial Link</h2>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
@@ -342,42 +356,30 @@
                 <button class="btn-add" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Product</button>
             </div>
 
+            <!-- Product Cards Area -->
             <div class="product-grid" id="productGrid">
-                <div class="empty-msg">Loading...</div>
+                <div class="empty-msg">Loading Products...</div>
             </div>
         </div>
     </div>
 
-    <!-- Action Popup Modal (Edit / Delete) -->
-    <div class="modal-overlay" id="actionModal">
-        <div class="modal-card" style="max-width:380px; text-align:center;">
-            <button class="modal-close" onclick="closeActionModal()">&times;</button>
-            <h3 class="modal-title" id="actionTitle">Product</h3>
-            <p style="color:#aaa; font-size:0.85rem; margin-bottom:16px;">Select an action:</p>
-            <div class="action-btns">
-                <button class="btn-edit-action" onclick="triggerEdit()"><i class="fas fa-edit"></i> Edit Product</button>
-                <button class="btn-delete-action" onclick="triggerDelete()"><i class="fas fa-trash"></i> Delete Product</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add / Edit Form Modal -->
+    <!-- Edit/Add Form Modal (Exact Match with Image 11) -->
     <div class="modal-overlay" id="productModal">
         <div class="modal-card">
-            <button class="modal-close" onclick="closeProductModal()">&times;</button>
-            <h3 class="modal-title" id="formTitle">Add New PC Panel</h3>
+            <button class="modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title" id="formTitle">EDIT PC PANEL</h3>
 
             <form id="productForm" onsubmit="saveProduct(event)">
                 <input type="hidden" id="editKey">
 
                 <div class="form-group">
                     <label>Product Name (Title)</label>
-                    <input type="text" id="pTitle" class="form-control" placeholder="e.g. BR MODS [ DUSTU AIMKILL ]" required>
+                    <input type="text" id="pTitle" class="form-control" placeholder="e.g. BR MODS [ PARSONAL ]" required>
                 </div>
 
                 <div class="form-group">
                     <label>Image URL</label>
-                    <input type="url" id="pImage" class="form-control" placeholder="Direct image link" required>
+                    <input type="url" id="pImage" class="form-control" placeholder="Direct Image Link" required>
                 </div>
 
                 <div class="grid-3">
@@ -400,38 +402,34 @@
                     <input type="url" id="pDownload" class="form-control" placeholder="Download or key link">
                 </div>
 
-                <!-- Package Durations (Sale Price FIRST, Old Price SECOND) -->
                 <div class="form-group">
                     <label>Package Durations & Prices</label>
-                    
-                    <div class="pkg-header-row">
-                        <div class="pkg-header-cell sale">Sale Price (বিক্রি দাম) *</div>
-                        <div class="pkg-header-cell old">Old Price (পুরোনো/কাটা)</div>
-                    </div>
+                    <p style="font-size:0.75rem; color:#888888; margin-bottom:10px;">প্রতিটি প্যাকেজের Sale Price এবং Old Price আলাদা দিন</p>
 
+                    <!-- Package rows matching Image 11 layout -->
                     <div class="pkg-row">
-                        <div class="pkg-label">1 Days</div>
+                        <div class="pkg-badge">1 Days</div>
                         <input type="number" id="sell_1d" class="form-control" placeholder="Sale Price (৳)">
                         <input type="number" id="old_1d" class="form-control" placeholder="Old Price (৳)">
                     </div>
                     <div class="pkg-row">
-                        <div class="pkg-label">7 Days</div>
+                        <div class="pkg-badge">7 Days</div>
                         <input type="number" id="sell_7d" class="form-control" placeholder="Sale Price (৳)">
                         <input type="number" id="old_7d" class="form-control" placeholder="Old Price (৳)">
                     </div>
                     <div class="pkg-row">
-                        <div class="pkg-label">1 Months</div>
+                        <div class="pkg-badge">1 Months</div>
                         <input type="number" id="sell_1m" class="form-control" placeholder="Sale Price (৳)">
                         <input type="number" id="old_1m" class="form-control" placeholder="Old Price (৳)">
                     </div>
                     <div class="pkg-row">
-                        <div class="pkg-label">Lifetime</div>
+                        <div class="pkg-badge">Lifetime</div>
                         <input type="number" id="sell_life" class="form-control" placeholder="Sale Price (৳)">
                         <input type="number" id="old_life" class="form-control" placeholder="Old Price (৳)">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-add" style="width:100%; justify-content:center; margin-top:10px;">
+                <button type="submit" class="btn-save-submit">
                     <i class="fas fa-save"></i> Save Product
                 </button>
             </form>
@@ -456,9 +454,8 @@
         const db = getDatabase(app);
 
         let pcProducts = {};
-        let activeKey = null;
 
-        // Video URL
+        // Setup Video URL
         onValue(ref(db, 'settings/video_pc'), (snap) => {
             if (snap.val()) document.getElementById('pcVideoInput').value = snap.val();
         });
@@ -466,11 +463,11 @@
         window.saveVideoUrl = () => {
             const url = document.getElementById('pcVideoInput').value.trim();
             set(ref(db, 'settings/video_pc'), url)
-                .then(() => alert('Video link saved!'))
+                .then(() => alert('PC Setup Video link saved!'))
                 .catch(e => alert('Error: ' + e.message));
         };
 
-        // Load Products as Boxes
+        // Load Products into Cards
         onValue(ref(db, 'pc_panels'), (snap) => {
             pcProducts = snap.val() || {};
             const grid = document.getElementById('productGrid');
@@ -478,66 +475,52 @@
 
             const keys = Object.keys(pcProducts);
             if (keys.length === 0) {
-                grid.innerHTML = '<div class="empty-msg">No PC Panels yet. Click "+ Add New Product"</div>';
+                grid.innerHTML = '<div class="empty-msg">No PC Panels found. Click "+ Add New Product" above.</div>';
                 return;
             }
 
             keys.forEach(key => {
                 const item = pcProducts[key];
                 const title = item.title || item.name || 'PC Panel';
-                const img = item.image || item.img || 'https://via.placeholder.com/230x140/11071a/ff007f?text=PC';
+                const img = item.image || item.img || 'https://via.placeholder.com/240x145/11071a/ff007f?text=PC+Panel';
 
-                const box = document.createElement('div');
-                box.className = 'product-box';
-                box.onclick = () => openActionModal(key);
-                box.innerHTML = `
-                    <img src="${img}" class="product-box-img" alt="${title}" onerror="this.src='https://via.placeholder.com/230x140/11071a/ff007f?text=No+Image'">
-                    <div class="product-box-name">${title}</div>
-                    <div class="click-hint"><i class="fas fa-cog"></i> Click to Edit / Delete</div>
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${img}" class="product-card-img" alt="${title}" onerror="this.src='https://via.placeholder.com/240x145/11071a/ff007f?text=No+Image'">
+                    <div class="product-card-title">${title}</div>
+                    <div class="card-actions">
+                        <button class="btn-card-edit" onclick="editProduct('${key}')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn-card-delete" onclick="deleteProduct('${key}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
                 `;
-                grid.appendChild(box);
+                grid.appendChild(card);
             });
         });
 
-        // Action Modal
-        window.openActionModal = (key) => {
-            activeKey = key;
-            const item = pcProducts[key];
-            document.getElementById('actionTitle').innerText = item.title || item.name || 'PC Panel';
-            document.getElementById('actionModal').style.display = 'flex';
-        };
-
-        window.closeActionModal = () => {
-            document.getElementById('actionModal').style.display = 'none';
-        };
-
-        window.triggerEdit = () => {
-            closeActionModal();
-            if (activeKey) editProduct(activeKey);
-        };
-
-        window.triggerDelete = () => {
-            closeActionModal();
-            if (activeKey && confirm('Delete this product permanently?')) {
-                remove(ref(db, 'pc_panels/' + activeKey))
-                    .then(() => alert('Deleted!'))
-                    .catch(e => alert('Error: ' + e.message));
-            }
-        };
-
-        // Form Handlers
+        // Add Modal Open
         window.openAddModal = () => {
             document.getElementById('editKey').value = '';
             document.getElementById('productForm').reset();
-            document.getElementById('formTitle').innerText = 'Add New PC Panel';
+            document.getElementById('formTitle').innerText = 'ADD NEW PC PANEL';
             document.getElementById('productModal').style.display = 'flex';
         };
 
+        // Close Modal
         window.closeProductModal = () => {
             document.getElementById('productModal').style.display = 'none';
         };
 
-        // Smart populate logic to fix misplaced values
+        // Delete Product directly
+        window.deleteProduct = (key) => {
+            if (confirm('Are you sure you want to delete this product?')) {
+                remove(ref(db, 'pc_panels/' + key))
+                    .then(() => alert('Product deleted successfully!'))
+                    .catch(e => alert('Error: ' + e.message));
+            }
+        };
+
+        // Smart Package Value Extractor
         function populatePkgRow(durationMatch, sellId, oldId, pkgs) {
             let sellVal = '';
             let oldVal = '';
@@ -560,13 +543,13 @@
                             sellVal = val.sell_price || val.salePrice || val.price || '';
                             oldVal = val.old_price || val.oldPrice || val.old || '';
                         } else {
-                            sellVal = val; // Single scalar price = Sale Price
+                            sellVal = val;
                         }
                     }
                 });
             }
 
-            // HEURISTIC FIX: If sell price is empty but old price has a value, move it to sell price!
+            // Fallback: If sale is empty but old has value, move it to sale
             if (!sellVal && oldVal) {
                 sellVal = oldVal;
                 oldVal = '';
@@ -576,13 +559,14 @@
             document.getElementById(oldId).value = oldVal;
         }
 
-        function editProduct(key) {
+        // Edit Product Modal Opener
+        window.editProduct = (key) => {
             const item = pcProducts[key];
             if (!item) return;
 
             document.getElementById('editKey').value = key;
             document.getElementById('pTitle').value = item.title || item.name || '';
-            document.getElementById('pImage').value = item.image || '';
+            document.getElementById('pImage').value = item.image || item.img || '';
             document.getElementById('pOldPrice').value = item.old_price || item.oldPrice || '';
             document.getElementById('pSalePrice').value = item.sell_price || item.salePrice || item.price || '';
             document.getElementById('pBuyPrice').value = item.buy_price || item.buyPrice || '';
@@ -595,10 +579,11 @@
             populatePkgRow('month', 'sell_1m', 'old_1m', pkgs);
             populatePkgRow('life', 'sell_life', 'old_life', pkgs);
 
-            document.getElementById('formTitle').innerText = 'Edit PC Panel';
+            document.getElementById('formTitle').innerText = 'EDIT PC PANEL';
             document.getElementById('productModal').style.display = 'flex';
-        }
+        };
 
+        // Save Product Handler
         window.saveProduct = (e) => {
             e.preventDefault();
             const editKey = document.getElementById('editKey').value;
@@ -643,7 +628,7 @@
                     alert('Product saved successfully!');
                     closeProductModal();
                 })
-                .catch(err => alert('Error: ' + err.message));
+                .catch(err => alert('Error saving product: ' + err.message));
         };
     </script>
 </body>
