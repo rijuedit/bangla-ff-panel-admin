@@ -58,17 +58,17 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
+    <!-- Sidebar (404 Fixed) -->
     <div class="sidebar">
         <div class="sidebar-logo">OXI ADMIN</div>
         <nav class="nav flex-column">
-            <a class="nav-link" href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
             <a class="nav-link" href="manage-pc.html"><i class="fa-solid fa-desktop"></i> Manage PC Panel</a>
             <a class="nav-link active" href="manage-mobile.html"><i class="fa-solid fa-mobile-screen"></i> Manage Mobile Panel</a>
             <a class="nav-link" href="manage-free-panel.html"><i class="fa-solid fa-gift"></i> Manage Free Panel</a>
-            <a class="nav-link" href="manage-free-bypass.html"><i class="fa-solid fa-bolt"></i> Manage Free Bypass</a>
+            <a class="nav-link" href="manage-bypass.html"><i class="fa-solid fa-bolt"></i> Manage Free Bypass</a>
             <a class="nav-link" href="manage-emulator.html"><i class="fa-solid fa-gamepad"></i> Manage Emulator</a>
-            <a class="nav-link" href="admin-users.html"><i class="fa-solid fa-users"></i> Admin Users</a>
+            <a class="nav-link" href="manage-admins.html"><i class="fa-solid fa-users"></i> Admin Users</a>
         </nav>
     </div>
 
@@ -188,7 +188,7 @@
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
-        const dbRef = database.ref('mobile_panels');
+        const dbRef = database.ref('mobile_panels'); // Mobile specific path
 
         let allProductsData = {};
         const detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
@@ -321,7 +321,6 @@
             return { num: parts[0] || '1', unit: 'Days' };
         }
 
-        // 🌟 🔥 Package Row with Number + Select Options (Hours, Days, Months, Years, Lifetime)
         function addPackageRow(durationStr = '', oldP = '', newP = '', resellP = '') {
             const parsed = parseDurationStr(durationStr);
             const div = document.createElement('div');
