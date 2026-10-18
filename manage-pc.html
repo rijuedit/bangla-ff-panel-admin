@@ -21,7 +21,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); }
 
-        /* Navbar Matches User Design */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 30px; background: rgba(12, 5, 20, 0.95);
@@ -48,7 +47,6 @@
         .product-card:hover { border-color: var(--neon-purple); transform: translateY(-5px); }
         .product-img { width: 100px; height: 100px; object-fit: contain; margin-bottom: 15px; }
 
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 2, 10, 0.95); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: var(--bg-card); border: 1px solid var(--neon-purple); width: 100%; max-width: 550px; border-radius: 15px; padding: 25px; max-height: 90vh; overflow-y: auto; }
         .input-group { margin-bottom: 15px; text-align: left; }
@@ -140,8 +138,8 @@
                     card.className = 'product-card';
                     card.onclick = () => editProduct(key, p);
                     card.innerHTML = `
-                        <img src="${p.image || 'logo.png'}" class="product-img" onerror="this.src='logo.png'">
-                        <div style="font-weight:bold; color:var(--neon-purple); font-size: 1.2rem;">${p.name}</div>
+                        <img src="${p.image || p.img || 'logo.png'}" class="product-img" onerror="this.src='logo.png'">
+                        <div style="font-weight:bold; color:var(--neon-purple); font-size: 1.2rem;">${p.name || p.title || 'PC Panel'}</div>
                         <div style="font-size:0.9rem; color:var(--text-dim); margin-top:10px; background:#11071a; padding:5px; border-radius:5px;">Click to Edit</div>
                     `;
                     grid.appendChild(card);
@@ -192,8 +190,8 @@
         function editProduct(id, p) {
             currentEditId = id;
             document.getElementById('modalTitle').innerText = "Edit PC Product";
-            document.getElementById('pName').value = p.name || "";
-            document.getElementById('pImg').value = p.image || "";
+            document.getElementById('pName').value = p.name || p.title || "";
+            document.getElementById('pImg').value = p.image || p.img || "";
             const pkgContainer = document.getElementById('pkgContainer');
             pkgContainer.innerHTML = "";
 
@@ -223,6 +221,8 @@
             });
 
             const data = { name, image, packages };
+            
+            // Save under products/pc for instant sync
             if (currentEditId) {
                 db.ref(`products/pc/${currentEditId}`).set(data);
             } else {
