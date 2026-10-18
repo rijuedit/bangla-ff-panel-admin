@@ -11,31 +11,32 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background-color: #0a0512;
+            background-color: #07030b;
             color: #ffffff;
             min-height: 100vh;
         }
 
         /* Header / Navbar */
         .navbar {
-            background: #140924;
-            border-bottom: 2px solid #2a113d;
-            padding: 12px 24px;
+            background: #0d0614;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #2a113d;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .nav-brand {
@@ -45,114 +46,108 @@
             text-decoration: none;
         }
 
-        .nav-logo {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #a855f7;
-        }
-
         .brand-text h1 {
             font-size: 1.2rem;
-            color: #ffffff;
+            color: #ff007f;
             font-weight: 800;
-            letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
         }
 
         .brand-text span {
             font-size: 0.75rem;
-            color: #a855f7;
-            font-weight: 600;
+            color: #aaa;
             display: block;
         }
 
         .nav-actions {
             display: flex;
-            align-items: center;
             gap: 12px;
         }
 
         .nav-btn {
-            background: #1a0b2e;
+            background: #140821;
             color: #ffffff;
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 6px;
             text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.85rem;
+            font-weight: 700;
             border: 1px solid #2a113d;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
 
         .nav-btn:hover {
-            border-color: #a855f7;
-            background: #251042;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+            border-color: #ff007f;
+            color: #ff007f;
         }
 
-        .nav-btn.discord {
-            background: #5865F2;
-            border-color: #5865F2;
-        }
-
-        .nav-btn.discord:hover {
-            background: #4752C4;
-            box-shadow: 0 0 10px rgba(88, 101, 242, 0.4);
-        }
-
-        /* Container & Header Actions */
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 24px 16px;
+            padding: 30px 20px;
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #a855f7;
+            color: #ffffff;
             text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 20px;
-            background: #140924;
-            padding: 8px 16px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: #140821;
+            padding: 10px 18px;
             border-radius: 8px;
             border: 1px solid #2a113d;
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
 
         .back-link:hover {
-            background: #1a0b2e;
-            color: #00f2fe;
-            border-color: #00f2fe;
-            transform: translateX(-3px);
+            border-color: #ff007f;
+            color: #ff007f;
         }
 
-        /* Section Cards */
+        /* Card Section */
         .admin-card {
-            background: #140924;
+            background: #0d0614;
             border: 1px solid #2a113d;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
         .admin-card h2 {
             font-size: 1.3rem;
-            color: #00f2fe;
-            margin-bottom: 16px;
+            color: #00ff7f;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* Form Inputs */
+        .btn-add {
+            background: linear-gradient(90deg, #d500f9, #ff007f);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+        }
+
+        /* Input Controls */
         .form-group {
             margin-bottom: 16px;
         }
@@ -160,7 +155,7 @@
         .form-group label {
             display: block;
             font-size: 0.85rem;
-            color: #aaa;
+            color: #bbb;
             margin-bottom: 6px;
             font-weight: 600;
         }
@@ -170,174 +165,161 @@
             background: #1a0b2e;
             border: 1px solid #2a113d;
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 11px 14px;
             color: #ffffff;
             font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.3s ease;
+            transition: 0.3s;
         }
 
         .form-control:focus {
-            border-color: #a855f7;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            border-color: #ff007f;
         }
 
         .grid-3 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
+            gap: 15px;
         }
 
         @media (max-width: 768px) {
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
+            .grid-3 { grid-template-columns: 1fr; }
         }
 
-        .btn-action {
-            background: linear-gradient(135deg, #a855f7, #6b21a8);
-            color: #ffffff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 700;
+        /* Product Box Grid (Matching Admin Box Style Requested) */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product-box {
+            background: #11071a;
+            border: 1.5px solid #2a113d;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+            transition: 0.3s;
+            position: relative;
         }
 
-        .btn-action:hover {
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        .product-box:hover {
+            border-color: #ff007f;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.3);
+            transform: translateY(-4px);
         }
 
-        /* Table Styling */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
+        .product-box-img {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #2a113d;
-        }
-
-        th {
-            background: #1a0b2e;
-            color: #a855f7;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        td {
-            font-size: 0.9rem;
-        }
-
-        .thumb-img {
-            width: 45px;
-            height: 45px;
-            border-radius: 6px;
+            height: 150px;
             object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 12px;
             border: 1px solid #2a113d;
         }
 
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-edit {
-            background: #00f2fe;
-            color: #0a0512;
-        }
-
-        .btn-delete {
-            background: #ff4d4d;
+        .product-box-name {
+            font-size: 1rem;
+            font-weight: 700;
             color: #ffffff;
-            margin-left: 6px;
+            margin-bottom: 8px;
         }
 
-        /* Modal */
+        .click-hint {
+            font-size: 0.75rem;
+            color: #ff007f;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Modals */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 5, 18, 0.85);
-            backdrop-filter: blur(5px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            padding: 16px;
+            padding: 15px;
         }
 
         .modal-card {
-            background: #140924;
-            border: 1px solid #2a113d;
-            border-radius: 12px;
+            background: #0d0614;
+            border: 2px solid #ff007f;
+            border-radius: 16px;
             width: 100%;
-            max-width: 650px;
+            max-width: 550px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #2a113d;
-            padding-bottom: 12px;
-        }
-
-        .modal-title {
-            font-size: 1.2rem;
-            color: #ffffff;
-            font-weight: 700;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.35);
+            position: relative;
         }
 
         .modal-close {
+            position: absolute;
+            top: 15px; right: 15px;
             background: transparent;
             border: none;
             color: #888;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             cursor: pointer;
         }
+        .modal-close:hover { color: #ff007f; }
 
-        .modal-close:hover {
-            color: #ff4d4d;
+        .modal-title {
+            font-size: 1.2rem;
+            color: #ff007f;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-transform: uppercase;
         }
+
+        /* Action Menu Popup */
+        .action-popup {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn-action-menu {
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-edit-popup {
+            background: #00f2fe;
+            color: #000;
+        }
+        .btn-edit-popup:hover { box-shadow: 0 0 15px rgba(0, 242, 254, 0.5); }
+
+        .btn-delete-popup {
+            background: #ff4d4d;
+            color: #fff;
+        }
+        .btn-delete-popup:hover { box-shadow: 0 0 15px rgba(255, 77, 77, 0.5); }
 
         .pkg-row {
             display: flex;
             gap: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             align-items: center;
         }
-
-        .pkg-row input {
-            flex: 1;
-        }
+        .pkg-row input { flex: 1; }
     </style>
 </head>
 <body>
@@ -345,7 +327,6 @@
     <!-- Header / Navbar -->
     <header class="navbar">
         <a href="index.html" class="nav-brand">
-            <img src="logo.png" alt="Logo" class="nav-logo" onerror="this.style.display='none'">
             <div class="brand-text">
                 <h1>BANGLA FF PANEL</h1>
                 <span>PREMIUM CORP (ADMIN)</span>
@@ -353,76 +334,72 @@
         </a>
         <div class="nav-actions">
             <a href="index.html" class="nav-btn"><i class="fas fa-chart-line"></i> Dashboard</a>
-            <a href="https://discord.gg/ZBjSWaF7u" target="_blank" class="nav-btn discord"><i class="fab fa-discord"></i> Discord</a>
+            <a href="https://discord.gg/ZBjSWaF7u" target="_blank" class="nav-btn"><i class="fab fa-discord"></i> Discord</a>
         </div>
     </header>
 
     <!-- Main Container -->
     <div class="container">
-        <!-- Back Link to Admin Main -->
         <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
 
-        <!-- Setup Video Admin Card -->
+        <!-- Video Tutorial Admin Section -->
         <div class="admin-card">
             <h2><i class="fas fa-video"></i> PC Setup Video Tutorial Link</h2>
-            <div class="grid-2">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>YouTube / Google Drive Video Link</label>
-                    <input type="url" id="pcVideoInput" class="form-control" placeholder="Paste YouTube or Google Drive embed link">
-                </div>
-                <div style="display: flex; align-items: flex-end;">
-                    <button class="btn-action" onclick="saveVideoUrl()"><i class="fas fa-save"></i> Save Video Link</button>
-                </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <input type="url" id="pcVideoInput" class="form-control" placeholder="Paste YouTube or Google Drive link" style="flex: 1; min-width: 250px;">
+                <button class="btn-add" onclick="saveVideoUrl()"><i class="fas fa-save"></i> Save Video</button>
             </div>
         </div>
 
-        <!-- Product Management Card -->
+        <!-- Manage PC Panels (Box Grid Layout) -->
         <div class="admin-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <h2><i class="fas fa-desktop"></i> Manage PC Panels</h2>
-                <button class="btn-action" onclick="openProductModal()"><i class="fas fa-plus"></i> Add New Product</button>
+                <button class="btn-add" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Product</button>
             </div>
 
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Old Price</th>
-                            <th>Sale Price</th>
-                            <th>Buy Price</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productTableBody">
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: #888;">Loading Products...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Product Cards Box Area -->
+            <div class="product-grid" id="productGrid">
+                <div style="grid-column: 1/-1; text-align: center; color: #888; padding: 30px;">Loading Products...</div>
             </div>
         </div>
     </div>
 
-    <!-- Product Add/Edit Modal -->
+    <!-- 1. Action Menu Popup Modal (When clicking a product box) -->
+    <div class="modal-overlay" id="actionModal">
+        <div class="modal-card" style="max-width: 400px; text-align: center;">
+            <button class="modal-close" onclick="closeActionModal()">&times;</button>
+            <h3 class="modal-title" id="actionModalTitle">Product Name</h3>
+            <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 20px;">Select an action for this product:</p>
+            
+            <div class="action-popup">
+                <button class="btn-action-menu btn-edit-popup" onclick="triggerEditFromPopup()">
+                    <i class="fas fa-edit"></i> Edit Product Menu
+                </button>
+                <button class="btn-action-menu btn-delete-popup" onclick="triggerDeleteFromPopup()">
+                    <i class="fas fa-trash"></i> Delete Product
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Add / Edit Product Form Modal -->
     <div class="modal-overlay" id="productModal">
         <div class="modal-card">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalHeaderTitle">Add New PC Panel</h3>
-                <button class="modal-close" onclick="closeProductModal()">&times;</button>
-            </div>
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            <h3 class="modal-title" id="modalFormTitle">Add New PC Panel</h3>
+            
             <form id="productForm" onsubmit="saveProduct(event)">
                 <input type="hidden" id="editKey">
                 
                 <div class="form-group">
                     <label>Product Name</label>
-                    <input type="text" id="pName" class="form-control" placeholder="e.g. VIP PC Panel Injector" required>
+                    <input type="text" id="pName" class="form-control" placeholder="e.g. BR MODS [ DUSTU AIMKILL ]" required>
                 </div>
 
                 <div class="form-group">
                     <label>Image URL</label>
-                    <input type="url" id="pImage" class="form-control" placeholder="Direct Image URL (e.g. Imgur/Discord link)" required>
+                    <input type="url" id="pImage" class="form-control" placeholder="Direct Image Link" required>
                 </div>
 
                 <div class="grid-3">
@@ -432,50 +409,46 @@
                     </div>
                     <div class="form-group">
                         <label>Sale Price (৳) (বিক্রি দাম)</label>
-                        <input type="number" id="pSalePrice" class="form-control" placeholder="e.g. 1000" required>
+                        <input type="number" id="pSalePrice" class="form-control" placeholder="e.g. 1100" required>
                     </div>
                     <div class="form-group">
                         <label>Buy Price (৳) (কিনার দাম)</label>
-                        <input type="number" id="pBuyPrice" class="form-control" placeholder="e.g. 700">
+                        <input type="number" id="pBuyPrice" class="form-control" placeholder="e.g. 800">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Download Link / Key Access</label>
-                    <input type="url" id="pDownloadLink" class="form-control" placeholder="Link for panel download or key generator">
+                    <input type="url" id="pDownloadLink" class="form-control" placeholder="Link for panel file or key generator">
                 </div>
 
                 <div class="form-group">
-                    <label>Package Durations & Pricing (Optional)</label>
+                    <label>Package Durations & Sale Price (Optional)</label>
                     <div class="pkg-row">
-                        <input type="text" value="1 Hour" class="form-control" readonly style="max-width: 120px;">
-                        <input type="number" id="pkg_1h" class="form-control" placeholder="Price for 1 Hour">
-                    </div>
-                    <div class="pkg-row">
-                        <input type="text" value="1 Day" class="form-control" readonly style="max-width: 120px;">
+                        <input type="text" value="1 Days" class="form-control" readonly style="max-width: 110px;">
                         <input type="number" id="pkg_1d" class="form-control" placeholder="Price for 1 Day">
                     </div>
                     <div class="pkg-row">
-                        <input type="text" value="7 Days" class="form-control" readonly style="max-width: 120px;">
+                        <input type="text" value="7 Days" class="form-control" readonly style="max-width: 110px;">
                         <input type="number" id="pkg_7d" class="form-control" placeholder="Price for 7 Days">
                     </div>
                     <div class="pkg-row">
-                        <input type="text" value="30 Days" class="form-control" readonly style="max-width: 120px;">
-                        <input type="number" id="pkg_30d" class="form-control" placeholder="Price for 30 Days">
+                        <input type="text" value="1 Months" class="form-control" readonly style="max-width: 110px;">
+                        <input type="number" id="pkg_1m" class="form-control" placeholder="Price for 1 Month">
                     </div>
                     <div class="pkg-row">
-                        <input type="text" value="Lifetime" class="form-control" readonly style="max-width: 120px;">
+                        <input type="text" value="Lifetime" class="form-control" readonly style="max-width: 110px;">
                         <input type="number" id="pkg_life" class="form-control" placeholder="Price for Lifetime">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-action" style="width: 100%; margin-top: 10px; justify-content: center;">Save Product</button>
+                <button type="submit" class="btn-add" style="width: 100%; justify-content: center; margin-top: 10px;">Save Product</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Firebase Configuration
+        // Firebase Config
         const firebaseConfig = {
             databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
@@ -483,58 +456,83 @@
         const database = firebase.database();
 
         let pcProducts = {};
+        let activeSelectedKey = null;
 
-        // Fetch Setup Video Setting
-        database.ref('settings/video_pc').on('value', snapshot => {
-            const val = snapshot.val();
-            if (val) {
-                document.getElementById('pcVideoInput').value = val;
+        // Fetch Setup Video Link
+        database.ref('settings/video_pc').on('value', snap => {
+            if (snap.val()) {
+                document.getElementById('pcVideoInput').value = snap.val();
             }
         });
 
         function saveVideoUrl() {
-            const videoUrl = document.getElementById('pcVideoInput').value.trim();
-            database.ref('settings/video_pc').set(videoUrl)
+            const url = document.getElementById('pcVideoInput').value.trim();
+            database.ref('settings/video_pc').set(url)
                 .then(() => alert('PC Setup Video URL saved successfully!'))
-                .catch(err => alert('Error saving video URL: ' + err.message));
+                .catch(err => alert('Error saving video: ' + err.message));
         }
 
-        // Fetch Products from node 'pc_panels'
-        database.ref('pc_panels').on('value', snapshot => {
-            pcProducts = snapshot.val() || {};
-            const tbody = document.getElementById('productTableBody');
-            tbody.innerHTML = '';
+        // Fetch Products and Display in BOX / CARD Layout
+        database.ref('pc_panels').on('value', snap => {
+            pcProducts = snap.val() || {};
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
 
             const keys = Object.keys(pcProducts);
             if (keys.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #888;">No PC Panels Added Yet.</td></tr>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888;">No PC Panels Added Yet. Click "+ Add New Product" above.</div>';
                 return;
             }
 
             keys.forEach(key => {
                 const item = pcProducts[key];
-                const tr = document.createElement('tr');
+                const name = item.name || item.title || 'PC Panel';
+                const img = item.image || item.img || 'https://via.placeholder.com/240x150/11071a/ff007f?text=PC+Panel';
 
-                tr.innerHTML = `
-                    <td><img src="${item.image || 'https://via.placeholder.com/45'}" class="thumb-img" onerror="this.src='https://via.placeholder.com/45'"></td>
-                    <td><strong>${item.name || 'N/A'}</strong></td>
-                    <td>${item.oldPrice ? '৳' + item.oldPrice : '-'}</td>
-                    <td style="color:#00f2fe; font-weight:bold;">৳${item.salePrice || item.price || 0}</td>
-                    <td style="color:#a855f7;">${item.buyPrice ? '৳' + item.buyPrice : '-'}</td>
-                    <td>
-                        <button class="btn-sm btn-edit" onclick="editProduct('${key}')"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="btn-sm btn-delete" onclick="deleteProduct('${key}')"><i class="fas fa-trash"></i> Delete</button>
-                    </td>
+                const boxHTML = `
+                    <div class="product-box" onclick="openActionModal('${key}')">
+                        <img src="${img}" class="product-box-img" alt="${name}" onerror="this.src='https://via.placeholder.com/240x150/11071a/ff007f?text=No+Image'">
+                        <div class="product-box-name">${name}</div>
+                        <div class="click-hint"><i class="fas fa-cog"></i> Click to Edit / Delete</div>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                grid.innerHTML += boxHTML;
             });
         });
 
-        // Modal Handlers
-        function openProductModal() {
+        // 1. Action Popup Modal Handlers
+        function openActionModal(key) {
+            activeSelectedKey = key;
+            const item = pcProducts[key];
+            if (!item) return;
+
+            document.getElementById('actionModalTitle').innerText = item.name || 'PC Panel Options';
+            document.getElementById('actionModal').style.display = 'flex';
+        }
+
+        function closeActionModal() {
+            document.getElementById('actionModal').style.display = 'none';
+        }
+
+        function triggerEditFromPopup() {
+            closeActionModal();
+            if (activeSelectedKey) {
+                editProduct(activeSelectedKey);
+            }
+        }
+
+        function triggerDeleteFromPopup() {
+            closeActionModal();
+            if (activeSelectedKey) {
+                deleteProduct(activeSelectedKey);
+            }
+        }
+
+        // 2. Product Add/Edit Form Handlers
+        function openAddModal() {
             document.getElementById('editKey').value = '';
             document.getElementById('productForm').reset();
-            document.getElementById('modalHeaderTitle').innerText = 'Add New PC Panel';
+            document.getElementById('modalFormTitle').innerText = 'Add New PC Panel';
             document.getElementById('productModal').style.display = 'flex';
         }
 
@@ -547,22 +545,20 @@
             if (!item) return;
 
             document.getElementById('editKey').value = key;
-            document.getElementById('pName').value = item.name || '';
-            document.getElementById('pImage').value = item.image || '';
+            document.getElementById('pName').value = item.name || item.title || '';
+            document.getElementById('pImage').value = item.image || item.img || '';
             document.getElementById('pOldPrice').value = item.oldPrice || '';
             document.getElementById('pSalePrice').value = item.salePrice || item.price || '';
             document.getElementById('pBuyPrice').value = item.buyPrice || '';
             document.getElementById('pDownloadLink').value = item.downloadLink || '';
 
-            // Load package pricing if exists
             const pkgs = item.packages || {};
-            document.getElementById('pkg_1h').value = pkgs['1 Hour'] || '';
-            document.getElementById('pkg_1d').value = pkgs['1 Day'] || '';
+            document.getElementById('pkg_1d').value = pkgs['1 Days'] || pkgs['1 Day'] || '';
             document.getElementById('pkg_7d').value = pkgs['7 Days'] || '';
-            document.getElementById('pkg_30d').value = pkgs['30 Days'] || '';
+            document.getElementById('pkg_1m').value = pkgs['1 Months'] || pkgs['1 Month'] || '';
             document.getElementById('pkg_life').value = pkgs['Lifetime'] || '';
 
-            document.getElementById('modalHeaderTitle').innerText = 'Edit PC Panel';
+            document.getElementById('modalFormTitle').innerText = 'Edit PC Panel';
             document.getElementById('productModal').style.display = 'flex';
         }
 
@@ -571,10 +567,9 @@
             const editKey = document.getElementById('editKey').value;
 
             const packages = {};
-            if (document.getElementById('pkg_1h').value) packages['1 Hour'] = document.getElementById('pkg_1h').value;
-            if (document.getElementById('pkg_1d').value) packages['1 Day'] = document.getElementById('pkg_1d').value;
+            if (document.getElementById('pkg_1d').value) packages['1 Days'] = document.getElementById('pkg_1d').value;
             if (document.getElementById('pkg_7d').value) packages['7 Days'] = document.getElementById('pkg_7d').value;
-            if (document.getElementById('pkg_30d').value) packages['30 Days'] = document.getElementById('pkg_30d').value;
+            if (document.getElementById('pkg_1m').value) packages['1 Months'] = document.getElementById('pkg_1m').value;
             if (document.getElementById('pkg_life').value) packages['Lifetime'] = document.getElementById('pkg_life').value;
 
             const payload = {
@@ -601,7 +596,7 @@
         function deleteProduct(key) {
             if (confirm('Are you sure you want to delete this PC panel?')) {
                 database.ref('pc_panels/' + key).remove()
-                    .then(() => alert('Product deleted!'))
+                    .then(() => alert('Product deleted successfully!'))
                     .catch(err => alert('Error deleting product: ' + err.message));
             }
         }
