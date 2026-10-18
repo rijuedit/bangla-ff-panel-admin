@@ -58,7 +58,7 @@
 </head>
 <body>
 
-    <!-- Sidebar (404 Fixed) -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">OXI ADMIN</div>
         <nav class="nav flex-column">
@@ -74,13 +74,10 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        
-        <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="text-white mb-0" style="font-weight: 700;">
                 <i class="fa-solid fa-desktop text-white me-2"></i> PC Panels
             </h3>
-            
             <div style="display: flex; gap: 12px;">
                 <button class="btn-purple" onclick="openGlobalLinkModal()">
                     <i class="fa-solid fa-link"></i> Global Buy Link
@@ -91,7 +88,6 @@
             </div>
         </div>
 
-        <!-- 📦 Product Grid Boxes -->
         <div id="productGrid" class="product-grid"></div>
     </div>
 
@@ -103,9 +99,7 @@
                     <h5 class="modal-title" id="detailModalTitle" style="font-weight: bold; color: #fff;">Product Name</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                
                 <div class="modal-body" id="detailPackages" style="max-height: 60vh; overflow-y: auto;"></div>
-                
                 <div class="modal-footer" style="justify-content: space-between;">
                     <div>
                         <button id="btnEdit" class="btn" style="background: #ffaa00; color: #000; font-weight: bold; margin-right: 5px;">
@@ -174,7 +168,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -194,6 +187,46 @@
         const detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
         const formModal = new bootstrap.Modal(document.getElementById('addProductModal'));
         const linkModal = new bootstrap.Modal(document.getElementById('globalLinkModal'));
+
+        // 🌟 অটো-স্মার্ট প্রাইস ডিটেক্টর
+        function extractPkgPrices(pkg) {
+            let oldP = 0, saleP = 0, buyP = 0;
+            if (!pkg) return { oldP, saleP, buyP };
+
+            const keys = Object.keys(pkg);
+
+            // 1. Old Price
+            for (let k of keys) {
+                if (k.toLowerCase().includes('old')) {
+                    oldP = pkg[k];
+                    break;
+                }
+            }
+
+            // 2. Sale Price
+            for (let k of keys) {
+                const lk = k.toLowerCase();
+                if (lk.includes('new') || lk.includes('sale') || lk === 'price') {
+                    saleP = pkg[k];
+                    break;
+                }
+            }
+
+            // 3. Buy Price
+            for (let k of keys) {
+                const lk = k.toLowerCase();
+                if (lk.includes('resell') || lk.includes('buy') || lk.includes('cost')) {
+                    buyP = pkg[k];
+                    break;
+                }
+            }
+
+            return {
+                oldP: oldP || 0,
+                saleP: saleP || 0,
+                buyP: buyP || 0
+            };
+        }
 
         function loadProducts() {
             dbRef.on('value', (snapshot) => {
@@ -229,13 +262,12 @@
             document.getElementById('detailModalTitle').innerText = pName;
             
             let packagesHTML = '<div style="display: flex; flex-direction: column; gap: 15px;">';
-            const pkgs = product.packages || product.packageList || [];
+            const pkgs = Array.isArray(product.packages) ? product.packages : (product.packages ? Object.values(product.packages) : []);
+            
             if (pkgs.length > 0) {
                 pkgs.forEach(pkg => {
                     const duration = pkg.duration || pkg.name || 'N/A';
-                    const oldPrice = pkg.oldPrice || pkg.old_price || 0;
-                    const newPrice = pkg.newPrice || pkg.price || 0;
-                    const resellPrice = pkg.resellPrice || pkg.resell_price || pkg.buyPrice || 0;
+                    const prices = extractPkgPrices(pkg);
 
                     packagesHTML += `
                     <div style="background: #0c0514; border: 1px solid #2a113d; padding: 12px; border-radius: 8px;">
@@ -244,15 +276,15 @@
                         </div>
                         <div class="p-box-container">
                             <div class="p-box old">
-                                <span class="p-val">৳${oldPrice}</span>
+                                <span class="p-val">৳${prices.oldP}</span>
                                 <span class="p-label">Old Price</span>
                             </div>
                             <div class="p-box sale">
-                                <span class="p-val">৳${newPrice}</span>
+                                <span class="p-val">৳${prices.saleP}</span>
                                 <span class="p-label">Sale</span>
                             </div>
                             <div class="p-box buy">
-                                <span class="p-val">৳${resellPrice}</span>
+                                <span class="p-val">৳${prices.buyP}</span>
                                 <span class="p-label">Buy</span>
                             </div>
                         </div>
@@ -272,9 +304,7 @@
             
             document.getElementById('btnDelete').onclick = () => {
                 if(confirm("Are you sure you want to delete this product?")) {
-                    dbRef.child(id).remove().then(() => {
-                        detailModal.hide();
-                    });
+                    dbRef.child(id).remove().then(() => detailModal.hide());
                 }
             };
             
@@ -302,9 +332,12 @@
             document.getElementById('productImage').value = pImg;
             
             document.getElementById('packagesContainer').innerHTML = '';
-            const pkgs = product.packages || product.packageList || [];
+            const pkgs = Array.isArray(product.packages) ? product.packages : (product.packages ? Object.values(product.packages) : []);
             if(pkgs.length > 0) {
-                pkgs.forEach(pkg => addPackageRow(pkg.duration || pkg.name, pkg.oldPrice || pkg.old_price, pkg.newPrice || pkg.price, pkg.resellPrice || pkg.resell_price));
+                pkgs.forEach(pkg => {
+                    const prices = extractPkgPrices(pkg);
+                    addPackageRow(pkg.duration || pkg.name, prices.oldP, prices.saleP, prices.buyP);
+                });
             } else {
                 addPackageRow();
             }
@@ -315,9 +348,7 @@
             if (!str) return { num: '1', unit: 'Days' };
             if (str.toLowerCase().includes('lifetime')) return { num: '', unit: 'Lifetime' };
             const parts = str.trim().split(/\s+/);
-            if (parts.length >= 2) {
-                return { num: parts[0], unit: parts[1] };
-            }
+            if (parts.length >= 2) return { num: parts[0], unit: parts[1] };
             return { num: parts[0] || '1', unit: 'Days' };
         }
 
@@ -383,12 +414,19 @@
                 const num = row.querySelector('.pkg-dur-num').value;
                 const unit = row.querySelector('.pkg-dur-unit').value;
                 const duration = (unit === 'Lifetime') ? 'Lifetime' : `${num || 1} ${unit}`;
-                const oldPrice = row.querySelector('.pkg-old').value;
-                const newPrice = row.querySelector('.pkg-new').value;
-                const resellPrice = row.querySelector('.pkg-resell').value;
+                const oldPrice = Number(row.querySelector('.pkg-old').value) || 0;
+                const newPrice = Number(row.querySelector('.pkg-new').value) || 0;
+                const resellPrice = Number(row.querySelector('.pkg-resell').value) || 0;
                 
                 if(duration) {
-                    packages.push({ duration, oldPrice, newPrice, resellPrice });
+                    packages.push({ 
+                        duration, 
+                        oldPrice, 
+                        newPrice, 
+                        price: newPrice,
+                        resellPrice,
+                        buyPrice: resellPrice
+                    });
                 }
             });
 
