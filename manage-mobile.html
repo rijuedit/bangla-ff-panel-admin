@@ -1,466 +1,412 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Mobile Panel - OXI ADMIN</title>
-    
-    <!-- Bootstrap 5 & FontAwesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* Base Theme */
-        body { background-color: #05020a; color: #ffffff; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #05020a; }
-        ::-webkit-scrollbar-thumb { background: #9d00ff; border-radius: 4px; }
-
-        /* Sidebar Design */
-        .sidebar { position: fixed; top: 0; left: 0; width: 250px; height: 100vh; background: #11071a; border-right: 1px solid #2a113d; padding: 20px 0; overflow-y: auto; }
-        .sidebar-logo { text-align: center; color: #ff0066; font-size: 22px; font-weight: 800; margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase; }
-        .nav-link { color: #a385bd; padding: 12px 20px; font-weight: 500; transition: 0.3s; border-left: 3px solid transparent; margin-bottom: 5px; font-size: 15px; }
-        .nav-link:hover, .nav-link.active { color: #ffffff; background: rgba(157, 0, 255, 0.1); border-left-color: #9d00ff; }
-        .nav-link i { width: 25px; text-align: center; margin-right: 5px; }
-
-        /* Main Content */
-        .main-content { margin-left: 250px; padding: 30px; }
-
-        /* Header Buttons */
-        .btn-purple { background: #9d00ff; color: white; border: none; font-weight: 600; padding: 8px 18px; border-radius: 6px; font-size: 14px; }
-        .btn-purple:hover { background: #7a00cc; color: white; }
-        .btn-pink { background: #ff0066; color: white; border: none; font-weight: 600; padding: 8px 18px; border-radius: 6px; font-size: 14px; }
-        .btn-pink:hover { background: #cc0052; color: white; }
-
-        /* Product Box (Grid Design) */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
-        .product-card { background: #11071a; border: 1px solid #2a113d; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .product-card:hover { border-color: #9d00ff; transform: translateY(-5px); box-shadow: 0 5px 15px rgba(157, 0, 255, 0.3); }
-        .product-img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; border: 1px solid #9d00ff; background: #05020a; }
-        .product-name { color: #ffffff; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* Popup Modals UI */
-        .modal-content { background-color: #11071a; border: 1px solid #9d00ff; border-radius: 12px; color: white; }
-        .modal-header, .modal-footer { border-color: #2a113d; }
-        .form-control, .form-select { background-color: #05020a; border: 1px solid #2a113d; color: white; }
-        .form-control:focus, .form-select:focus { background-color: #0c0514; border-color: #9d00ff; color: white; box-shadow: none; }
-        .form-label { color: #a385bd; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-
-        /* Popup Price Boxes */
-        .p-box-container { display: flex; gap: 8px; justify-content: space-between; margin-top: 10px; }
-        .p-box { flex: 1; text-align: center; background: #05020a; padding: 8px 4px; border-radius: 6px; border: 1px solid #3d1c56; }
-        .p-val { font-weight: bold; display: block; font-size: 14px; }
-        .p-label { color: #a385bd; font-size: 9px; text-transform: uppercase; margin-top: 3px; }
-        .p-box.old .p-val { color: #ff0066; text-decoration: line-through; }
-        .p-box.sale .p-val { color: #00cc66; }
-        .p-box.buy .p-val { color: #9d00ff; }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage Mobile Panel - OXI ADMIN</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--bg:#07040d;--panel:#120a1c;--panel2:#190d27;--line:#352047;--purple:#a855f7;--pink:#ec4899;--muted:#b9a6ca;--green:#34d399}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 75% 0%,#24103b 0,transparent 42%),var(--bg);color:#f8f5ff;font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:7px}
+::-webkit-scrollbar-thumb{background:#7134a4;border-radius:8px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:250px;padding:24px 14px;background:rgba(15,8,24,.96);border-right:1px solid var(--line);z-index:10;overflow:auto}
+.brand{font-weight:900;font-size:21px;letter-spacing:1.5px;text-align:center;margin:0 0 30px;background:linear-gradient(90deg,#e879f9,#a855f7,#fb7185);color:transparent;background-clip:text}
+.nav-link{display:flex;align-items:center;gap:12px;color:var(--muted);padding:12px 14px;margin:4px 0;border-radius:10px;border:1px solid transparent;transition:.2s}
+.nav-link i{width:20px;text-align:center}
+.nav-link:hover,.nav-link.active{color:#fff;background:linear-gradient(100deg,#8b5cf626,#ec48991a);border-color:#7041a0}
+.main-content{margin-left:250px;padding:30px;max-width:1700px}
+.page-title{font-weight:800;letter-spacing:-.5px}
+.sub{color:var(--muted);font-size:13px}
+.btn-neon{border:1px solid #a855f7;background:linear-gradient(110deg,#7c3aed,#a855f7);color:#fff;border-radius:10px;padding:10px 15px;font-weight:700;box-shadow:0 5px 20px #7c3aed24}
+.btn-neon:hover{color:#fff;filter:brightness(1.12)}
+.btn-pink{background:linear-gradient(110deg,#db2777,#f472b6);border:0;color:white;border-radius:10px;padding:10px 15px;font-weight:700}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:24px}
+.product-card{background:linear-gradient(145deg,#1b1028,#100817);border:1px solid var(--line);border-radius:17px;padding:14px;cursor:pointer;transition:.25s;overflow:hidden}
+.product-card:hover{transform:translateY(-4px);border-color:#a855f7;box-shadow:0 12px 35px #7c3aed20}
+.product-img{width:100%;height:155px;object-fit:cover;border-radius:11px;border:1px solid #51336c;background:#09050e;margin-bottom:14px}
+.product-name{font-weight:800;font-size:15px;overflow-wrap:anywhere}
+.product-meta{color:var(--muted);font-size:12px;margin-top:5px}
+.modal-content{background:#130a1e;color:#fff;border:1px solid #6d3a91;border-radius:16px;box-shadow:0 20px 70px #0008}
+.modal-header,.modal-footer{border-color:#382448}
+.form-control,.form-select{background:#09050e;color:#fff;border:1px solid #432957;border-radius:9px}
+.form-control:focus,.form-select:focus{background:#0c0613;color:#fff;border-color:#a855f7;box-shadow:0 0 0 .2rem #a855f725}
+.form-control::placeholder{color:#7e6c8d}
+.form-label{color:#c7b4d8;font-size:12px;font-weight:700}
+.pkg-card{padding:13px;margin-bottom:12px;border:1px solid #39234c;border-radius:12px;background:#0d0714}
+.price-row{display:flex;gap:8px;margin-top:10px}
+.price-box{flex:1;min-width:0;text-align:center;padding:9px 3px;border:1px solid #39234c;border-radius:9px;background:#08040c}
+.price-box small{display:block;color:#9f8ab1;font-size:9px;text-transform:uppercase}
+.price-box b{font-size:13px}
+.old b{color:#fb7185;text-decoration:line-through}
+.sale b{color:var(--green)}
+.buy b{color:#c084fc}
+.empty{border:1px dashed #54346d;border-radius:15px;padding:45px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
+@media(max-width:850px){
+.sidebar{position:relative;width:100%;height:auto;padding:14px}
+.brand{margin-bottom:12px}
+.sidebar nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.nav-link{font-size:12px;padding:9px}
+.main-content{margin:0;padding:18px}
+.header{align-items:flex-start!important;gap:14px;flex-direction:column}
+.header-actions{display:flex;flex-wrap:wrap;gap:8px!important}
+.header-actions button{font-size:12px;padding:9px 11px}
+.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.product-img{height:120px}
+.product-card{padding:10px}
+.product-name{font-size:12px}
+}
+</style>
 </head>
 <body>
+<aside class="sidebar">
+ <div class="brand"><i class="fa-solid fa-bolt"></i> OXI ADMIN</div>
+ <nav class="nav flex-column">
+ <a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+ <a class="nav-link" href="manage-pc.html"><i class="fa-solid fa-desktop"></i> Manage PC Panel</a>
+ <a class="nav-link active" href="manage-mobile.html"><i class="fa-solid fa-mobile-screen"></i> Manage Mobile Panel</a>
+ <a class="nav-link" href="manage-free-panel.html"><i class="fa-solid fa-gift"></i> Manage Free Panel</a>
+ <a class="nav-link" href="manage-bypass.html"><i class="fa-solid fa-bolt"></i> Manage Free Bypass</a>
+ <a class="nav-link" href="manage-emulator.html"><i class="fa-solid fa-gamepad"></i> Manage Emulator</a>
+ <a class="nav-link" href="manage-admins.html"><i class="fa-solid fa-users"></i> Admin Users</a>
+ </nav>
+</aside>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-logo">OXI ADMIN</div>
-        <nav class="nav flex-column">
-            <a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-            <a class="nav-link" href="manage-pc.html"><i class="fa-solid fa-desktop"></i> Manage PC Panel</a>
-            <a class="nav-link active" href="manage-mobile.html"><i class="fa-solid fa-mobile-screen"></i> Manage Mobile Panel</a>
-            <a class="nav-link" href="manage-free-panel.html"><i class="fa-solid fa-gift"></i> Manage Free Panel</a>
-            <a class="nav-link" href="manage-bypass.html"><i class="fa-solid fa-bolt"></i> Manage Free Bypass</a>
-            <a class="nav-link" href="manage-emulator.html"><i class="fa-solid fa-gamepad"></i> Manage Emulator</a>
-            <a class="nav-link" href="manage-admins.html"><i class="fa-solid fa-users"></i> Admin Users</a>
-        </nav>
+<main class="main-content">
+ <div class="header d-flex justify-content-between align-items-center">
+  <div>
+   <div class="sub mb-1">PRODUCT MANAGEMENT / MOBILE</div>
+   <h2 class="page-title mb-1"><i class="fa-solid fa-mobile-screen-button me-2" style="color:#c084fc"></i>Mobile Panels</h2>
+   <div class="sub">Manage products, packages and pricing</div>
+  </div>
+  <div class="header-actions d-flex gap-2">
+   <button class="btn-neon" onclick="openGlobalLinkModal()"><i class="fa-solid fa-link me-1"></i> Global Buy Link</button>
+   <button class="btn-pink" onclick="openAddModal()"><i class="fa-solid fa-plus me-1"></i> Add Product</button>
+  </div>
+ </div>
+ <div id="productGrid" class="product-grid"><div class="empty"><i class="fa-solid fa-spinner fa-spin me-2"></i>Loading mobile panels...</div></div>
+</main>
+
+<div class="modal fade" id="productDetailModal" tabindex="-1">
+ <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header">
+   <h5 class="modal-title fw-bold" id="detailModalTitle">Product Name</h5>
+   <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body" id="detailPackages" style="max-height:60vh;overflow:auto"></div>
+  <div class="modal-footer justify-content-between">
+   <div>
+    <button id="btnEdit" class="btn btn-warning fw-bold me-1"><i class="fa-solid fa-pen"></i> Edit</button>
+    <button id="btnDelete" class="btn btn-danger fw-bold"><i class="fa-solid fa-trash"></i> Delete</button>
+   </div>
+   <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+  </div>
+ </div></div>
+</div>
+
+<div class="modal fade" id="addProductModal" tabindex="-1">
+ <div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content">
+  <div class="modal-header">
+   <h5 class="modal-title fw-bold" id="formModalTitle">Add New Product</h5>
+   <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+   <input type="hidden" id="productId">
+   <div class="mb-3"><label class="form-label">Panel Name</label><input type="text" id="productName" class="form-control" placeholder="Enter panel name"></div>
+   <div class="mb-3"><label class="form-label">Image URL</label><input type="url" id="productImage" class="form-control" placeholder="https://..."></div>
+   <div class="d-flex justify-content-between align-items-center mt-4 mb-3"><h6 class="fw-bold mb-0">Packages & Pricing</h6><span class="sub">Old / Sale / Buy price</span></div>
+   <div id="packagesContainer"></div>
+   <button type="button" class="btn-neon mt-1" onclick="addPackageRow()"><i class="fa-solid fa-plus me-1"></i> Add Package</button>
+  </div>
+  <div class="modal-footer">
+   <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+   <button class="btn-pink" onclick="saveProduct()"><i class="fa-solid fa-floppy-disk me-1"></i> Save Product</button>
+  </div>
+ </div></div>
+</div>
+
+<div class="modal fade" id="globalLinkModal" tabindex="-1">
+ <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header">
+   <h5 class="modal-title fw-bold"><i class="fa-solid fa-link me-2" style="color:#c084fc"></i>Global Buy Link</h5>
+   <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body"><label class="form-label">Global Link URL</label><input type="url" id="globalBuyLinkInput" class="form-control" placeholder="https://discord.gg/yourlink"></div>
+  <div class="modal-footer">
+   <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+   <button class="btn-neon" onclick="saveGlobalLink()">Save Link</button>
+  </div>
+ </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+const firebaseConfig = {
+ databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const dbRef = database.ref('mobile_panels');
+let allProductsData = {};
+
+const detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+const formModal = new bootstrap.Modal(document.getElementById('addProductModal'));
+const linkModal = new bootstrap.Modal(document.getElementById('globalLinkModal'));
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+}[c]));
+
+function extractPkgPrices(pkg) {
+ let oldP = pkg?.oldPrice ?? pkg?.old_price ?? 0;
+ let saleP = pkg?.newPrice ?? pkg?.salePrice ?? pkg?.sell_price ?? pkg?.price ?? 0;
+ let buyP = pkg?.resellPrice ?? pkg?.buyPrice ?? pkg?.buy_price ?? pkg?.costPrice ?? 0;
+ return {
+  oldP: Number(oldP) || 0,
+  saleP: Number(saleP) || 0,
+  buyP: Number(buyP) || 0
+ };
+}
+
+function getPkgs(product) {
+ return Array.isArray(product.packages)
+  ? product.packages
+  : (product.packages ? Object.values(product.packages) : []);
+}
+
+function loadProducts() {
+ dbRef.on('value', snapshot => {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = '';
+  allProductsData = {};
+
+  if (!snapshot.exists()) {
+   grid.innerHTML = '<div class="empty"><i class="fa-solid fa-box-open fa-2x mb-3"></i><div>No mobile products yet.</div><div class="sub mt-2">Use “Add Product” to create one.</div></div>';
+   return;
+  }
+
+  snapshot.forEach(child => {
+   const id = child.key;
+   const p = child.val() || {};
+   allProductsData[id] = p;
+
+   const name = p.name || p.title || p.panelName || 'Unnamed Panel';
+   const img = p.imageUrl || p.image || p.img || 'logo.png';
+   const card = document.createElement('div');
+   card.className = 'product-card';
+   card.innerHTML = `<img src="${esc(img)}" class="product-img" alt="Panel">
+    <div class="d-flex justify-content-between align-items-start gap-2">
+     <div class="product-name">${esc(name)}</div>
+     <span class="badge rounded-pill text-bg-dark border border-secondary">${getPkgs(p).length} pkg</span>
     </div>
+    <div class="product-meta"><i class="fa-solid fa-tags me-1"></i>Manage packages & pricing</div>`;
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="text-white mb-0" style="font-weight: 700;">
-                <i class="fa-solid fa-mobile-screen text-white me-2"></i> Mobile Panels
-            </h3>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn-purple" onclick="openGlobalLinkModal()">
-                    <i class="fa-solid fa-link"></i> Global Buy Link
-                </button>
-                <button class="btn-pink" onclick="openAddModal()">
-                    <i class="fa-solid fa-plus"></i> Add Product
-                </button>
-            </div>
-        </div>
+   card.querySelector('img').onerror = function() {
+    this.onerror = null;
+    this.src = 'logo.png';
+   };
+   card.onclick = () => openProductDetail(id);
+   grid.appendChild(card);
+  });
+ });
+}
 
-        <div id="productGrid" class="product-grid"></div>
-    </div>
+function openProductDetail(id) {
+ const p = allProductsData[id];
+ if (!p) return;
 
-    <!-- 📌 Product Detail Popup -->
-    <div class="modal fade" id="productDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalTitle" style="font-weight: bold; color: #fff;">Product Name</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="detailPackages" style="max-height: 60vh; overflow-y: auto;"></div>
-                <div class="modal-footer" style="justify-content: space-between;">
-                    <div>
-                        <button id="btnEdit" class="btn" style="background: #ffaa00; color: #000; font-weight: bold; margin-right: 5px;">
-                            <i class="fa-solid fa-pen"></i> Edit
-                        </button>
-                        <button id="btnDelete" class="btn" style="background: #ff0066; color: #fff; font-weight: bold;">
-                            <i class="fa-solid fa-trash"></i> Delete
-                        </button>
-                    </div>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+ document.getElementById('detailModalTitle').textContent =
+  p.name || p.title || p.panelName || 'Unnamed Panel';
 
-    <!-- 📌 Add / Edit Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="formModalTitle">Add New Product</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="productId">
-                    <div class="mb-3">
-                        <label class="form-label">Panel Name</label>
-                        <input type="text" id="productName" class="form-control" placeholder="Enter Panel Name">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Image URL</label>
-                        <input type="text" id="productImage" class="form-control" placeholder="Enter Image URL">
-                    </div>
-                    
-                    <h6 class="text-white mt-4 border-bottom border-secondary pb-2">Packages</h6>
-                    <div id="packagesContainer"></div>
-                    <button type="button" class="btn btn-sm btn-purple mt-2" onclick="addPackageRow()">+ Add Package</button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-pink" onclick="saveProduct()">Save Product</button>
-                </div>
-            </div>
-        </div>
-    </div>
+ const pkgs = getPkgs(p);
+ let html = '';
 
-    <!-- 📌 Global Buy Link Modal -->
-    <div class="modal fade" id="globalLinkModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Global Buy Link</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Global Link URL</label>
-                        <input type="text" id="globalBuyLinkInput" class="form-control" placeholder="https://discord.gg/yourlink">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-purple" onclick="saveGlobalLink()">Save Link</button>
-                </div>
-            </div>
-        </div>
-    </div>
+ if (!pkgs.length) {
+  html = '<div class="text-center p-4" style="color:#fda4af">No packages available.</div>';
+ }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+ pkgs.forEach(pkg => {
+  const d = pkg.duration || pkg.name || 'N/A';
+  const v = extractPkgPrices(pkg);
+  html += `<div class="pkg-card">
+   <div class="text-center fw-bold pb-2" style="color:#86efac;border-bottom:1px dashed #39234c">
+    <i class="fa-regular fa-clock me-1"></i>${esc(d)}
+   </div>
+   <div class="price-row">
+    <div class="price-box old"><b>৳${v.oldP}</b><small>Old price</small></div>
+    <div class="price-box sale"><b>৳${v.saleP}</b><small>Sale price</small></div>
+    <div class="price-box buy"><b>৳${v.buyP}</b><small>Buy price</small></div>
+   </div>
+  </div>`;
+ });
 
-    <script>
-        const firebaseConfig = {
-            databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
-        
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const database = firebase.database();
-        const dbRef = database.ref('mobile_panels');
+ document.getElementById('detailPackages').innerHTML = html;
+ document.getElementById('btnEdit').onclick = () => {
+  detailModal.hide();
+  openEditModal(id);
+ };
+ document.getElementById('btnDelete').onclick = () => {
+  if (confirm('Are you sure you want to delete this product?')) {
+   dbRef.child(id).remove()
+    .then(() => detailModal.hide())
+    .catch(e => alert('Delete failed: ' + e.message));
+  }
+ };
+ detailModal.show();
+}
 
-        let allProductsData = {};
-        const detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
-        const formModal = new bootstrap.Modal(document.getElementById('addProductModal'));
-        const linkModal = new bootstrap.Modal(document.getElementById('globalLinkModal'));
+function openAddModal() {
+ document.getElementById('formModalTitle').textContent = 'Add New Product';
+ document.getElementById('productId').value = '';
+ document.getElementById('productName').value = '';
+ document.getElementById('productImage').value = '';
+ document.getElementById('packagesContainer').innerHTML = '';
+ addPackageRow();
+ formModal.show();
+}
 
-        // 🌟 অটো-স্মার্ট প্রাইস ডিটেক্টর
-        function extractPkgPrices(pkg) {
-            let oldP = 0, saleP = 0, buyP = 0;
-            if (!pkg) return { oldP, saleP, buyP };
+function openEditModal(id) {
+ const p = allProductsData[id];
+ if (!p) return;
 
-            const keys = Object.keys(pkg);
+ document.getElementById('formModalTitle').textContent = 'Edit Product';
+ document.getElementById('productId').value = id;
+ document.getElementById('productName').value = p.name || p.title || '';
+ document.getElementById('productImage').value = p.imageUrl || p.image || p.img || '';
+ document.getElementById('packagesContainer').innerHTML = '';
 
-            // 1. Old Price
-            for (let k of keys) {
-                if (k.toLowerCase().includes('old')) {
-                    oldP = pkg[k];
-                    break;
-                }
-            }
+ const pkgs = getPkgs(p);
+ if (pkgs.length) {
+  pkgs.forEach(pkg => {
+   const v = extractPkgPrices(pkg);
+   addPackageRow(pkg.duration || pkg.name || '', v.oldP, v.saleP, v.buyP);
+  });
+ } else {
+  addPackageRow();
+ }
+ formModal.show();
+}
 
-            // 2. Sale Price
-            for (let k of keys) {
-                const lk = k.toLowerCase();
-                if (lk.includes('new') || lk.includes('sale') || lk === 'price') {
-                    saleP = pkg[k];
-                    break;
-                }
-            }
+function parseDurationStr(str) {
+ if (!str) return {num:'1', unit:'Days'};
+ if (String(str).toLowerCase().includes('lifetime')) return {num:'', unit:'Lifetime'};
+ const parts = String(str).trim().split(/\s+/);
+ if (parts.length >= 2) return {num:parts[0], unit:parts.slice(1).join(' ')};
+ return {num:parts[0] || '1', unit:'Days'};
+}
 
-            // 3. Buy Price
-            for (let k of keys) {
-                const lk = k.toLowerCase();
-                if (lk.includes('resell') || lk.includes('buy') || lk.includes('cost')) {
-                    buyP = pkg[k];
-                    break;
-                }
-            }
+function addPackageRow(durationStr='', oldP='', newP='', resellP='') {
+ const parsed = parseDurationStr(durationStr);
+ const div = document.createElement('div');
+ div.className = 'row g-2 mb-3 package-row align-items-end pkg-card';
 
-            return {
-                oldP: oldP || 0,
-                saleP: saleP || 0,
-                buyP: buyP || 0
-            };
-        }
+ div.innerHTML = `<div class="col-md-4">
+  <label class="form-label">Duration</label>
+  <div class="d-flex gap-1">
+   <input type="number" min="1" class="form-control pkg-dur-num" value="${esc(parsed.num)}" placeholder="Qty" style="width:80px">
+   <select class="form-select pkg-dur-unit" onchange="toggleQtyInput(this)">
+    <option value="Hours">Hours</option>
+    <option value="Days">Days</option>
+    <option value="Months">Months</option>
+    <option value="Years">Years</option>
+    <option value="Lifetime">Lifetime</option>
+   </select>
+  </div>
+ </div>
+ <div class="col-4 col-md-2"><label class="form-label">Old Price</label><input type="number" min="0" class="form-control pkg-old" value="${esc(oldP)}" placeholder="৳"></div>
+ <div class="col-4 col-md-2"><label class="form-label">Sale Price</label><input type="number" min="0" class="form-control pkg-new" value="${esc(newP)}" placeholder="৳"></div>
+ <div class="col-4 col-md-2"><label class="form-label">Buy Price</label><input type="number" min="0" class="form-control pkg-resell" value="${esc(resellP)}" placeholder="৳"></div>
+ <div class="col-4 col-md-2"><button type="button" class="btn btn-outline-danger w-100" title="Remove package"><i class="fa-solid fa-trash"></i></button></div>`;
 
-        function loadProducts() {
-            dbRef.on('value', (snapshot) => {
-                const grid = document.getElementById('productGrid');
-                grid.innerHTML = '';
-                allProductsData = {};
-                
-                snapshot.forEach((childSnapshot) => {
-                    const id = childSnapshot.key;
-                    const product = childSnapshot.val();
-                    allProductsData[id] = product;
-                    
-                    const pName = product.name || product.title || product.panelName || 'Unnamed Panel';
-                    const pImg = product.imageUrl || product.image || product.img || 'logo.png';
-                    
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.onclick = () => openProductDetail(id);
-                    
-                    card.innerHTML = `
-                        <img src="${pImg}" class="product-img" alt="Panel" onerror="this.src='logo.png'">
-                        <div class="product-name">${pName}</div>
-                    `;
-                    grid.appendChild(card);
-                });
-            });
-        }
+ div.querySelector('.pkg-dur-unit').value =
+  ['Hours','Days','Months','Years','Lifetime'].find(u =>
+   parsed.unit.toLowerCase().includes(u.toLowerCase().slice(0,-1)) ||
+   parsed.unit.toLowerCase() === u.toLowerCase()
+  ) || 'Days';
 
-        function openProductDetail(id) {
-            const product = allProductsData[id];
-            const pName = product.name || product.title || product.panelName || 'Unnamed Panel';
-            
-            document.getElementById('detailModalTitle').innerText = pName;
-            
-            let packagesHTML = '<div style="display: flex; flex-direction: column; gap: 15px;">';
-            const pkgs = Array.isArray(product.packages) ? product.packages : (product.packages ? Object.values(product.packages) : []);
-            
-            if (pkgs.length > 0) {
-                pkgs.forEach(pkg => {
-                    const duration = pkg.duration || pkg.name || 'N/A';
-                    const prices = extractPkgPrices(pkg);
+ if (parsed.unit === 'Lifetime') div.querySelector('.pkg-dur-num').disabled = true;
+ div.querySelector('button').onclick = () => div.remove();
+ document.getElementById('packagesContainer').appendChild(div);
+}
 
-                    packagesHTML += `
-                    <div style="background: #0c0514; border: 1px solid #2a113d; padding: 12px; border-radius: 8px;">
-                        <div style="color: #00cc66; text-align: center; font-weight: bold; border-bottom: 1px dashed #2a113d; padding-bottom: 8px; font-size: 14px;">
-                            <i class="fa-regular fa-clock"></i> ${duration}
-                        </div>
-                        <div class="p-box-container">
-                            <div class="p-box old">
-                                <span class="p-val">৳${prices.oldP}</span>
-                                <span class="p-label">Old Price</span>
-                            </div>
-                            <div class="p-box sale">
-                                <span class="p-val">৳${prices.saleP}</span>
-                                <span class="p-label">Sale</span>
-                            </div>
-                            <div class="p-box buy">
-                                <span class="p-val">৳${prices.buyP}</span>
-                                <span class="p-label">Buy</span>
-                            </div>
-                        </div>
-                    </div>`;
-                });
-            } else {
-                packagesHTML += `<div class="text-center text-danger p-3">No packages available.</div>`;
-            }
-            packagesHTML += '</div>';
-            
-            document.getElementById('detailPackages').innerHTML = packagesHTML;
-            
-            document.getElementById('btnEdit').onclick = () => {
-                detailModal.hide();
-                openEditModal(id);
-            };
-            
-            document.getElementById('btnDelete').onclick = () => {
-                if(confirm("Are you sure you want to delete this product?")) {
-                    dbRef.child(id).remove().then(() => detailModal.hide());
-                }
-            };
-            
-            detailModal.show();
-        }
+function toggleQtyInput(sel) {
+ const n = sel.parentElement.querySelector('.pkg-dur-num');
+ if (sel.value === 'Lifetime') {
+  n.value = '';
+  n.disabled = true;
+ } else {
+  n.disabled = false;
+  if (!n.value) n.value = '1';
+ }
+}
 
-        function openAddModal() {
-            document.getElementById('formModalTitle').innerText = "Add New Product";
-            document.getElementById('productId').value = '';
-            document.getElementById('productName').value = '';
-            document.getElementById('productImage').value = '';
-            document.getElementById('packagesContainer').innerHTML = '';
-            addPackageRow();
-            formModal.show();
-        }
+async function saveProduct() {
+ const id = document.getElementById('productId').value;
+ const name = document.getElementById('productName').value.trim();
+ const imageUrl = document.getElementById('productImage').value.trim();
 
-        function openEditModal(id) {
-            const product = allProductsData[id];
-            const pName = product.name || product.title || '';
-            const pImg = product.imageUrl || product.image || '';
+ if (!name) {
+  alert('Please enter a panel name.');
+  return;
+ }
 
-            document.getElementById('formModalTitle').innerText = "Edit Product";
-            document.getElementById('productId').value = id;
-            document.getElementById('productName').value = pName;
-            document.getElementById('productImage').value = pImg;
-            
-            document.getElementById('packagesContainer').innerHTML = '';
-            const pkgs = Array.isArray(product.packages) ? product.packages : (product.packages ? Object.values(product.packages) : []);
-            if(pkgs.length > 0) {
-                pkgs.forEach(pkg => {
-                    const prices = extractPkgPrices(pkg);
-                    addPackageRow(pkg.duration || pkg.name, prices.oldP, prices.saleP, prices.buyP);
-                });
-            } else {
-                addPackageRow();
-            }
-            formModal.show();
-        }
+ const packages = [];
+ document.querySelectorAll('.package-row').forEach(row => {
+  const num = row.querySelector('.pkg-dur-num').value;
+  const unit = row.querySelector('.pkg-dur-unit').value;
+  const duration = unit === 'Lifetime' ? 'Lifetime' : `${num || 1} ${unit}`;
+  const oldPrice = Number(row.querySelector('.pkg-old').value) || 0;
+  const newPrice = Number(row.querySelector('.pkg-new').value) || 0;
+  const resellPrice = Number(row.querySelector('.pkg-resell').value) || 0;
 
-        function parseDurationStr(str) {
-            if (!str) return { num: '1', unit: 'Days' };
-            if (str.toLowerCase().includes('lifetime')) return { num: '', unit: 'Lifetime' };
-            const parts = str.trim().split(/\s+/);
-            if (parts.length >= 2) return { num: parts[0], unit: parts[1] };
-            return { num: parts[0] || '1', unit: 'Days' };
-        }
+  packages.push({
+   duration, oldPrice, newPrice,
+   price:newPrice,
+   resellPrice,
+   buyPrice:resellPrice
+  });
+ });
 
-        function addPackageRow(durationStr = '', oldP = '', newP = '', resellP = '') {
-            const parsed = parseDurationStr(durationStr);
-            const div = document.createElement('div');
-            div.className = 'row g-2 mb-2 package-row align-items-end';
-            
-            div.innerHTML = `
-                <div class="col-md-4">
-                    <label class="form-label" style="font-size:11px;">Duration</label>
-                    <div class="d-flex gap-1">
-                        <input type="number" class="form-control pkg-dur-num" value="${parsed.num}" placeholder="Qty" style="width: 75px;" ${parsed.unit === 'Lifetime' ? 'disabled' : ''}>
-                        <select class="form-select pkg-dur-unit" onchange="toggleQtyInput(this)">
-                            <option value="Hours" ${parsed.unit.toLowerCase().includes('hour') ? 'selected' : ''}>Hours</option>
-                            <option value="Days" ${parsed.unit.toLowerCase().includes('day') ? 'selected' : ''}>Days</option>
-                            <option value="Months" ${parsed.unit.toLowerCase().includes('month') ? 'selected' : ''}>Months</option>
-                            <option value="Years" ${parsed.unit.toLowerCase().includes('year') ? 'selected' : ''}>Years</option>
-                            <option value="Lifetime" ${parsed.unit.toLowerCase().includes('lifetime') ? 'selected' : ''}>Lifetime</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label" style="font-size:11px;">Old Price</label>
-                    <input type="number" class="form-control pkg-old" value="${oldP}" placeholder="৳">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label" style="font-size:11px;">Sale Price</label>
-                    <input type="number" class="form-control pkg-new" value="${newP}" placeholder="৳">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label" style="font-size:11px;">Buy Price</label>
-                    <input type="number" class="form-control pkg-resell" value="${resellP}" placeholder="৳">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger w-100" onclick="this.parentElement.parentElement.remove()">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            `;
-            document.getElementById('packagesContainer').appendChild(div);
-        }
+ if (!packages.length) {
+  alert('Add at least one package.');
+  return;
+ }
 
-        function toggleQtyInput(selectElem) {
-            const numInput = selectElem.parentElement.querySelector('.pkg-dur-num');
-            if (selectElem.value === 'Lifetime') {
-                numInput.value = '';
-                numInput.disabled = true;
-            } else {
-                numInput.disabled = false;
-                if (!numInput.value) numInput.value = '1';
-            }
-        }
+ const data = {name, title:name, imageUrl, image:imageUrl, packages};
 
-        function saveProduct() {
-            const id = document.getElementById('productId').value;
-            const name = document.getElementById('productName').value;
-            const imageUrl = document.getElementById('productImage').value;
-            
-            const packageRows = document.querySelectorAll('.package-row');
-            let packages = [];
-            packageRows.forEach(row => {
-                const num = row.querySelector('.pkg-dur-num').value;
-                const unit = row.querySelector('.pkg-dur-unit').value;
-                const duration = (unit === 'Lifetime') ? 'Lifetime' : `${num || 1} ${unit}`;
-                const oldPrice = Number(row.querySelector('.pkg-old').value) || 0;
-                const newPrice = Number(row.querySelector('.pkg-new').value) || 0;
-                const resellPrice = Number(row.querySelector('.pkg-resell').value) || 0;
-                
-                if(duration) {
-                    packages.push({ 
-                        duration, 
-                        oldPrice, 
-                        newPrice, 
-                        price: newPrice,
-                        resellPrice,
-                        buyPrice: resellPrice
-                    });
-                }
-            });
+ try {
+  if (id) await dbRef.child(id).update(data);
+  else await dbRef.push(data);
+  formModal.hide();
+ } catch (e) {
+  alert('Could not save product: ' + e.message);
+ }
+}
 
-            const productData = { 
-                name: name,
-                title: name,
-                imageUrl: imageUrl,
-                image: imageUrl,
-                packages: packages 
-            };
+function openGlobalLinkModal() {
+ database.ref('global_buy_link/mobile').once('value')
+  .then(s => {
+   document.getElementById('globalBuyLinkInput').value = s.val() || '';
+   linkModal.show();
+  })
+  .catch(e => alert('Could not load link: ' + e.message));
+}
 
-            if(id) {
-                dbRef.child(id).update(productData).then(() => formModal.hide());
-            } else {
-                dbRef.push(productData).then(() => formModal.hide());
-            }
-        }
+function saveGlobalLink() {
+ const link = document.getElementById('globalBuyLinkInput').value.trim();
+ database.ref('global_buy_link/mobile').set(link)
+  .then(() => {
+   alert('Global Buy Link Saved!');
+   linkModal.hide();
+  })
+  .catch(e => alert('Could not save link: ' + e.message));
+}
 
-        function openGlobalLinkModal() {
-            database.ref('global_buy_link/mobile').once('value').then(snapshot => {
-                document.getElementById('globalBuyLinkInput').value = snapshot.val() || '';
-                linkModal.show();
-            });
-        }
-
-        function saveGlobalLink() {
-            const link = document.getElementById('globalBuyLinkInput').value;
-            database.ref('global_buy_link/mobile').set(link).then(() => {
-                alert("Global Buy Link Saved!");
-                linkModal.hide();
-            });
-        }
-
-        window.onload = loadProducts;
-    </script>
+window.onload = loadProducts;
+</script>
 </body>
 </html>
