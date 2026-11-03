@@ -367,11 +367,26 @@
                     <input type="text" id="pTitle" class="styled-input" placeholder="Enter Panel Name">
                 </div>
 
-                <div class="mb-6">
+                <div class="mb-5">
                     <label class="text-xs text-gray-400 uppercase block mb-2" for="pImage">
                         Image URL
                     </label>
                     <input type="url" id="pImage" class="styled-input" placeholder="Enter Image URL">
+                </div>
+
+                <div class="mb-6">
+                    <label class="text-xs text-purple-400 uppercase block mb-2" for="pSetupVideo">
+                        <i class="fas fa-play-circle mr-1"></i> Product Setup Video URL
+                    </label>
+                    <input
+                        type="url"
+                        id="pSetupVideo"
+                        class="styled-input"
+                        placeholder="এই প্রোডাক্টের YouTube / video link দিন"
+                    >
+                    <p class="text-xs text-gray-500 mt-2">
+                        এই লিংকটি শুধু এই প্রোডাক্টের Buy Now প্যাকেজে দেখাবে।
+                    </p>
                 </div>
 
                 <div class="flex justify-between items-center gap-3 mb-3">
@@ -598,6 +613,7 @@
         function resetModal() {
             $("pTitle").value = "";
             $("pImage").value = "";
+            $("pSetupVideo").value = "";
             $("packageContainer").innerHTML = "";
             $("modalTitle").textContent = "Add New Product";
             $("modalDeleteBtn").classList.add("hidden");
@@ -647,6 +663,7 @@
 
             const title = $("pTitle").value.trim();
             const image = $("pImage").value.trim();
+            const setupVideoUrl = $("pSetupVideo").value.trim();
 
             if (!title) {
                 alert("Please enter a Panel Name.");
@@ -657,6 +674,12 @@
             if (image && !/^https?:\/\/\S+$/i.test(image)) {
                 alert("Please enter a valid Image URL.");
                 $("pImage").focus();
+                return;
+            }
+
+            if (setupVideoUrl && !/^https?:\/\/\S+$/i.test(setupVideoUrl)) {
+                alert("Please enter a valid Setup Video URL.");
+                $("pSetupVideo").focus();
                 return;
             }
 
@@ -698,7 +721,7 @@
                 return;
             }
 
-            const data = { title, image, packages };
+            const data = { title, image, setupVideoUrl, packages };
 
             isSaving = true;
             $("saveBtn").disabled = true;
@@ -840,6 +863,7 @@
 
                 $("pTitle").value = product.title || "";
                 $("pImage").value = product.image || "";
+                $("pSetupVideo").value = product.setupVideoUrl || "";
 
                 const container = $("packageContainer");
                 container.innerHTML = "";
