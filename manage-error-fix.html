@@ -1,347 +1,181 @@
+
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0a0512">
-  <title>BANGLA FF PANEL - ERROR FIX</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-  <!-- Firebase SDK v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-  <style>
-    :root {
-      --page: #05020a;
-      --panel: #11071a;
-      --panel-2: #160b22;
-      --line: #2a113d;
-      --muted: #77688a;
-      --text: #ffffff;
-      --purple: #9d00ff;
-      --purple-2: #ff0066;
-      --green: #18c66b;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse at 50% -20%, rgba(157, 0, 255, .08), transparent 48%),
-        linear-gradient(135deg, #05020a, #0a0512 55%, #05020a);
-      font-family: Inter, Arial, sans-serif;
-      padding-bottom: 42px;
-    }
-    .navbar {
-      min-height: 72px;
-      padding: 13px max(5%, calc((100% - 1120px) / 2));
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      background: rgba(7, 11, 24, .88);
-      border-bottom: 1px solid #1a0b2e;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(14px);
-    }
-    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: white; min-width: 0; }
-    .brand img { width: 39px; height: 39px; object-fit: cover; border-radius: 9px; border: 1px solid #9d00ff; }
-    .brand h1 { font-size: 15px; line-height: 1.2; font-weight: 800; letter-spacing: .5px; }
-    .brand span { display: block; color: #ff0066; font-size: 9px; letter-spacing: 1.7px; margin-top: 4px; font-weight: 700; }
-    .nav-actions { display: flex; gap: 9px; align-items: center; }
-    .nav-btn {
-      display: inline-flex; align-items: center; gap: 7px; padding: 9px 13px;
-      border: 1px solid #3a1a50; border-radius: 8px; color: #cbd0df;
-      background: #11071a; text-decoration: none; font-size: 12px; font-weight: 700;
-      transition: .2s ease;
-    }
-    .nav-btn:hover { color: #fff; border-color: #7662e9; transform: translateY(-1px); }
-    .discord-btn { color: #a9aaff; border-color: rgba(88,101,242,.4); }
-    .main-container {
-      width: min(100% - 32px, 1120px);
-      margin: 28px auto 0;
-      padding: 20px;
-      border: 1px solid #1a0b2e;
-      border-radius: 20px;
-      background: rgba(7, 12, 26, .74);
-      box-shadow: 0 18px 55px rgba(0,0,0,.25);
-    }
-    .page-heading { display: flex; justify-content: space-between; align-items: end; gap: 14px; margin: 2px 2px 20px; }
-    .section-title {
-      font-family: "Barlow Condensed", Inter, sans-serif;
-      font-size: 30px; line-height: 1; letter-spacing: .8px; font-weight: 800;
-      text-transform: uppercase; color: #ffffff;
-    }
-    .section-subtitle { color: #77688a; font-size: 11px; letter-spacing: 1.1px; margin-top: 8px; text-transform: uppercase; }
-    .live-note { color: #23ce78; font-size: 10px; letter-spacing: 1px; font-weight: 800; white-space: nowrap; }
-    .live-note::before, .live-dot { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00cc66; box-shadow: 0 0 9px rgba(0,204,102,.65); margin-right: 6px; }
-    .items-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .item-card {
-      min-width: 0; min-height: 246px; padding: 17px 18px;
-      display: flex; flex-direction: column; align-items: stretch;
-      border: 1px solid #2a113d; border-radius: 17px;
-      background: linear-gradient(150deg, #11071a, #08040f);
-      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
-    }
-    .item-card:hover { transform: translateY(-3px); border-color: #9d00ff; box-shadow: 0 10px 28px rgba(157,0,255,.15); }
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-    .item-icon {
-      width: 46px; height: 46px; flex: 0 0 46px; border-radius: 13px;
-      display: grid; place-items: center; color: #c77aff; font-size: 21px;
-      border: 1px solid #6f20a5;
-      background: linear-gradient(145deg, rgba(157,0,255,.12), rgba(19,23,48,.45));
-      box-shadow: inset 0 0 14px rgba(157,0,255,.08);
-      overflow: hidden;
-    }
-    .item-icon img { width: 25px; height: 25px; object-fit: contain; }
-    .status { color: #ff0066; font-size: 9px; font-weight: 800; letter-spacing: 1px; white-space: nowrap; padding-top: 1px; }
-    .status::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #00cc66; margin-right: 5px; box-shadow: 0 0 7px #00cc66; }
-    .item-title {
-      font-family: "Barlow Condensed", Inter, sans-serif;
-      font-size: 16px; line-height: 1.18; letter-spacing: .25px; font-weight: 800;
-      color: #ffffff; text-transform: uppercase; margin-top: 13px;
-      overflow-wrap: anywhere;
-    }
-    .item-desc { color: #77688a; font-size: 12px; line-height: 1.55; margin-top: 10px; overflow-wrap: anywhere; }
-    .video-link {
-      width: 100%; height: 138px; min-height: 138px; margin-top: 14px;
-      border-radius: 11px; overflow: hidden; position: relative; display: grid; place-items: center;
-      text-decoration: none; border: 1px solid rgba(111,150,139,.13);
-      background:
-        linear-gradient(135deg, rgba(31,68,64,.55), rgba(22,49,39,.76)),
-        radial-gradient(circle at 50% 50%, rgba(67,119,98,.20), transparent 70%);
-    }
-    .video-link.has-thumb { background-size: cover; background-position: center; }
-    .video-link::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.15); transition: .2s; }
-    .video-link:hover::before { background: rgba(0,0,0,.02); }
-    .play-circle {
-      position: relative; z-index: 1; width: 62px; height: 62px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,.86); display: grid; place-items: center;
-      color: white; font-size: 20px; padding-left: 3px;
-      background: rgba(0,0,0,.28); transition: .2s;
-    }
-    .video-link:hover .play-circle { transform: scale(1.08); background: rgba(0,0,0,.5); }
-    .card-spacer { flex: 1; min-height: 15px; }
-    .download-btn {
-      align-self: flex-start; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-      margin-top: 14px; padding: 9px 13px; min-height: 34px;
-      border-radius: 9px; color: white; text-decoration: none; font-size: 11px; font-weight: 800;
-      background: linear-gradient(135deg, #9d00ff 0%, #ff0066 100%);
-      box-shadow: 0 5px 15px rgba(255,0,102,.30); transition: .2s;
-    }
-    .download-btn:hover { transform: translateY(-2px); filter: brightness(1.12); box-shadow: 0 7px 20px rgba(255,0,102,.45); }
-    .empty-state, .error-state {
-      grid-column: 1 / -1; text-align: center; padding: 48px 18px;
-      border: 1px dashed #3a1a50; border-radius: 14px; color: #77688a; font-size: 13px;
-      background: rgba(13,20,40,.55);
-    }
-    .empty-state i, .error-state i { display: block; font-size: 28px; margin-bottom: 12px; color: #7764d9; }
-    @media (max-width: 850px) { .items-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 560px) {
-      .navbar { padding: 12px 16px; }
-      .brand h1 { font-size: 12px; }
-      .brand span { font-size: 8px; }
-      .nav-btn { padding: 8px 10px; font-size: 11px; }
-      .main-container { width: min(100% - 20px, 1120px); margin-top: 14px; padding: 13px; border-radius: 15px; }
-      .items-grid { grid-template-columns: 1fr; gap: 12px; }
-      .item-card { min-height: 220px; padding: 16px; }
-      .video-link { height: 150px; min-height: 150px; }
-      .section-title { font-size: 27px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Error Fix</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--bg:#05020a;--card:#11071a;--border:#2a113d;--pink:#ff0066;--purple:#9d00ff;--gray:#b0b0b0;--green:#00cc66}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:white;font-family:Arial,sans-serif}
+header{padding:20px;background:var(--card);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+header h2{margin:0;color:var(--pink)}
+button{border:0;padding:11px 16px;border-radius:8px;background:linear-gradient(90deg,var(--pink),var(--purple));color:white;font-weight:bold;cursor:pointer}
+.container{max-width:1100px;margin:25px auto;padding:0 15px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat,.item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:17px}
+.stat small{color:var(--gray)}.stat h2{margin:8px 0 0;color:var(--pink)}
+.toolbar{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}
+input,textarea{width:100%;padding:12px;background:#09040f;border:1px solid var(--border);border-radius:8px;color:white;outline:none}
+#search{flex:1;min-width:180px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px}
+.item h3{color:var(--pink);margin:10px 0}
+.item p{color:var(--gray);font-size:14px;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.actions button{padding:8px 11px}.delete{background:#a50035}.toggle{background:#333}
+.modal{display:none;position:fixed;inset:0;background:#000c;z-index:5;overflow:auto;padding:20px}
+.modalbox{max-width:550px;margin:25px auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
+.modalbox h2{color:var(--pink)}
+.field{margin:12px 0}.field label{display:block;margin-bottom:6px;color:var(--gray)}
+.check{display:flex;gap:9px;align-items:center;margin:14px 0}.check input{width:auto}
+.close{float:right;background:#333}
+.status{color:var(--green);font-size:12px}
+@media(max-width:500px){.stats{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <header class="navbar">
-    <a class="brand" href="/">
-      <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-      <div>
-        <h1>BANGLA FF PANEL</h1>
-        <span>ERROR FIX CENTER</span>
-      </div>
-    </a>
-    <nav class="nav-actions">
-      <a class="nav-btn" href="/"><i class="fa-solid fa-house"></i> Home</a>
-      <a class="nav-btn discord-btn dynamic-discord" href="https://discord.gg/9VGgu48bY" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-discord"></i> Discord</a>
-    </nav>
-  </header>
+<header>
+<h2><i class="fa-solid fa-screwdriver-wrench"></i> Error Fix Manager</h2>
+<button onclick="location.href='admin.html'">Dashboard</button>
+</header>
 
-  <main class="main-container">
-    <div class="page-heading">
-      <div>
-        <h2 class="section-title">ERROR FIX</h2>
-        <p class="section-subtitle">TROUBLESHOOTING &amp; REQUIRED FILES</p>
-      </div>
-      <span class="live-note">LIVE UPDATES</span>
-    </div>
-    <section id="itemsContainer" class="items-grid" aria-live="polite">
-      <div class="empty-state">
-        <i class="fa-solid fa-spinner fa-spin"></i>
-        <p>Loading Error Fixes...</p>
-      </div>
-    </section>
-  </main>
+<div class="container">
+<div class="stats">
+<div class="stat"><small>Total Boxes</small><h2 id="total">0</h2></div>
+<div class="stat"><small>Visible Boxes</small><h2 id="visible">0</h2></div>
+<div class="stat"><small>Hidden Boxes</small><h2 id="hidden">0</h2></div>
+</div>
 
-  <script>
-    // একই Firebase Realtime Database ব্যবহার করা হচ্ছে।
-    const firebaseConfig = {
-      databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
+<div class="toolbar">
+<input id="search" placeholder="Search boxes..." oninput="render()">
+<button onclick="openModal()"><i class="fa fa-plus"></i> Add New Box</button>
+</div>
+<div class="grid" id="cards"></div>
+</div>
 
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+<div class="modal" id="modal">
+<div class="modalbox">
+<button class="close" onclick="closeModal()">Close</button>
+<h2 id="modalTitle">Add Error Fix Box</h2>
+<form id="boxForm">
+<input type="hidden" id="editId">
+<div class="field"><label>Box Title *</label><input id="title" required placeholder="Example: Fix Login Error"></div>
+<div class="field"><label>Description</label><textarea id="description" rows="3" placeholder="Write details..."></textarea></div>
+<div class="field"><label>Icon Class / Image URL</label><input id="icon" placeholder="fa-solid fa-wrench"></div>
+<div class="field"><label>Status Text</label><input id="statusText" placeholder="Working / Updated"></div>
+<div class="field"><label>Download Link *</label><input id="downloadUrl" type="url" required placeholder="https://..."></div>
+<div class="field"><label>Button Text</label><input id="buttonText" value="Download Now"></div>
+<div class="field"><label>Tutorial Video URL (Optional)</label><input id="videoUrl" placeholder="YouTube or Google Drive link"></div>
+<div class="check"><input type="checkbox" id="videoEnabled" checked><label for="videoEnabled">Show tutorial video link</label></div>
+<div class="check"><input type="checkbox" id="enabled" checked><label for="enabled">Show this box on website</label></div>
+<button type="submit" id="saveBtn">Save Box</button>
+</form>
+</div>
+</div>
 
-    const container = document.getElementById("itemsContainer");
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,onValue,push,set,update,remove} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    function youtubeId(url) {
-      if (!url) return null;
-      try {
-        const parsed = new URL(url);
-        if (parsed.hostname.includes("youtu.be")) return parsed.pathname.split("/").filter(Boolean)[0] || null;
-        if (parsed.pathname.includes("/shorts/")) return parsed.pathname.split("/shorts/")[1].split("/")[0];
-        if (parsed.pathname.includes("/embed/")) return parsed.pathname.split("/embed/")[1].split("/")[0];
-        return parsed.searchParams.get("v");
-      } catch (_) { return null; }
-    }
+const firebaseConfig={
+apiKey:"AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+authDomain:"bangla-ff-admin.firebaseapp.com",
+databaseURL:"https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"bangla-ff-admin",
+storageBucket:"bangla-ff-admin.firebasestorage.app",
+messagingSenderId:"295013484465",
+appId:"1:295013484465:web:b6bc2a949e239095761f90"
+};
 
-    function safeUrl(value) {
-      if (typeof value !== "string" || !value.trim()) return "";
-      try {
-        const url = new URL(value.trim(), window.location.href);
-        return ["http:", "https:"].includes(url.protocol) ? url.href : "";
-      } catch (_) { return ""; }
-    }
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+const auth=getAuth(app);
+const listRef=ref(db,"error_fixes");
+let records={};
 
-    function makeIcon(item) {
-      const wrap = document.createElement("div");
-      wrap.className = "item-icon";
-      const iconValue = String(item.icon || "fa-screwdriver-wrench").trim();
-      if (/^https?:\/\//i.test(iconValue)) {
-        const img = document.createElement("img");
-        img.src = safeUrl(iconValue);
-        img.alt = "";
-        img.onerror = () => { wrap.innerHTML = '<i class="fa-solid fa-screwdriver-wrench"></i>'; };
-        wrap.appendChild(img);
-      } else {
-        const i = document.createElement("i");
-        const classes = iconValue.split(/\s+/).filter(c => /^[a-zA-Z0-9_-]+$/.test(c));
-        i.className = classes.length ? classes.join(" ") : "fa-solid fa-screwdriver-wrench";
-        wrap.appendChild(i);
-      }
-      return wrap;
-    }
+onAuthStateChanged(auth,user=>{
+ if(!user) location.href="login.html";
+});
 
-    function createCard(item) {
-      const card = document.createElement("article");
-      card.className = "item-card";
+onValue(listRef,snap=>{
+ records=snap.val()||{};
+ render();
+});
 
-      const top = document.createElement("div");
-      top.className = "card-top";
-      top.appendChild(makeIcon(item));
+window.openModal=(id=null)=>{
+ document.getElementById("boxForm").reset();
+ document.getElementById("editId").value=id||"";
+ document.getElementById("modalTitle").textContent=id?"Edit Error Fix Box":"Add Error Fix Box";
+ if(id){
+  const x=records[id];
+  if(!x)return;
+  title.value=x.title||"";
+  description.value=x.description||"";
+  icon.value=x.icon||"";
+  statusText.value=x.status_text||"";
+  downloadUrl.value=x.download_url||"";
+  buttonText.value=x.button_text||"Download Now";
+  videoUrl.value=x.video_url||"";
+  videoEnabled.checked=x.video_enabled!==false;
+  enabled.checked=x.enabled!==false;
+ }
+ document.getElementById("modal").style.display="block";
+};
+window.closeModal=()=>document.getElementById("modal").style.display="none";
 
-      const status = document.createElement("span");
-      status.className = "status";
-      status.textContent = item.status_text || "LIVE";
-      top.appendChild(status);
-      card.appendChild(top);
+window.render=()=>{
+ const q=document.getElementById("search").value.toLowerCase();
+ const entries=Object.entries(records);
+ document.getElementById("total").textContent=entries.length;
+ document.getElementById("visible").textContent=entries.filter(([k,v])=>v.enabled!==false).length;
+ document.getElementById("hidden").textContent=entries.filter(([k,v])=>v.enabled===false).length;
+ document.getElementById("cards").innerHTML="";
+ entries.filter(([k,v])=>(v.title||"").toLowerCase().includes(q)).forEach(([id,x])=>{
+  const div=document.createElement("div");
+  div.className="item";
+  const title=document.createElement("h3");title.textContent=x.title||"Untitled";
+  const desc=document.createElement("p");desc.textContent=x.description||"No description";
+  const status=document.createElement("div");status.className="status";status.textContent=x.enabled===false?"Hidden":"Visible";
+  const actions=document.createElement("div");actions.className="actions";
+  const edit=document.createElement("button");edit.textContent="Edit";edit.onclick=()=>openModal(id);
+  const toggle=document.createElement("button");toggle.className="toggle";toggle.textContent=x.enabled===false?"Show":"Hide";
+  toggle.onclick=()=>update(ref(db,"error_fixes/"+id),{enabled:x.enabled===false});
+  const del=document.createElement("button");del.className="delete";del.textContent="Delete";
+  del.onclick=async()=>{if(confirm("Delete this box?"))await remove(ref(db,"error_fixes/"+id));};
+  actions.append(edit,toggle,del);
+  div.append(title,desc,status,actions);
+  document.getElementById("cards").append(div);
+ });
+};
 
-      const title = document.createElement("h3");
-      title.className = "item-title";
-      title.textContent = item.title || "Error Fix";
-      card.appendChild(title);
+document.getElementById("boxForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const id=document.getElementById("editId").value;
+ const data={
+  title:title.value.trim(),
+  description:description.value.trim(),
+  icon:icon.value.trim(),
+  status_text:statusText.value.trim(),
+  download_url:downloadUrl.value.trim(),
+  button_text:buttonText.value.trim()||"Download Now",
+  video_url:videoUrl.value.trim(),
+  video_enabled:videoEnabled.checked,
+  enabled:enabled.checked,
+  updated_at:Date.now()
+ };
+ try{
+  if(id) await update(ref(db,"error_fixes/"+id),data);
+  else {data.timestamp=Date.now();await set(push(listRef),data);}
+  closeModal();
+ }catch(err){alert("Error: "+err.message);}
+});
 
-      if (item.description) {
-        const desc = document.createElement("p");
-        desc.className = "item-desc";
-        desc.textContent = item.description;
-        card.appendChild(desc);
-      }
-
-      const videoUrl = safeUrl(item.video_url || item.video || "");
-      if (videoUrl && item.video_enabled !== false) {
-        const video = document.createElement("a");
-        video.className = "video-link";
-        video.href = videoUrl;
-        video.target = "_blank";
-        video.rel = "noopener noreferrer";
-        video.setAttribute("aria-label", "Open tutorial video");
-
-        const id = youtubeId(videoUrl);
-        if (id) {
-          video.classList.add("has-thumb");
-          video.style.backgroundImage = `linear-gradient(rgba(0,0,0,.16),rgba(0,0,0,.16)), url("https://img.youtube.com/vi/${encodeURIComponent(id)}/hqdefault.jpg")`;
-        }
-        const play = document.createElement("span");
-        play.className = "play-circle";
-        play.innerHTML = '<i class="fa-solid fa-play"></i>';
-        video.appendChild(play);
-        card.appendChild(video);
-      }
-
-      const spacer = document.createElement("div");
-      spacer.className = "card-spacer";
-      card.appendChild(spacer);
-
-      const downloadUrl = safeUrl(item.download_url || item.download || item.link || "");
-      if (downloadUrl) {
-        const download = document.createElement("a");
-        download.className = "download-btn";
-        download.href = downloadUrl;
-        download.target = "_blank";
-        download.rel = "noopener noreferrer";
-        download.innerHTML = '<i class="fa-solid fa-arrow-down"></i><span></span>';
-        download.querySelector("span").textContent = item.button_text || "Download";
-        card.appendChild(download);
-      }
-      return card;
-    }
-
-    function renderItems(snapshot) {
-      container.replaceChildren();
-      if (!snapshot.exists()) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.innerHTML = '<i class="fa-solid fa-box-open"></i><p>No Error Fix Available</p>';
-        container.appendChild(empty);
-        return;
-      }
-
-      const items = [];
-      snapshot.forEach(child => {
-        const value = child.val() || {};
-        if (value.enabled === false || value.visible === false) return;
-        items.push({ id: child.key, ...value });
-      });
-      items.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
-
-      if (!items.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.innerHTML = '<i class="fa-solid fa-eye-slash"></i><p>No Error Fix Available</p>';
-        container.appendChild(empty);
-        return;
-      }
-      items.forEach(item => container.appendChild(createCard(item)));
-    }
-
-    // Admin panel থেকে এই Firebase path-এ Error Fix card যোগ/সম্পাদনা করুন:
-    // error_fixes/{cardId}
-    db.ref("error_fixes").on("value", renderItems, error => {
-      console.error("Firebase read error:", error);
-      container.innerHTML = '<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Unable to load Error Fixes. Please try again later.</p></div>';
-    });
-
-    // Admin panel-এর Global Discord Link পরিবর্তন করলে এখানে স্বয়ংক্রিয়ভাবে আপডেট হবে।
-    db.ref("global_settings/discord_link").on("value", snapshot => {
-      const link = safeUrl(snapshot.val());
-      if (link) document.querySelectorAll(".dynamic-discord").forEach(el => el.href = link);
-    });
-  </script>
+document.querySelector("header button").addEventListener("contextmenu",async e=>{
+ e.preventDefault();await signOut(auth);location.href="login.html";
+});
+</script>
 </body>
 </html>
