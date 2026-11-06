@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Slides / Banners</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--bg:#05020a;--card:#11071a;--border:#2a113d;--pink:#ff0066;--purple:#9d00ff;--gray:#b0b0b0;--green:#00cc66}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:white;font-family:Arial,sans-serif}
+header{padding:20px;background:var(--card);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px}
+header h2{margin:0;color:var(--pink)}
+button{border:0;padding:11px 16px;border-radius:8px;background:linear-gradient(90deg,var(--pink),var(--purple));color:white;font-weight:bold;cursor:pointer}
+.container{max-width:1100px;margin:25px auto;padding:0 15px}
+.info{color:var(--gray);font-size:14px;line-height:1.6;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat,.item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:17px}
+.stat small{color:var(--gray)}.stat h2{margin:8px 0 0;color:var(--pink)}
+.toolbar{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}
+input{width:100%;padding:12px;background:#09040f;border:1px solid var(--border);border-radius:8px;color:white;outline:none}
+#search{flex:1;min-width:180px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+.item img{width:100%;height:130px;object-fit:cover;border-radius:8px;background:#09040f}
+.item h3{color:var(--pink);margin:10px 0}
+.item p{color:var(--gray);font-size:13px;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.actions button{padding:8px 11px}.delete{background:#a50035}.toggle{background:#333}
+.modal{display:none;position:fixed;inset:0;background:#000c;z-index:5;overflow:auto;padding:20px}
+.modalbox{max-width:550px;margin:25px auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
+.modalbox h2{color:var(--pink)}
+.field{margin:12px 0}.field label{display:block;margin-bottom:6px;color:var(--gray)}
+.field input{margin-top:4px}
+.check{display:flex;gap:9px;align-items:center;margin:14px 0}.check input{width:auto}
+.close{float:right;background:#333}
+.status{font-size:12px;color:var(--green)}
+.preview{display:block;max-width:100%;max-height:150px;margin-top:10px;border-radius:8px;object-fit:contain}
+@media(max-width:500px){.stats{grid-template-columns:1fr}header{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header>
+<h2><i class="fa-solid fa-images"></i> Slides / Banner Manager</h2>
+<button onclick="location.href='index.html'">Dashboard</button>
+</header>
+<div class="container">
+<p class="info">এখান থেকে ওয়েবসাইটের উপরের স্লাইড ব্যানার নিয়ন্ত্রণ করতে পারবে। ছবির URL এবং ব্যানারে ক্লিক করলে যে লিংকে যাবে সেটি দাও। একাধিক ব্যানার Visible থাকলে সেগুলো ডান দিক থেকে বাম দিকে স্বয়ংক্রিয়ভাবে স্লাইড করবে।</p>
+<div class="stats">
+<div class="stat"><small>Total Banners</small><h2 id="total">0</h2></div>
+<div class="stat"><small>Visible Banners</small><h2 id="visible">0</h2></div>
+<div class="stat"><small>Hidden Banners</small><h2 id="hidden">0</h2></div>
+</div>
+<div class="toolbar">
+<input id="search" placeholder="Search banners..." oninput="render()">
+<button onclick="openModal()"><i class="fa fa-plus"></i> Add Banner</button>
+</div>
+<div class="grid" id="cards"></div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modalbox">
+<button class="close" onclick="closeModal()">Close</button>
+<h2 id="modalTitle">Add Banner</h2>
+<form id="bannerForm">
+<input type="hidden" id="editId">
+<div class="field"><label>Banner Name (Optional)</label><input id="title" placeholder="Example: New Update"></div>
+<div class="field"><label>Image URL *</label><input id="imageUrl" type="url" required placeholder="https://example.com/banner.jpg"></div>
+<div class="field"><label>Click Destination URL</label><input id="targetUrl" type="url" placeholder="https://example.com/page"></div>
+<img id="preview" class="preview" style="display:none" alt="Banner preview">
+<div class="check"><input type="checkbox" id="enabled" checked><label for="enabled">Show this banner on website</label></div>
+<button type="submit" id="saveBtn">Save Banner</button>
+</form>
+</div>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,onValue,push,set,update,remove} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {getAuth,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+authDomain:"bangla-ff-admin.firebaseapp.com",
+databaseURL:"https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"bangla-ff-admin",
+storageBucket:"bangla-ff-admin.firebasestorage.app",
+messagingSenderId:"295013484465",
+appId:"1:295013484465:web:b6bc2a949e239095761f90"
+};
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+const auth=getAuth(app);
+const listRef=ref(db,"site_banners");
+let records={};
+
+onAuthStateChanged(auth,user=>{if(!user)location.href="login.html";});
+onValue(listRef,snap=>{records=snap.val()||{};render();},err=>alert("Banner load error: "+err.message));
+
+const $=id=>document.getElementById(id);
+window.openModal=(id=null)=>{
+ $("bannerForm").reset();
+ $("editId").value=id||"";
+ $("modalTitle").textContent=id?"Edit Banner":"Add Banner";
+ $("enabled").checked=true;
+ $("preview").style.display="none";
+ if(id){
+  const x=records[id];if(!x)return;
+  $("title").value=x.title||"";
+  $("imageUrl").value=x.image_url||"";
+  $("targetUrl").value=x.target_url||"";
+  $("enabled").checked=x.enabled!==false;
+  showPreview();
+ }
+ $("modal").style.display="block";
+};
+window.closeModal=()=>$("modal").style.display="none";
+function showPreview(){
+ const url=$("imageUrl").value.trim();
+ if(url){$("preview").src=url;$("preview").style.display="block";}
+ else $("preview").style.display="none";
+}
+$("imageUrl").addEventListener("input",showPreview);
+
+window.render=()=>{
+ const q=$("search").value.toLowerCase();
+ const entries=Object.entries(records);
+ $("total").textContent=entries.length;
+ $("visible").textContent=entries.filter(([,v])=>v.enabled!==false).length;
+ $("hidden").textContent=entries.filter(([,v])=>v.enabled===false).length;
+ $("cards").innerHTML="";
+ entries.filter(([,v])=>(v.title||"").toLowerCase().includes(q)||(v.image_url||"").toLowerCase().includes(q))
+ .forEach(([id,x])=>{
+  const div=document.createElement("div");div.className="item";
+  const img=document.createElement("img");img.src=x.image_url||"";img.alt=x.title||"Banner";
+  img.onerror=()=>{img.style.display="none";};
+  const title=document.createElement("h3");title.textContent=x.title||"Untitled Banner";
+  const link=document.createElement("p");link.textContent="Destination: "+(x.target_url||"Not set");
+  const status=document.createElement("div");status.className="status";status.textContent=x.enabled===false?"Hidden":"Visible";
+  const actions=document.createElement("div");actions.className="actions";
+  const edit=document.createElement("button");edit.textContent="Edit";edit.onclick=()=>openModal(id);
+  const toggle=document.createElement("button");toggle.className="toggle";toggle.textContent=x.enabled===false?"Show":"Hide";
+  toggle.onclick=()=>update(ref(db,"site_banners/"+id),{enabled:x.enabled===false});
+  const del=document.createElement("button");del.className="delete";del.textContent="Delete";
+  del.onclick=async()=>{if(confirm("Delete this banner?")){try{await remove(ref(db,"site_banners/"+id));}catch(err){alert(err.message);}}};
+  actions.append(edit,toggle,del);div.append(img,title,link,status,actions);$("cards").append(div);
+ });
+};
+$("bannerForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const id=$("editId").value;
+ const data={
+  title:$("title").value.trim(),
+  image_url:$("imageUrl").value.trim(),
+  target_url:$("targetUrl").value.trim(),
+  enabled:$("enabled").checked,
+  updated_at:Date.now()
+ };
+ try{
+  if(id)await update(ref(db,"site_banners/"+id),data);
+  else{data.timestamp=Date.now();await set(push(listRef),data);}
+  closeModal();
+ }catch(err){alert("Save failed: "+err.message);}
+});
+</script>
+</body>
+</html>
