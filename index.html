@@ -5,407 +5,869 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - Bangla FF Admin</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-:root{--bg-dark:#05020a;--bg-card:#11071a;--border-color:#2a113d;--neon-pink:#ff0066;--neon-purple:#9d00ff;--text-gray:#b0b0b0;--text-light:#fff;--green-glow:#00cc66}
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;cursor:default}
-body{background:var(--bg-dark);color:var(--text-light);display:flex;min-height:100vh;overflow-x:hidden}
-#mouse-glow{width:300px;height:300px;background:radial-gradient(circle,rgba(157,0,255,.15) 0%,transparent 70%);position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
-.sidebar{width:250px;background:rgba(12,5,20,.95);border-right:1px solid var(--border-color);display:flex;flex-direction:column;padding:20px;position:fixed;height:100vh;z-index:100}
-.logo{font-size:22px;font-weight:bold;color:var(--neon-purple);text-align:center;margin-bottom:30px;text-transform:uppercase;letter-spacing:2px;text-shadow:0 0 10px var(--neon-purple)}
-.sidebar-label{color:#555;font-size:11px;text-transform:uppercase;margin:20px 0 10px 10px;letter-spacing:1px}
-.nav-link{display:flex;align-items:center;padding:12px 15px;color:var(--text-gray);text-decoration:none;border-radius:8px;margin-bottom:5px;transition:.3s;font-size:14px}
-.nav-link i{margin-right:12px;width:20px;text-align:center}
-.nav-link:hover,.nav-link.active{background:rgba(157,0,255,.1);color:var(--neon-purple)}
-.nav-link.active{border-left:3px solid var(--neon-pink)}
-.visit-site-link{color:var(--green-glow)!important}
-.visit-site-link:hover{background:rgba(0,204,102,.1)!important}
-.logout-btn{margin-top:auto;border:1px solid var(--neon-pink);color:var(--neon-pink);padding:10px;border-radius:8px;text-align:center;text-decoration:none;transition:.3s;font-weight:bold}
-.logout-btn:hover{background:var(--neon-pink);color:white;box-shadow:0 0 15px var(--neon-pink)}
-.main-content{margin-left:250px;flex:1;padding:40px}
-.header{margin-bottom:30px}
-.header h1{font-size:28px}
-.header h1 span{color:var(--neon-pink)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px}
-.card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:15px;padding:25px;transition:.3s}
-.card:hover{border-color:var(--neon-purple);transform:translateY(-5px)}
-.card-icon{font-size:30px;margin-bottom:20px;color:var(--neon-purple);background:rgba(157,0,255,.1);width:60px;height:60px;display:flex;align-items:center;justify-content:center;border-radius:12px}
-.card-icon img{width:40px;height:40px;object-fit:contain}
-.card-title{font-size:20px;font-weight:600;margin-bottom:15px}
-.btn-group{display:flex;gap:10px;margin-bottom:20px}
-.btn{flex:1;padding:10px;border-radius:6px;border:1px solid var(--border-color);background:transparent;color:var(--text-light);font-size:13px;text-align:center;text-decoration:none;transition:.3s;cursor:pointer}
-.btn-manage:hover{background:var(--neon-purple);border-color:var(--neon-purple)}
-.btn-edit:hover{background:var(--neon-pink);border-color:var(--neon-pink)}
-.visibility-control{border-top:1px dashed var(--border-color);padding-top:15px;display:flex;align-items:center;justify-content:space-between}
-.switch{position:relative;display:inline-block;width:46px;height:22px}
-.switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#333;transition:.4s;border-radius:34px}
-.slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background-color:white;transition:.4s;border-radius:50%}
-input:checked+.slider{background-color:var(--green-glow)}
-input:checked+.slider:before{transform:translateX(24px)}
-.status-label{font-size:11px;font-weight:bold}
-.status-on{color:var(--green-glow)}
-.status-off{color:var(--neon-pink)}
-.discord-btn{background:#5865F2;border:none;color:white;padding:0 25px;border-radius:8px;font-weight:bold;cursor:pointer;transition:.3s}
-.discord-btn:hover{background:#4752C4;box-shadow:0 0 15px rgba(88,101,242,.4)}
-.add-new-btn{background:var(--neon-pink);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.3s}
-.add-new-btn:hover{background:#ff3385;box-shadow:0 0 15px rgba(255,0,102,.5)}
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);backdrop-filter:blur(5px);display:none;justify-content:center;align-items:center;z-index:1000}
-.modal{background:var(--bg-card);border:2px solid var(--neon-purple);width:450px;max-width:95%;padding:30px;border-radius:15px;box-shadow:0 0 30px rgba(157,0,255,.3)}
-.modal h2{font-size:20px;color:var(--neon-pink);margin-bottom:20px}
-.form-group{margin-bottom:20px}
-.form-group label{display:block;margin-bottom:8px;font-size:13px;color:var(--text-gray)}
-.form-group input,.form-group select{width:100%;padding:12px;background:#0c0514;border:1px solid var(--border-color);color:white;border-radius:8px;outline:none}
-.modal-footer{display:flex;gap:10px;margin-top:25px}
-.save-btn,.cancel-btn,.delete-btn{padding:12px;flex:1;border-radius:8px;font-weight:bold;cursor:pointer}
-.save-btn{background:var(--neon-purple);border:none;color:white}
-.cancel-btn{background:transparent;border:1px solid var(--text-gray);color:var(--text-gray)}
-.delete-btn{background:transparent;border:1px solid #ff3333;color:#ff3333;transition:.3s}
-.delete-btn:hover{background:#ff3333;color:white}
-button:disabled{opacity:.5;cursor:not-allowed}
-@media(max-width:800px){.sidebar{width:190px;padding:12px}.main-content{margin-left:190px;padding:20px}.grid{grid-template-columns:1fr}}
-@media(max-width:550px){body{display:block}.sidebar{position:relative;width:100%;height:auto}.main-content{margin-left:0;padding:15px}.grid{grid-template-columns:1fr}.sidebar-label{margin-top:12px}.logout-btn{margin-top:15px}}
+:root {
+    --bg-dark:#05020a;
+    --bg-card:#11071a;
+    --border-color:#2a113d;
+    --neon-pink:#ff0066;
+    --neon-purple:#9d00ff;
+    --text-gray:#b0b0b0;
+    --text-light:#ffffff;
+    --green-glow:#00cc66;
+}
+* {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+}
+body {
+    background-color:var(--bg-dark);
+    color:var(--text-light);
+    display:flex;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+#mouse-glow {
+    width:300px;
+    height:300px;
+    background:radial-gradient(circle,rgba(157,0,255,.15) 0%,transparent 70%);
+    position:fixed;
+    pointer-events:none;
+    z-index:9999;
+    transform:translate(-50%,-50%);
+}
+.sidebar {
+    width:250px;
+    background:rgba(12,5,20,.95);
+    border-right:1px solid var(--border-color);
+    display:flex;
+    flex-direction:column;
+    padding:20px;
+    position:fixed;
+    height:100vh;
+    z-index:100;
+}
+.logo {
+    font-size:22px;
+    font-weight:bold;
+    color:var(--neon-purple);
+    text-align:center;
+    margin-bottom:30px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    text-shadow:0 0 10px var(--neon-purple);
+}
+.sidebar-label {
+    color:#555;
+    font-size:11px;
+    text-transform:uppercase;
+    margin:20px 0 10px 10px;
+    letter-spacing:1px;
+}
+.nav-link {
+    display:flex;
+    align-items:center;
+    padding:12px 15px;
+    color:var(--text-gray);
+    text-decoration:none;
+    border-radius:8px;
+    margin-bottom:5px;
+    transition:.3s;
+    font-size:14px;
+}
+.nav-link i {
+    margin-right:12px;
+    width:20px;
+    text-align:center;
+}
+.nav-link:hover,.nav-link.active {
+    background:rgba(157,0,255,.1);
+    color:var(--neon-purple);
+}
+.nav-link.active { border-left:3px solid var(--neon-pink); }
+.visit-site-link { color:var(--green-glow)!important; }
+.visit-site-link:hover { background:rgba(0,204,102,.1)!important; }
+.logout-btn {
+    margin-top:auto;
+    border:1px solid var(--neon-pink);
+    color:var(--neon-pink);
+    padding:10px;
+    border-radius:8px;
+    text-align:center;
+    text-decoration:none;
+    transition:.3s;
+    font-weight:bold;
+}
+.logout-btn:hover {
+    background:var(--neon-pink);
+    color:white;
+    box-shadow:0 0 15px var(--neon-pink);
+}
+.main-content {
+    margin-left:250px;
+    flex:1;
+    padding:40px;
+    min-width:0;
+}
+.header { margin-bottom:30px; }
+.header h1 { font-size:28px; }
+.header h1 span { color:var(--neon-pink); }
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:25px;
+}
+.card {
+    background:var(--bg-card);
+    border:1px solid var(--border-color);
+    border-radius:15px;
+    padding:25px;
+    transition:.3s;
+    min-width:0;
+}
+.card:hover {
+    border-color:var(--neon-purple);
+    transform:translateY(-5px);
+}
+.card-icon {
+    font-size:30px;
+    margin-bottom:20px;
+    color:var(--neon-purple);
+    background:rgba(157,0,255,.1);
+    width:60px;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+}
+.card-icon img {
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+.card-title {
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:15px;
+    overflow-wrap:anywhere;
+}
+.btn-group {
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+.btn {
+    flex:1;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid var(--border-color);
+    background:transparent;
+    color:var(--text-light);
+    font-size:13px;
+    text-align:center;
+    text-decoration:none;
+    transition:.3s;
+    cursor:pointer;
+}
+.btn-manage:hover { background:var(--neon-purple);border-color:var(--neon-purple); }
+.btn-edit:hover { background:var(--neon-pink);border-color:var(--neon-pink); }
+.visibility-control {
+    border-top:1px dashed var(--border-color);
+    padding-top:15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+.switch {
+    position:relative;
+    display:inline-block;
+    width:46px;
+    height:22px;
+    flex-shrink:0;
+}
+.switch input { opacity:0;width:0;height:0; }
+.slider {
+    position:absolute;
+    cursor:pointer;
+    top:0;left:0;right:0;bottom:0;
+    background-color:#333;
+    transition:.4s;
+    border-radius:34px;
+}
+.slider:before {
+    position:absolute;
+    content:"";
+    height:16px;
+    width:16px;
+    left:3px;
+    bottom:3px;
+    background-color:white;
+    transition:.4s;
+    border-radius:50%;
+}
+input:checked + .slider { background-color:var(--green-glow); }
+input:checked + .slider:before { transform:translateX(24px); }
+.status-label { font-size:11px;font-weight:bold; }
+.status-on { color:var(--green-glow); }
+.status-off { color:var(--neon-pink); }
+.discord-btn {
+    background:#5865F2;
+    border:none;
+    color:white;
+    padding:0 25px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+.discord-btn:hover {
+    background:#4752C4;
+    box-shadow:0 0 15px rgba(88,101,242,.4);
+}
+.add-new-btn {
+    background:var(--neon-pink);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:.3s;
+}
+.add-new-btn:hover {
+    background:#ff3385;
+    box-shadow:0 0 15px rgba(255,0,102,.5);
+}
+.modal-overlay {
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,.85);
+    backdrop-filter:blur(5px);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+    padding:15px;
+}
+.modal {
+    background:var(--bg-card);
+    border:2px solid var(--neon-purple);
+    width:450px;
+    max-width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 0 30px rgba(157,0,255,.3);
+}
+.modal h2 {
+    font-size:20px;
+    color:var(--neon-pink);
+    margin-bottom:20px;
+}
+.form-group { margin-bottom:20px; }
+.form-group label {
+    display:block;
+    margin-bottom:8px;
+    font-size:13px;
+    color:var(--text-gray);
+}
+.form-group input,.form-group select {
+    width:100%;
+    padding:12px;
+    background:#0c0514;
+    border:1px solid var(--border-color);
+    color:white;
+    border-radius:8px;
+    outline:none;
+}
+.modal-footer {
+    display:flex;
+    gap:10px;
+    margin-top:25px;
+}
+.save-btn {
+    background:var(--neon-purple);
+    border:none;
+    color:white;
+    padding:12px;
+    flex:1;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+.cancel-btn {
+    background:transparent;
+    border:1px solid var(--text-gray);
+    color:var(--text-gray);
+    padding:12px;
+    flex:1;
+    border-radius:8px;
+    cursor:pointer;
+}
+.delete-btn {
+    background:transparent;
+    border:1px solid #ff3333;
+    color:#ff3333;
+    padding:12px;
+    flex:1;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+.delete-btn:hover { background:#ff3333;color:white; }
+
+@media(max-width:800px) {
+    .sidebar {
+        width:200px;
+        padding:15px;
+    }
+    .main-content {
+        margin-left:200px;
+        padding:25px;
+    }
+    .grid {
+        grid-template-columns:1fr;
+    }
+}
+@media(max-width:550px) {
+    body { display:block; }
+    .sidebar {
+        position:relative;
+        width:100%;
+        height:auto;
+        min-height:0;
+    }
+    .sidebar-label { margin-top:12px; }
+    .logout-btn { margin-top:15px; }
+    .main-content {
+        margin-left:0;
+        padding:20px 14px;
+    }
+    .header h1 { font-size:23px; }
+    .main-content > .card > div {
+        flex-direction:column;
+    }
+    .discord-btn { padding:12px; }
+}
 </style>
 </head>
+
 <body>
 
 <div id="mouse-glow"></div>
 
 <div class="sidebar">
-<div class="logo">Bangla FF</div>
-<a href="index.html" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
-<div class="sidebar-label">Website Control</div>
-<a href="https://bangla-ff-panel.netlify.app/" target="_blank" class="nav-link visit-site-link"><i class="fas fa-external-link-alt"></i> Visit Site</a>
-<div class="sidebar-label">Website Content</div>
-<a href="manage-banners.html" class="nav-link"><i class="fas fa-images"></i> Slides / Banners</a>
-<div class="sidebar-label">Tools</div>
-<a href="https://imgbb.com/" target="_blank" class="nav-link"><i class="fas fa-cloud-upload-alt"></i> ImgBB</a>
-<a href="https://postimages.org/" target="_blank" class="nav-link"><i class="fas fa-image"></i> PostImages</a>
-<div class="sidebar-label">Paid Panels</div>
-<a href="manage-pc.html" class="nav-link"><i class="fas fa-desktop"></i> Manage PC Panel</a>
-<a href="manage-mobile.html" class="nav-link"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
-<div class="sidebar-label">System</div>
-<a href="manage-notifications.html" class="nav-link"><i class="fas fa-bell"></i> Notifications</a>
-<a href="manage-admins.html" class="nav-link"><i class="fas fa-users-cog"></i> Admin Users</a>
-<a href="#" id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <div class="logo">Bangla FF</div>
+
+    <a href="index.html" class="nav-link active">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+
+    <div class="sidebar-label">Website Control</div>
+    <a href="https://bangla-ff-panel.netlify.app/" target="_blank" class="nav-link visit-site-link">
+        <i class="fas fa-external-link-alt"></i> Visit Site
+    </a>
+
+    <div class="sidebar-label">Website Content</div>
+    <a href="manage-banners.html" class="nav-link">
+        <i class="fas fa-images"></i> Slides / Banners
+    </a>
+
+    <div class="sidebar-label">Tools</div>
+    <a href="https://imgbb.com/" target="_blank" class="nav-link"><i class="fas fa-cloud-upload-alt"></i> ImgBB</a>
+    <a href="https://postimages.org/" target="_blank" class="nav-link"><i class="fas fa-image"></i> PostImages</a>
+
+    <div class="sidebar-label">Paid Panels</div>
+    <a href="manage-pc.html" class="nav-link"><i class="fas fa-desktop"></i> Manage PC Panel</a>
+    <a href="manage-mobile.html" class="nav-link"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
+
+    <div class="sidebar-label">System</div>
+    <a href="manage-notifications.html" class="nav-link"><i class="fas fa-bell"></i> Notifications</a>
+    <a href="manage-admins.html" class="nav-link"><i class="fas fa-users-cog"></i> Admin Users</a>
+
+    <a href="#" id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
 </div>
 
 <div class="main-content">
-<div class="header"><h1>Overview <span>Dashboard</span></h1></div>
 
-<div class="card" style="margin-bottom:30px;border-color:#5865F2;">
-<h3 class="card-title" style="color:#5865F2;display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:8px;"><i class="fab fa-discord"></i> Global Discord Settings</h3>
-<p style="color:var(--text-gray);font-size:13px;margin-bottom:20px;">Update the Discord link here and it will change automatically across all pages of your main website.</p>
-<div style="display:flex;gap:15px;">
-<input type="text" id="discordInput" placeholder="https://discord.gg/yourlink" style="flex:1;padding:12px;background:#0c0514;border:1px solid var(--border-color);color:white;border-radius:8px;outline:none;">
-<button id="saveDiscordBtn" class="discord-btn">Save Link</button>
-</div>
-</div>
+    <div class="header">
+        <h1>Overview <span>Dashboard</span></h1>
+    </div>
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-<h2 style="font-size:20px;color:var(--neon-purple);">Website Categories</h2>
-<button class="add-new-btn" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Box</button>
-</div>
-<div class="grid" id="dynamic_grid"></div>
+    <div class="card" style="margin-bottom:30px;border-color:#5865F2;">
+        <h3 class="card-title" style="color:#5865F2;display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:8px;">
+            <i class="fab fa-discord"></i> Global Discord Settings
+        </h3>
+
+        <p style="color:var(--text-gray);font-size:13px;margin-bottom:20px;">
+            Update the Discord link here and it will change automatically across all pages of your main website.
+        </p>
+
+        <div style="display:flex;gap:15px;">
+            <input type="text" id="discordInput" placeholder="https://discord.gg/yourlink" style="flex:1;min-width:0;padding:12px;background:#0c0514;border:1px solid var(--border-color);color:white;border-radius:8px;outline:none;">
+            <button id="saveDiscordBtn" class="discord-btn">Save Link</button>
+        </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px;flex-wrap:wrap;">
+        <h2 style="font-size:20px;color:var(--neon-purple);">Website Categories</h2>
+
+        <button class="add-new-btn" id="addNewBtn">
+            <i class="fas fa-plus"></i> Add New Box
+        </button>
+    </div>
+
+    <div class="grid" id="dynamic_grid"></div>
+
 </div>
 
 <div class="modal-overlay" id="editModal">
-<div class="modal">
-<h2 id="modal_title">Edit Category Box</h2>
-<input type="hidden" id="edit_category_id">
-<div class="form-group"><label>Category Title</label><input type="text" id="edit_title" placeholder="e.g. Paid PC Panel"></div>
-<div class="form-group"><label>Manage Page Link <small style="color:#666;">(যে পেজে যাবে)</small></label><input type="text" id="edit_manage_link" placeholder="e.g. manage-new.html"></div>
-<div class="form-group">
-<label>Icon Type</label>
-<select id="edit_icon_type">
-<option value="icon">FontAwesome Icon Class</option>
-<option value="emoji">Direct Emoji / Text</option>
-<option value="image">Image Logo URL</option>
-</select>
-</div>
-<div class="form-group"><label id="icon_val_label">Icon Class</label><input type="text" id="edit_icon_value" placeholder="fas fa-desktop"></div>
-<div class="modal-footer">
-<button class="delete-btn" id="deleteCategoryBtn" style="display:none;">Delete</button>
-<button class="cancel-btn" onclick="closeModal()">Cancel</button>
-<button class="save-btn" id="saveCategoryBtn">Save Changes</button>
-</div>
-</div>
+    <div class="modal">
+
+        <h2 id="modal_title">Edit Category Box</h2>
+
+        <input type="hidden" id="edit_category_id">
+
+        <div class="form-group">
+            <label>Category Title</label>
+            <input type="text" id="edit_title" placeholder="e.g. Paid PC Panel">
+        </div>
+
+        <div class="form-group">
+            <label>Manage Page Link (Admin Page)</label>
+            <input type="text" id="edit_manage_link" placeholder="e.g. manage-new.html">
+        </div>
+
+        <div class="form-group">
+            <label>User Site Page Link</label>
+            <input type="text" id="edit_public_link" placeholder="e.g. new-page.html">
+        </div>
+
+        <div class="form-group">
+            <label>Icon Type</label>
+            <select id="edit_icon_type">
+                <option value="icon">FontAwesome Icon Class</option>
+                <option value="emoji">Direct Emoji / Text</option>
+                <option value="image">Image Logo URL</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label id="icon_val_label">Icon Class</label>
+            <input type="text" id="edit_icon_value" placeholder="fas fa-desktop">
+        </div>
+
+        <div class="modal-footer">
+            <button class="delete-btn" id="deleteCategoryBtn" style="display:none;">Delete</button>
+            <button class="cancel-btn" id="cancelModalBtn">Cancel</button>
+            <button class="save-btn" id="saveCategoryBtn">Save Changes</button>
+        </div>
+
+    </div>
 </div>
 
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getDatabase,ref,set,update,push,remove,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-const firebaseConfig={
-apiKey:"AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
-authDomain:"bangla-ff-admin.firebaseapp.com",
-databaseURL:"https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId:"bangla-ff-admin",
-storageBucket:"bangla-ff-admin.firebasestorage.app",
-messagingSenderId:"295013484465",
-appId:"1:295013484465:web:b6bc2a949e239095761f90"
+import {
+    getDatabase,
+    ref,
+    get,
+    set,
+    update,
+    push,
+    remove,
+    onValue
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+    authDomain: "bangla-ff-admin.firebaseapp.com",
+    databaseURL: "https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "bangla-ff-admin",
+    storageBucket: "bangla-ff-admin.firebasestorage.app",
+    messagingSenderId: "295013484465",
+    appId: "1:295013484465:web:b6bc2a949e239095761f90"
 };
 
-const app=initializeApp(firebaseConfig);
-const db=getDatabase(app);
-const auth=getAuth(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
 
-const $=id=>document.getElementById(id);
-const glow=$("mouse-glow");
+const glow = document.getElementById("mouse-glow");
 
-window.addEventListener("mousemove",e=>{
-glow.style.left=e.clientX+"px";
-glow.style.top=e.clientY+"px";
+window.addEventListener("mousemove", (e) => {
+    glow.style.left = e.clientX + "px";
+    glow.style.top = e.clientY + "px";
 });
 
-onAuthStateChanged(auth,user=>{
-if(!user)window.location.href="login.html";
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+    }
 });
 
-$("logoutBtn").addEventListener("click",e=>{
-e.preventDefault();
-signOut(auth).then(()=>window.location.href="login.html");
+document.getElementById("logoutBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    signOut(auth).then(() => {
+        window.location.href = "login.html";
+    });
 });
 
-onValue(ref(db,"global_settings/discord_link"),snap=>{
-if(snap.exists())$("discordInput").value=snap.val();
+const discordInput = document.getElementById("discordInput");
+
+onValue(ref(db, "global_settings/discord_link"), (snapshot) => {
+    if (snapshot.exists()) {
+        discordInput.value = snapshot.val();
+    }
 });
 
-$("saveDiscordBtn").addEventListener("click",async()=>{
-const link=$("discordInput").value.trim();
-if(!link)return alert("Please enter a valid Discord link!");
-try{
-await set(ref(db,"global_settings/discord_link"),link);
-alert("Discord link updated globally!");
-}catch(e){alert("Error: "+e.message);}
+document.getElementById("saveDiscordBtn").addEventListener("click", async () => {
+    const link = discordInput.value.trim();
+
+    if (!link) {
+        alert("Please enter a valid Discord link!");
+        return;
+    }
+
+    try {
+        await set(ref(db, "global_settings/discord_link"), link);
+        alert("Discord link updated globally!");
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
 });
 
-const defaultBoxes={
-free_panel:{title:"Free Panel",iconType:"icon",iconValue:"fas fa-laptop-code",manageLink:"manage-free-panel.html"},
-free_bypass:{title:"Free Bypass",iconType:"icon",iconValue:"fas fa-shield-virus",manageLink:"manage-bypass.html"},
-emulator:{title:"Emulator",iconType:"icon",iconValue:"fas fa-microchip",manageLink:"manage-emulator.html"},
-pc_panel:{title:"Paid PC Panels",iconType:"icon",iconValue:"fas fa-desktop",manageLink:"manage-pc.html"},
-mobile_panel:{title:"Paid Mobile Panels",iconType:"icon",iconValue:"fas fa-mobile-alt",manageLink:"manage-mobile.html"},
-apk:{title:"Free Fire APK",iconType:"icon",iconValue:"fas fa-mobile",manageLink:"manage-apk.html"},
-error_fix:{title:"Error Fix",iconType:"icon",iconValue:"fas fa-screwdriver-wrench",manageLink:"manage-error-fix.html"}
+/*
+  Default categories.
+  Deleted default categories are blocked by deleted_categories.
+*/
+
+const defaultBoxes = {
+    free_panel: {
+        title: "Free Panel",
+        iconType: "icon",
+        iconValue: "fas fa-laptop-code",
+        manageLink: "manage-free-panel.html",
+        publicLink: "free-panel.html"
+    },
+    free_bypass: {
+        title: "Free Bypass",
+        iconType: "icon",
+        iconValue: "fas fa-shield-virus",
+        manageLink: "manage-bypass.html",
+        publicLink: "free-bypass.html"
+    },
+    emulator: {
+        title: "Emulator",
+        iconType: "icon",
+        iconValue: "fas fa-microchip",
+        manageLink: "manage-emulator.html",
+        publicLink: "emulator.html"
+    },
+    pc_panel: {
+        title: "Paid PC Panels",
+        iconType: "icon",
+        iconValue: "fas fa-desktop",
+        manageLink: "manage-pc.html",
+        publicLink: "pc-panel.html"
+    },
+    mobile_panel: {
+        title: "Paid Mobile Panels",
+        iconType: "icon",
+        iconValue: "fas fa-mobile-alt",
+        manageLink: "manage-mobile.html",
+        publicLink: "mobile-panel.html"
+    },
+    apk: {
+        title: "Free Fire APK",
+        iconType: "icon",
+        iconValue: "fas fa-mobile",
+        manageLink: "manage-apk.html",
+        publicLink: "apk.html"
+    },
+    error_fix: {
+        title: "Error Fix",
+        iconType: "icon",
+        iconValue: "fas fa-screwdriver-wrench",
+        manageLink: "manage-error-fix.html",
+        publicLink: "error-fix.html"
+    }
 };
 
-let visibilityState={};
-let categoriesData={};
-let deletedDefaults={};
+let visibilityState = {};
+let categoriesData = {};
+let deletedCategories = {};
 
-onValue(ref(db,"site_visibility"),snap=>{
-visibilityState=snap.val()||{};
-renderGrid();
+function renderGrid() {
+    const grid = document.getElementById("dynamic_grid");
+    grid.innerHTML = "";
+
+    Object.entries(categoriesData).forEach(([key, data]) => {
+
+        if (!data) return;
+
+        // Permanently deleted category marker
+        if (deletedCategories[key] === true) return;
+
+        const isVisible = visibilityState[key] !== false;
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const iconBox = document.createElement("div");
+        iconBox.className = "card-icon";
+
+        const iconValue = (data.iconValue || "").trim();
+
+        if (data.iconType === "image" || iconValue.startsWith("http")) {
+            const img = document.createElement("img");
+            img.src = iconValue;
+            img.alt = "Category icon";
+            iconBox.appendChild(img);
+        } else if (
+            data.iconType === "emoji" ||
+            (!iconValue.includes("fa-") && iconValue !== "")
+        ) {
+            const span = document.createElement("span");
+            span.textContent = iconValue;
+            iconBox.appendChild(span);
+        } else {
+            const icon = document.createElement("i");
+            icon.className = iconValue || "fas fa-box";
+            iconBox.appendChild(icon);
+        }
+
+        const title = document.createElement("h3");
+        title.className = "card-title";
+        title.textContent = data.title || "Untitled Box";
+
+        const buttonGroup = document.createElement("div");
+        buttonGroup.className = "btn-group";
+
+        const manageButton = document.createElement("a");
+        manageButton.className = "btn btn-manage";
+        manageButton.textContent = "Manage Items";
+        manageButton.href = data.manageLink || "#";
+
+        const editButton = document.createElement("button");
+        editButton.className = "btn btn-edit";
+        editButton.textContent = "Edit Box";
+        editButton.type = "button";
+        editButton.addEventListener("click", () => openEditModal(key));
+
+        buttonGroup.append(manageButton, editButton);
+
+        const visibility = document.createElement("div");
+        visibility.className = "visibility-control";
+
+        const visibilityText = document.createElement("span");
+        visibilityText.textContent = "Visibility:";
+
+        const label = document.createElement("label");
+        label.className = "switch";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = isVisible;
+
+        const slider = document.createElement("span");
+        slider.className = "slider";
+
+        checkbox.addEventListener("change", () => {
+            toggleVis(key, checkbox.checked);
+        });
+
+        label.append(checkbox, slider);
+
+        const status = document.createElement("span");
+        status.className = "status-label " + (isVisible ? "status-on" : "status-off");
+        status.textContent = isVisible ? "ON" : "OFF";
+
+        visibility.append(visibilityText, label, status);
+
+        card.append(iconBox, title, buttonGroup, visibility);
+        grid.appendChild(card);
+    });
+}
+
+onValue(ref(db, "site_visibility"), (snapshot) => {
+    visibilityState = snapshot.val() || {};
+    renderGrid();
 });
 
-onValue(ref(db,"site_settings/categories"),snap=>{
-categoriesData={...defaultBoxes,...(snap.val()||{})};
-renderGrid();
+onValue(ref(db, "site_settings/categories"), (snapshot) => {
+    categoriesData = {
+        ...defaultBoxes,
+        ...(snapshot.val() || {})
+    };
+    renderGrid();
 });
 
-onValue(ref(db,"site_settings/deleted_default_categories"),snap=>{
-deletedDefaults=snap.val()||{};
-renderGrid();
+onValue(ref(db, "site_settings/deleted_categories"), (snapshot) => {
+    deletedCategories = snapshot.val() || {};
+    renderGrid();
 });
 
-function renderGrid(){
-const grid=$("dynamic_grid");
-grid.innerHTML="";
-
-for(const [key,data] of Object.entries(categoriesData)){
-if(defaultBoxes[key] && deletedDefaults[key]===true)continue;
-
-const isVis=visibilityState[key]!==false;
-const card=document.createElement("div");
-card.className="card";
-
-const icon=document.createElement("div");
-icon.className="card-icon";
-const val=data.iconValue||"";
-
-if(data.iconType==="image"&&val){
-const img=document.createElement("img");
-img.src=val;
-img.alt="icon";
-icon.appendChild(img);
-}else if(data.iconType==="emoji"||(!val.includes("fa-")&&!val.startsWith("http"))){
-const span=document.createElement("span");
-span.style.cssText="font-size:30px;display:inline-block;line-height:1";
-span.textContent=val||"📦";
-icon.appendChild(span);
-}else{
-const i=document.createElement("i");
-i.className=val;
-icon.appendChild(i);
-}
-
-const title=document.createElement("h3");
-title.className="card-title";
-title.textContent=data.title||"Untitled";
-
-const group=document.createElement("div");
-group.className="btn-group";
-
-const manage=document.createElement("a");
-manage.href=data.manageLink||"#";
-manage.className="btn btn-manage";
-manage.textContent="Manage Items";
-
-const edit=document.createElement("button");
-edit.className="btn btn-edit";
-edit.textContent="Edit Box";
-edit.addEventListener("click",()=>openEditModal(key));
-
-group.append(manage,edit);
-
-const visibility=document.createElement("div");
-visibility.className="visibility-control";
-
-const label=document.createElement("span");
-label.textContent="Visibility:";
-
-const switchLabel=document.createElement("label");
-switchLabel.className="switch";
-
-const checkbox=document.createElement("input");
-checkbox.type="checkbox";
-checkbox.checked=isVis;
-checkbox.addEventListener("change",()=>toggleVis(key,checkbox.checked));
-
-const slider=document.createElement("span");
-slider.className="slider";
-switchLabel.append(checkbox,slider);
-
-const status=document.createElement("span");
-status.className="status-label "+(isVis?"status-on":"status-off");
-status.textContent=isVis?"ON":"OFF";
-
-visibility.append(label,switchLabel,status);
-card.append(icon,title,group,visibility);
-grid.appendChild(card);
-}
-}
-
-async function toggleVis(key,isChecked){
-try{
-await set(ref(db,`site_visibility/${key}`),isChecked);
-}catch(e){alert("Visibility update failed: "+e.message);}
-}
-window.toggleVis=toggleVis;
-
-window.openAddModal=function(){
-$("modal_title").innerText="Add New Category Box";
-$("edit_category_id").value="NEW";
-$("edit_title").value="";
-$("edit_manage_link").value="";
-$("edit_icon_type").value="icon";
-$("edit_icon_value").value="";
-$("deleteCategoryBtn").style.display="none";
-$("editModal").style.display="flex";
-updateIconLabel();
+window.toggleVis = async function(key, isChecked) {
+    try {
+        await set(ref(db, `site_visibility/${key}`), isChecked);
+    } catch (error) {
+        alert("Visibility update failed: " + error.message);
+    }
 };
 
-window.openEditModal=function(key){
-const data=categoriesData[key];
-if(!data)return;
-
-$("modal_title").innerText="Edit Category Box";
-$("edit_category_id").value=key;
-$("edit_title").value=data.title||"";
-$("edit_manage_link").value=data.manageLink||"";
-$("edit_icon_type").value=data.iconType||"icon";
-$("edit_icon_value").value=data.iconValue||"";
-$("deleteCategoryBtn").style.display="block";
-$("editModal").style.display="flex";
-updateIconLabel();
-};
-
-window.closeModal=function(){
-$("editModal").style.display="none";
-};
-
-const typeSelect=$("edit_icon_type");
-const iconLabel=$("icon_val_label");
-
-function updateIconLabel(){
-const val=typeSelect.value;
-if(val==="icon")iconLabel.innerText="Icon Class (e.g. fas fa-desktop)";
-else if(val==="emoji")iconLabel.innerText="Emoji or Text (e.g. 💻, 🔥)";
-else iconLabel.innerText="Image Logo URL";
+function openAddModal() {
+    document.getElementById("modal_title").textContent = "Add New Category Box";
+    document.getElementById("edit_category_id").value = "NEW";
+    document.getElementById("edit_title").value = "";
+    document.getElementById("edit_manage_link").value = "";
+    document.getElementById("edit_public_link").value = "";
+    document.getElementById("edit_icon_type").value = "icon";
+    document.getElementById("edit_icon_value").value = "";
+    document.getElementById("deleteCategoryBtn").style.display = "none";
+    document.getElementById("editModal").style.display = "flex";
+    updateIconLabel();
 }
-typeSelect.addEventListener("change",updateIconLabel);
 
-$("saveCategoryBtn").addEventListener("click",async()=>{
-const id=$("edit_category_id").value;
-let type=typeSelect.value;
-const val=$("edit_icon_value").value.trim();
-const title=$("edit_title").value.trim();
-const manageLink=$("edit_manage_link").value.trim();
+function openEditModal(key) {
+    const data = categoriesData[key];
+    if (!data) return;
 
-if(!title)return alert("Please enter category title.");
-
-if(type==="icon"&&val&&!val.includes("fa-")&&!val.startsWith("http"))type="emoji";
-
-const data={title,manageLink,iconType:type,iconValue:val};
-const btn=$("saveCategoryBtn");
-btn.disabled=true;
-btn.textContent="Saving...";
-
-try{
-if(id==="NEW"){
-const newRef=push(ref(db,"site_settings/categories"));
-await set(newRef,data);
-}else{
-await update(ref(db,`site_settings/categories/${id}`),data);
+    document.getElementById("modal_title").textContent = "Edit Category Box";
+    document.getElementById("edit_category_id").value = key;
+    document.getElementById("edit_title").value = data.title || "";
+    document.getElementById("edit_manage_link").value = data.manageLink || "";
+    document.getElementById("edit_public_link").value = data.publicLink || "";
+    document.getElementById("edit_icon_type").value = data.iconType || "icon";
+    document.getElementById("edit_icon_value").value = data.iconValue || "";
+    document.getElementById("deleteCategoryBtn").style.display = "block";
+    document.getElementById("editModal").style.display = "flex";
+    updateIconLabel();
 }
-closeModal();
-}catch(e){
-alert("Save failed: "+e.message);
-}finally{
-btn.disabled=false;
-btn.textContent="Save Changes";
+
+function closeModal() {
+    document.getElementById("editModal").style.display = "none";
 }
+
+window.openEditModal = openEditModal;
+
+document.getElementById("addNewBtn").addEventListener("click", openAddModal);
+document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+
+const typeSelect = document.getElementById("edit_icon_type");
+const iconLabel = document.getElementById("icon_val_label");
+
+function updateIconLabel() {
+    const type = typeSelect.value;
+
+    if (type === "icon") {
+        iconLabel.textContent = "Icon Class (e.g. fas fa-desktop)";
+    } else if (type === "emoji") {
+        iconLabel.textContent = "Emoji or Text (e.g. 💻, 🔥)";
+    } else {
+        iconLabel.textContent = "Image Logo URL";
+    }
+}
+
+typeSelect.addEventListener("change", updateIconLabel);
+
+document.getElementById("saveCategoryBtn").addEventListener("click", async () => {
+
+    const id = document.getElementById("edit_category_id").value;
+    let type = typeSelect.value;
+
+    const title = document.getElementById("edit_title").value.trim();
+    const manageLink = document.getElementById("edit_manage_link").value.trim();
+    const publicLink = document.getElementById("edit_public_link").value.trim();
+    const val = document.getElementById("edit_icon_value").value.trim();
+
+    if (!title) {
+        alert("Please enter category title!");
+        return;
+    }
+
+    if (type === "icon" && val && !val.includes("fa-") && !val.startsWith("http")) {
+        type = "emoji";
+    }
+
+    const data = {
+        title,
+        manageLink,
+        publicLink,
+        iconType: type,
+        iconValue: val
+    };
+
+    try {
+        let categoryId = id;
+
+        if (id === "NEW") {
+            const newRef = push(ref(db, "site_settings/categories"));
+            categoryId = newRef.key;
+
+            await set(newRef, data);
+            await set(ref(db, `site_visibility/${categoryId}`), true);
+        } else {
+            await update(ref(db, `site_settings/categories/${id}`), data);
+        }
+
+        // Remove old deletion marker if this category is saved again
+        await remove(ref(db, `site_settings/deleted_categories/${categoryId}`));
+
+        closeModal();
+        alert("Category saved successfully!");
+
+    } catch (error) {
+        alert("Save failed: " + error.message);
+    }
 });
 
-$("deleteCategoryBtn").addEventListener("click",async()=>{
-const id=$("edit_category_id").value;
-if(!id||id==="NEW")return;
+document.getElementById("deleteCategoryBtn").addEventListener("click", async () => {
 
-const categoryName=categoriesData[id]?.title||"this box";
-if(!confirm(`Delete "${categoryName}" permanently?`))return;
+    const id = document.getElementById("edit_category_id").value;
 
-const btn=$("deleteCategoryBtn");
-btn.disabled=true;
-btn.textContent="Deleting...";
+    if (!id || id === "NEW") return;
 
-try{
-const tasks=[
-remove(ref(db,`site_settings/categories/${id}`)),
-remove(ref(db,`site_visibility/${id}`))
-];
+    if (!confirm("Are you sure you want to permanently delete this box?")) {
+        return;
+    }
 
-if(defaultBoxes[id]){
-tasks.push(set(ref(db,`site_settings/deleted_default_categories/${id}`),true));
-}
+    try {
+        // Remove actual category data
+        await remove(ref(db, `site_settings/categories/${id}`));
 
-await Promise.all(tasks);
+        // Remove its visibility setting
+        await remove(ref(db, `site_visibility/${id}`));
 
-delete categoriesData[id];
-delete visibilityState[id];
-if(defaultBoxes[id])deletedDefaults[id]=true;
+        // This marker prevents default boxes from coming back
+        await set(ref(db, `site_settings/deleted_categories/${id}`), true);
 
-renderGrid();
-closeModal();
-alert("Category deleted successfully!");
+        closeModal();
+        alert("Box deleted successfully!");
 
-}catch(e){
-alert("Delete failed: "+e.message);
-}finally{
-btn.disabled=false;
-btn.textContent="Delete";
-}
+    } catch (error) {
+        alert("Delete failed: " + error.message);
+    }
 });
 </script>
+
 </body>
 </html>
