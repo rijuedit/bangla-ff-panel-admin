@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +13,7 @@ body{margin:0;background:var(--bg);color:white;font-family:Arial,sans-serif}
 header{padding:20px;background:var(--card);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 header h2{margin:0;color:var(--pink)}
 button{border:0;padding:11px 16px;border-radius:8px;background:linear-gradient(90deg,var(--pink),var(--purple));color:white;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
 .container{max-width:1100px;margin:25px auto;padding:0 15px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .stat,.item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:17px}
@@ -35,6 +37,7 @@ input,textarea{width:100%;padding:12px;background:#09040f;border:1px solid var(-
 </style>
 </head>
 <body>
+
 <header>
 <h2><i class="fa-solid fa-screwdriver-wrench"></i> Error Fix Manager</h2>
 <button onclick="location.href='index.html'">Dashboard</button>
@@ -51,6 +54,7 @@ input,textarea{width:100%;padding:12px;background:#09040f;border:1px solid var(-
 <input id="search" placeholder="Search boxes..." oninput="render()">
 <button onclick="openModal()"><i class="fa fa-plus"></i> Add New Box</button>
 </div>
+
 <div class="grid" id="cards"></div>
 </div>
 
@@ -58,8 +62,10 @@ input,textarea{width:100%;padding:12px;background:#09040f;border:1px solid var(-
 <div class="modalbox">
 <button class="close" onclick="closeModal()">Close</button>
 <h2 id="modalTitle">Add Error Fix Box</h2>
+
 <form id="boxForm">
 <input type="hidden" id="editId">
+
 <div class="field"><label>Box Title *</label><input id="title" required placeholder="Example: Fix Login Error"></div>
 <div class="field"><label>Description</label><textarea id="description" rows="3" placeholder="Write details..."></textarea></div>
 <div class="field"><label>Icon Class / Image URL</label><input id="icon" placeholder="fa-solid fa-wrench"></div>
@@ -67,8 +73,10 @@ input,textarea{width:100%;padding:12px;background:#09040f;border:1px solid var(-
 <div class="field"><label>Download Link *</label><input id="downloadUrl" type="url" required placeholder="https://..."></div>
 <div class="field"><label>Button Text</label><input id="buttonText" value="Download Now"></div>
 <div class="field"><label>Tutorial Video URL (Optional)</label><input id="videoUrl" placeholder="YouTube or Google Drive link"></div>
+
 <div class="check"><input type="checkbox" id="videoEnabled" checked><label for="videoEnabled">Show tutorial video link</label></div>
 <div class="check"><input type="checkbox" id="enabled" checked><label for="enabled">Show this box on website</label></div>
+
 <button type="submit" id="saveBtn">Save Box</button>
 </form>
 </div>
@@ -76,8 +84,12 @@ input,textarea{width:100%;padding:12px;background:#09040f;border:1px solid var(-
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getDatabase,ref,onValue,push,set,update,remove} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+ getDatabase,ref,onValue,push,set,update,remove
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {
+ getAuth,onAuthStateChanged,signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
@@ -93,7 +105,9 @@ const app=initializeApp(firebaseConfig);
 const db=getDatabase(app);
 const auth=getAuth(app);
 const listRef=ref(db,"error_fixes");
+
 let records={};
+let deletingIds=new Set();
 
 onAuthStateChanged(auth,user=>{
  if(!user) location.href="login.html";
@@ -102,78 +116,172 @@ onAuthStateChanged(auth,user=>{
 onValue(listRef,snap=>{
  records=snap.val()||{};
  render();
+},error=>{
+ alert("Database read error: "+error.message);
 });
 
+const $=id=>document.getElementById(id);
+
 window.openModal=(id=null)=>{
- document.getElementById("boxForm").reset();
- document.getElementById("editId").value=id||"";
- document.getElementById("modalTitle").textContent=id?"Edit Error Fix Box":"Add Error Fix Box";
+ $("boxForm").reset();
+ $("editId").value=id||"";
+ $("modalTitle").textContent=id?"Edit Error Fix Box":"Add Error Fix Box";
+
  if(id){
   const x=records[id];
   if(!x)return;
-  title.value=x.title||"";
-  description.value=x.description||"";
-  icon.value=x.icon||"";
-  statusText.value=x.status_text||"";
-  downloadUrl.value=x.download_url||"";
-  buttonText.value=x.button_text||"Download Now";
-  videoUrl.value=x.video_url||"";
-  videoEnabled.checked=x.video_enabled!==false;
-  enabled.checked=x.enabled!==false;
+
+  $("title").value=x.title||"";
+  $("description").value=x.description||"";
+  $("icon").value=x.icon||"";
+  $("statusText").value=x.status_text||"";
+  $("downloadUrl").value=x.download_url||"";
+  $("buttonText").value=x.button_text||"Download Now";
+  $("videoUrl").value=x.video_url||"";
+  $("videoEnabled").checked=x.video_enabled!==false;
+  $("enabled").checked=x.enabled!==false;
  }
- document.getElementById("modal").style.display="block";
+
+ $("modal").style.display="block";
 };
-window.closeModal=()=>document.getElementById("modal").style.display="none";
+
+window.closeModal=()=>{
+ $("modal").style.display="none";
+};
 
 window.render=()=>{
- const q=document.getElementById("search").value.toLowerCase();
+ const q=$("search").value.toLowerCase();
  const entries=Object.entries(records);
- document.getElementById("total").textContent=entries.length;
- document.getElementById("visible").textContent=entries.filter(([k,v])=>v.enabled!==false).length;
- document.getElementById("hidden").textContent=entries.filter(([k,v])=>v.enabled===false).length;
- document.getElementById("cards").innerHTML="";
- entries.filter(([k,v])=>(v.title||"").toLowerCase().includes(q)).forEach(([id,x])=>{
+
+ $("total").textContent=entries.length;
+ $("visible").textContent=entries.filter(([k,v])=>v.enabled!==false).length;
+ $("hidden").textContent=entries.filter(([k,v])=>v.enabled===false).length;
+
+ $("cards").innerHTML="";
+
+ entries.filter(([k,v])=>
+  (v.title||"").toLowerCase().includes(q)
+ ).forEach(([id,x])=>{
+
   const div=document.createElement("div");
   div.className="item";
-  const title=document.createElement("h3");title.textContent=x.title||"Untitled";
-  const desc=document.createElement("p");desc.textContent=x.description||"No description";
-  const status=document.createElement("div");status.className="status";status.textContent=x.enabled===false?"Hidden":"Visible";
-  const actions=document.createElement("div");actions.className="actions";
-  const edit=document.createElement("button");edit.textContent="Edit";edit.onclick=()=>openModal(id);
-  const toggle=document.createElement("button");toggle.className="toggle";toggle.textContent=x.enabled===false?"Show":"Hide";
-  toggle.onclick=()=>update(ref(db,"error_fixes/"+id),{enabled:x.enabled===false});
-  const del=document.createElement("button");del.className="delete";del.textContent="Delete";
-  del.onclick=async()=>{if(confirm("Delete this box?"))await remove(ref(db,"error_fixes/"+id));};
+
+  const heading=document.createElement("h3");
+  heading.textContent=x.title||"Untitled";
+
+  const desc=document.createElement("p");
+  desc.textContent=x.description||"No description";
+
+  const status=document.createElement("div");
+  status.className="status";
+  status.textContent=x.enabled===false?"Hidden":"Visible";
+
+  const actions=document.createElement("div");
+  actions.className="actions";
+
+  const edit=document.createElement("button");
+  edit.textContent="Edit";
+  edit.onclick=()=>openModal(id);
+
+  const toggle=document.createElement("button");
+  toggle.className="toggle";
+  toggle.textContent=x.enabled===false?"Show":"Hide";
+  toggle.onclick=async()=>{
+   toggle.disabled=true;
+   try{
+    await update(ref(db,`error_fixes/${id}`),{
+     enabled:x.enabled===false
+    });
+   }catch(err){
+    alert("Update failed: "+err.message);
+   }finally{
+    toggle.disabled=false;
+   }
+  };
+
+  const del=document.createElement("button");
+  del.className="delete";
+  del.innerHTML='<i class="fa fa-trash"></i> Delete';
+
+  del.onclick=async()=>{
+   if(deletingIds.has(id))return;
+
+   const confirmed=confirm(
+    `Are you sure you want to permanently delete "${x.title||"this box"}"?`
+   );
+
+   if(!confirmed)return;
+
+   deletingIds.add(id);
+   del.disabled=true;
+   del.textContent="Deleting...";
+
+   try{
+    await remove(ref(db,`error_fixes/${id}`));
+
+    delete records[id];
+    render();
+
+    alert("Box deleted successfully!");
+
+   }catch(err){
+    del.disabled=false;
+    del.textContent="Delete";
+    alert("Delete failed: "+err.message);
+   }finally{
+    deletingIds.delete(id);
+   }
+  };
+
   actions.append(edit,toggle,del);
-  div.append(title,desc,status,actions);
-  document.getElementById("cards").append(div);
+  div.append(heading,desc,status,actions);
+  $("cards").append(div);
  });
 };
 
-document.getElementById("boxForm").addEventListener("submit",async e=>{
+$("boxForm").addEventListener("submit",async e=>{
  e.preventDefault();
- const id=document.getElementById("editId").value;
+
+ const id=$("editId").value;
+ const saveBtn=$("saveBtn");
+ saveBtn.disabled=true;
+ saveBtn.textContent="Saving...";
+
  const data={
-  title:title.value.trim(),
-  description:description.value.trim(),
-  icon:icon.value.trim(),
-  status_text:statusText.value.trim(),
-  download_url:downloadUrl.value.trim(),
-  button_text:buttonText.value.trim()||"Download Now",
-  video_url:videoUrl.value.trim(),
-  video_enabled:videoEnabled.checked,
-  enabled:enabled.checked,
+  title:$("title").value.trim(),
+  description:$("description").value.trim(),
+  icon:$("icon").value.trim(),
+  status_text:$("statusText").value.trim(),
+  download_url:$("downloadUrl").value.trim(),
+  button_text:$("buttonText").value.trim()||"Download Now",
+  video_url:$("videoUrl").value.trim(),
+  video_enabled:$("videoEnabled").checked,
+  enabled:$("enabled").checked,
   updated_at:Date.now()
  };
+
  try{
-  if(id) await update(ref(db,"error_fixes/"+id),data);
-  else {data.timestamp=Date.now();await set(push(listRef),data);}
+  if(id){
+   await update(ref(db,`error_fixes/${id}`),data);
+  }else{
+   data.timestamp=Date.now();
+   await set(push(listRef),data);
+  }
+
   closeModal();
- }catch(err){alert("Error: "+err.message);}
+
+ }catch(err){
+  alert("Save failed: "+err.message);
+ }finally{
+  saveBtn.disabled=false;
+  saveBtn.textContent="Save Box";
+ }
 });
 
 document.querySelector("header button").addEventListener("contextmenu",async e=>{
- e.preventDefault();await signOut(auth);location.href="login.html";
+ e.preventDefault();
+ await signOut(auth);
+ location.href="login.html";
 });
 </script>
 </body>
