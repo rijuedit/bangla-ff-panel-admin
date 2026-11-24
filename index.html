@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - Bangla FF Admin</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 
 <style>
 :root {
@@ -14,7 +16,7 @@
     --neon-pink:#ff0066;
     --neon-purple:#9d00ff;
     --text-gray:#b0b0b0;
-    --text-light:#ffffff;
+    --text-light:#fff;
     --green-glow:#00cc66;
 }
 * {
@@ -24,7 +26,7 @@
     font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
 }
 body {
-    background-color:var(--bg-dark);
+    background:var(--bg-dark);
     color:var(--text-light);
     display:flex;
     min-height:100vh;
@@ -33,7 +35,7 @@ body {
 #mouse-glow {
     width:300px;
     height:300px;
-    background:radial-gradient(circle,rgba(157,0,255,.15) 0%,transparent 70%);
+    background:radial-gradient(circle,rgba(157,0,255,.15),transparent 70%);
     position:fixed;
     pointer-events:none;
     z-index:9999;
@@ -78,11 +80,7 @@ body {
     transition:.3s;
     font-size:14px;
 }
-.nav-link i {
-    margin-right:12px;
-    width:20px;
-    text-align:center;
-}
+.nav-link i { margin-right:12px;width:20px;text-align:center; }
 .nav-link:hover,.nav-link.active {
     background:rgba(157,0,255,.1);
     color:var(--neon-purple);
@@ -115,6 +113,7 @@ body {
 .header { margin-bottom:30px; }
 .header h1 { font-size:28px; }
 .header h1 span { color:var(--neon-pink); }
+
 .grid {
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
@@ -125,13 +124,30 @@ body {
     border:1px solid var(--border-color);
     border-radius:15px;
     padding:25px;
-    transition:.3s;
+    transition:border-color .3s,box-shadow .3s;
     min-width:0;
 }
 .card:hover {
     border-color:var(--neon-purple);
-    transform:translateY(-5px);
+    box-shadow:0 0 15px rgba(157,0,255,.15);
 }
+.card.sortable-ghost {
+    opacity:.3;
+    border:2px dashed var(--neon-pink);
+}
+.card.sortable-chosen {
+    border-color:var(--neon-purple);
+    box-shadow:0 0 20px rgba(157,0,255,.35);
+}
+.card-title {
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:15px;
+    overflow-wrap:anywhere;
+    cursor:grab;
+    touch-action:pan-y;
+}
+.card-title:active { cursor:grabbing; }
 .card-icon {
     font-size:30px;
     margin-bottom:20px;
@@ -148,12 +164,6 @@ body {
     width:40px;
     height:40px;
     object-fit:contain;
-}
-.card-title {
-    font-size:20px;
-    font-weight:600;
-    margin-bottom:15px;
-    overflow-wrap:anywhere;
 }
 .btn-group {
     display:flex;
@@ -175,6 +185,7 @@ body {
 }
 .btn-manage:hover { background:var(--neon-purple);border-color:var(--neon-purple); }
 .btn-edit:hover { background:var(--neon-pink);border-color:var(--neon-pink); }
+
 .visibility-control {
     border-top:1px dashed var(--border-color);
     padding-top:15px;
@@ -195,7 +206,7 @@ body {
     position:absolute;
     cursor:pointer;
     top:0;left:0;right:0;bottom:0;
-    background-color:#333;
+    background:#333;
     transition:.4s;
     border-radius:34px;
 }
@@ -206,15 +217,16 @@ body {
     width:16px;
     left:3px;
     bottom:3px;
-    background-color:white;
+    background:white;
     transition:.4s;
     border-radius:50%;
 }
-input:checked + .slider { background-color:var(--green-glow); }
-input:checked + .slider:before { transform:translateX(24px); }
+.switch input:checked + .slider { background:var(--green-glow); }
+.switch input:checked + .slider:before { transform:translateX(24px); }
 .status-label { font-size:11px;font-weight:bold; }
 .status-on { color:var(--green-glow); }
 .status-off { color:var(--neon-pink); }
+
 .discord-btn {
     background:#5865F2;
     border:none;
@@ -231,7 +243,7 @@ input:checked + .slider:before { transform:translateX(24px); }
 }
 .add-new-btn {
     background:var(--neon-pink);
-    color:#fff;
+    color:white;
     border:none;
     padding:10px 20px;
     border-radius:8px;
@@ -246,10 +258,14 @@ input:checked + .slider:before { transform:translateX(24px); }
     background:#ff3385;
     box-shadow:0 0 15px rgba(255,0,102,.5);
 }
+.sort-hint {
+    color:var(--text-gray);
+    font-size:12px;
+    margin:-8px 0 18px;
+}
 .modal-overlay {
     position:fixed;
-    top:0;left:0;
-    width:100%;height:100%;
+    inset:0;
     background:rgba(0,0,0,.85);
     backdrop-filter:blur(5px);
     display:none;
@@ -328,17 +344,9 @@ input:checked + .slider:before { transform:translateX(24px); }
 .delete-btn:hover { background:#ff3333;color:white; }
 
 @media(max-width:800px) {
-    .sidebar {
-        width:200px;
-        padding:15px;
-    }
-    .main-content {
-        margin-left:200px;
-        padding:25px;
-    }
-    .grid {
-        grid-template-columns:1fr;
-    }
+    .sidebar { width:200px;padding:15px; }
+    .main-content { margin-left:200px;padding:25px; }
+    .grid { grid-template-columns:1fr; }
 }
 @media(max-width:550px) {
     body { display:block; }
@@ -350,14 +358,9 @@ input:checked + .slider:before { transform:translateX(24px); }
     }
     .sidebar-label { margin-top:12px; }
     .logout-btn { margin-top:15px; }
-    .main-content {
-        margin-left:0;
-        padding:20px 14px;
-    }
+    .main-content { margin-left:0;padding:20px 14px; }
     .header h1 { font-size:23px; }
-    .main-content > .card > div {
-        flex-direction:column;
-    }
+    .main-content > .card > div { flex-direction:column; }
     .discord-btn { padding:12px; }
 }
 </style>
@@ -385,18 +388,32 @@ input:checked + .slider:before { transform:translateX(24px); }
     </a>
 
     <div class="sidebar-label">Tools</div>
-    <a href="https://imgbb.com/" target="_blank" class="nav-link"><i class="fas fa-cloud-upload-alt"></i> ImgBB</a>
-    <a href="https://postimages.org/" target="_blank" class="nav-link"><i class="fas fa-image"></i> PostImages</a>
+    <a href="https://imgbb.com/" target="_blank" class="nav-link">
+        <i class="fas fa-cloud-upload-alt"></i> ImgBB
+    </a>
+    <a href="https://postimages.org/" target="_blank" class="nav-link">
+        <i class="fas fa-image"></i> PostImages
+    </a>
 
     <div class="sidebar-label">Paid Panels</div>
-    <a href="manage-pc.html" class="nav-link"><i class="fas fa-desktop"></i> Manage PC Panel</a>
-    <a href="manage-mobile.html" class="nav-link"><i class="fas fa-mobile-alt"></i> Manage Mobile Panel</a>
+    <a href="manage-pc.html" class="nav-link">
+        <i class="fas fa-desktop"></i> Manage PC Panel
+    </a>
+    <a href="manage-mobile.html" class="nav-link">
+        <i class="fas fa-mobile-alt"></i> Manage Mobile Panel
+    </a>
 
     <div class="sidebar-label">System</div>
-    <a href="manage-notifications.html" class="nav-link"><i class="fas fa-bell"></i> Notifications</a>
-    <a href="manage-admins.html" class="nav-link"><i class="fas fa-users-cog"></i> Admin Users</a>
+    <a href="manage-notifications.html" class="nav-link">
+        <i class="fas fa-bell"></i> Notifications
+    </a>
+    <a href="manage-admins.html" class="nav-link">
+        <i class="fas fa-users-cog"></i> Admin Users
+    </a>
 
-    <a href="#" id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <a href="#" id="logoutBtn" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
 </div>
 
 <div class="main-content">
@@ -406,7 +423,7 @@ input:checked + .slider:before { transform:translateX(24px); }
     </div>
 
     <div class="card" style="margin-bottom:30px;border-color:#5865F2;">
-        <h3 class="card-title" style="color:#5865F2;display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:8px;">
+        <h3 class="card-title" style="color:#5865F2;display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:8px;cursor:default;">
             <i class="fab fa-discord"></i> Global Discord Settings
         </h3>
 
@@ -422,19 +439,21 @@ input:checked + .slider:before { transform:translateX(24px); }
 
     <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px;flex-wrap:wrap;">
         <h2 style="font-size:20px;color:var(--neon-purple);">Website Categories</h2>
-
         <button class="add-new-btn" id="addNewBtn">
             <i class="fas fa-plus"></i> Add New Box
         </button>
     </div>
 
-    <div class="grid" id="dynamic_grid"></div>
+    <p class="sort-hint">
+        <i class="fas fa-arrows-alt"></i>
+        বক্সের নাম ধরে টেনে নিজের পছন্দমতো সাজাও। অর্ডার অটোমেটিক সেভ হবে।
+    </p>
 
+    <div class="grid" id="dynamic_grid"></div>
 </div>
 
 <div class="modal-overlay" id="editModal">
     <div class="modal">
-
         <h2 id="modal_title">Edit Category Box</h2>
 
         <input type="hidden" id="edit_category_id">
@@ -473,7 +492,6 @@ input:checked + .slider:before { transform:translateX(24px); }
             <button class="cancel-btn" id="cancelModalBtn">Cancel</button>
             <button class="save-btn" id="saveCategoryBtn">Save Changes</button>
         </div>
-
     </div>
 </div>
 
@@ -518,31 +536,32 @@ window.addEventListener("mousemove", (e) => {
     glow.style.top = e.clientY + "px";
 });
 
+let currentUser = null;
+
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         window.location.href = "login.html";
+        return;
     }
+    currentUser = user;
 });
 
-document.getElementById("logoutBtn").addEventListener("click", (e) => {
+document.getElementById("logoutBtn").addEventListener("click", async (e) => {
     e.preventDefault();
-    signOut(auth).then(() => {
-        window.location.href = "login.html";
-    });
+    await signOut(auth);
+    window.location.href = "login.html";
 });
 
 const discordInput = document.getElementById("discordInput");
 
 onValue(ref(db, "global_settings/discord_link"), (snapshot) => {
-    if (snapshot.exists()) {
-        discordInput.value = snapshot.val();
-    }
+    if (snapshot.exists()) discordInput.value = snapshot.val();
 });
 
 document.getElementById("saveDiscordBtn").addEventListener("click", async () => {
     const link = discordInput.value.trim();
 
-    if (!link) {
+    if (!link || !/^https:\/\/(discord\.gg|discord\.com)\//i.test(link)) {
         alert("Please enter a valid Discord link!");
         return;
     }
@@ -555,11 +574,7 @@ document.getElementById("saveDiscordBtn").addEventListener("click", async () => 
     }
 });
 
-/*
-  Default categories.
-  Deleted default categories are blocked by deleted_categories.
-*/
-
+/* Default categories */
 const defaultBoxes = {
     free_panel: {
         title: "Free Panel",
@@ -615,32 +630,90 @@ const defaultBoxes = {
 let visibilityState = {};
 let categoriesData = {};
 let deletedCategories = {};
+let categoryOrder = [];
+let sortableInstance = null;
+let orderLoaded = false;
+
+function getVisibleCategoryKeys() {
+    const allKeys = Object.keys(categoriesData).filter(key => {
+        return categoriesData[key] && deletedCategories[key] !== true;
+    });
+
+    const savedOrder = Array.isArray(categoryOrder) ? categoryOrder : [];
+
+    return [
+        ...savedOrder.filter(key => allKeys.includes(key)),
+        ...allKeys.filter(key => !savedOrder.includes(key))
+    ];
+}
+
+function initializeSorting() {
+    const grid = document.getElementById("dynamic_grid");
+
+    if (sortableInstance) {
+        sortableInstance.destroy();
+        sortableInstance = null;
+    }
+
+    if (!window.Sortable) {
+        console.error("SortableJS could not be loaded.");
+        return;
+    }
+
+    sortableInstance = new Sortable(grid, {
+        animation: 250,
+        ghostClass: "sortable-ghost",
+        chosenClass: "sortable-chosen",
+        dragClass: "sortable-drag",
+        handle: ".card-title",
+        delayOnTouchOnly: true,
+        delay: 120,
+        touchStartThreshold: 5,
+        onEnd: async function() {
+            const newOrder = [...grid.children]
+                .map(card => card.dataset.categoryId)
+                .filter(Boolean);
+
+            try {
+                await set(ref(db, "site_settings/category_order"), newOrder);
+                categoryOrder = newOrder;
+            } catch (error) {
+                alert("Order save failed: " + error.message);
+                renderGrid();
+            }
+        }
+    });
+}
 
 function renderGrid() {
     const grid = document.getElementById("dynamic_grid");
     grid.innerHTML = "";
 
-    Object.entries(categoriesData).forEach(([key, data]) => {
+    const keys = getVisibleCategoryKeys();
 
+    keys.forEach((key) => {
+        const data = categoriesData[key];
         if (!data) return;
-
-        // Permanently deleted category marker
-        if (deletedCategories[key] === true) return;
 
         const isVisible = visibilityState[key] !== false;
 
         const card = document.createElement("div");
         card.className = "card";
+        card.dataset.categoryId = key;
 
         const iconBox = document.createElement("div");
         iconBox.className = "card-icon";
 
-        const iconValue = (data.iconValue || "").trim();
+        const iconValue = String(data.iconValue || "").trim();
 
-        if (data.iconType === "image" || iconValue.startsWith("http")) {
+        if (data.iconType === "image" || /^https?:\/\//i.test(iconValue)) {
             const img = document.createElement("img");
             img.src = iconValue;
             img.alt = "Category icon";
+            img.onerror = () => {
+                img.remove();
+                iconBox.innerHTML = '<i class="fas fa-image"></i>';
+            };
             iconBox.appendChild(img);
         } else if (
             data.iconType === "emoji" ||
@@ -658,6 +731,7 @@ function renderGrid() {
         const title = document.createElement("h3");
         title.className = "card-title";
         title.textContent = data.title || "Untitled Box";
+        title.title = "Drag this title to reorder";
 
         const buttonGroup = document.createElement("div");
         buttonGroup.className = "btn-group";
@@ -702,12 +776,14 @@ function renderGrid() {
         status.textContent = isVisible ? "ON" : "OFF";
 
         visibility.append(visibilityText, label, status);
-
         card.append(iconBox, title, buttonGroup, visibility);
         grid.appendChild(card);
     });
+
+    initializeSorting();
 }
 
+/* Firebase listeners */
 onValue(ref(db, "site_visibility"), (snapshot) => {
     visibilityState = snapshot.val() || {};
     renderGrid();
@@ -723,6 +799,23 @@ onValue(ref(db, "site_settings/categories"), (snapshot) => {
 
 onValue(ref(db, "site_settings/deleted_categories"), (snapshot) => {
     deletedCategories = snapshot.val() || {};
+    renderGrid();
+});
+
+onValue(ref(db, "site_settings/category_order"), (snapshot) => {
+    const value = snapshot.val();
+
+    if (Array.isArray(value)) {
+        categoryOrder = value;
+    } else if (value && typeof value === "object") {
+        categoryOrder = Object.entries(value)
+            .sort((a,b) => Number(a[1]) - Number(b[1]))
+            .map(entry => entry[0]);
+    } else {
+        categoryOrder = [];
+    }
+
+    orderLoaded = true;
     renderGrid();
 });
 
@@ -767,8 +860,6 @@ function closeModal() {
     document.getElementById("editModal").style.display = "none";
 }
 
-window.openEditModal = openEditModal;
-
 document.getElementById("addNewBtn").addEventListener("click", openAddModal);
 document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
 
@@ -790,7 +881,6 @@ function updateIconLabel() {
 typeSelect.addEventListener("change", updateIconLabel);
 
 document.getElementById("saveCategoryBtn").addEventListener("click", async () => {
-
     const id = document.getElementById("edit_category_id").value;
     let type = typeSelect.value;
 
@@ -829,7 +919,6 @@ document.getElementById("saveCategoryBtn").addEventListener("click", async () =>
             await update(ref(db, `site_settings/categories/${id}`), data);
         }
 
-        // Remove old deletion marker if this category is saved again
         await remove(ref(db, `site_settings/deleted_categories/${categoryId}`));
 
         closeModal();
@@ -841,7 +930,6 @@ document.getElementById("saveCategoryBtn").addEventListener("click", async () =>
 });
 
 document.getElementById("deleteCategoryBtn").addEventListener("click", async () => {
-
     const id = document.getElementById("edit_category_id").value;
 
     if (!id || id === "NEW") return;
@@ -851,14 +939,12 @@ document.getElementById("deleteCategoryBtn").addEventListener("click", async () 
     }
 
     try {
-        // Remove actual category data
         await remove(ref(db, `site_settings/categories/${id}`));
-
-        // Remove its visibility setting
         await remove(ref(db, `site_visibility/${id}`));
-
-        // This marker prevents default boxes from coming back
         await set(ref(db, `site_settings/deleted_categories/${id}`), true);
+
+        categoryOrder = categoryOrder.filter(key => key !== id);
+        await set(ref(db, "site_settings/category_order"), categoryOrder);
 
         closeModal();
         alert("Box deleted successfully!");
