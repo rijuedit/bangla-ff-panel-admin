@@ -1,1 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Premium Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#05020a;color:#fff;padding:20px}
+.container{max-width:950px;margin:auto}
+h1{color:#d58aff;margin-bottom:20px}
+.card{background:#11071a;border:1px solid #35134d;border-radius:12px;padding:20px;margin-bottom:20px}
+label{display:block;color:#ccc;margin:12px 0 7px}
+input{width:100%;padding:12px;background:#08040e;border:1px solid #45205d;border-radius:7px;color:white}
+button{padding:11px 16px;border:0;border-radius:7px;cursor:pointer;font-weight:bold;margin:5px 3px 5px 0}
+.save{background:#9d00ff;color:white}.add{background:#ff0066;color:white}
+.edit{background:#4d3b68;color:white}.del{background:#b51e36;color:white}
+.file{border:1px solid #39204b;border-radius:8px;padding:13px;margin-top:12px;overflow-wrap:anywhere}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row input{flex:1;min-width:180px}
+small{color:#aaa}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>PREMIUM PANEL — ADMIN</h1>
 
+<div class="card">
+<h3>Video Settings</h3>
+<label><input type="checkbox" id="videoEnabled" style="width:auto"> Show video on website</label>
+<label>Video URL</label>
+<input id="videoUrl" placeholder="YouTube video URL">
+<button class="save" id="saveVideo">Save Video Settings</button>
+</div>
+
+<div class="card">
+<h3>RAR Password</h3>
+<label>RAR Password</label>
+<input id="rarPassword" placeholder="Enter RAR password">
+<button class="save" id="saveRar">Save RAR Password</button>
+</div>
+
+<div class="card">
+<h3 id="formTitle">Add New File</h3>
+<input type="hidden" id="fileId">
+<label>File Title</label>
+<input id="fileTitle" placeholder="Example: Premium Panel V1">
+<label>Download URL</label>
+<input id="downloadUrl" placeholder="https://...">
+<label>Username</label>
+<input id="username" placeholder="Enter username">
+<label>Password</label>
+<input id="password" placeholder="Enter password">
+<br><br>
+<button class="add" id="saveFile">Add File</button>
+<button class="edit" id="cancelEdit" style="display:none">Cancel Edit</button>
+</div>
+
+<div class="card">
+<h3>Uploaded Files</h3>
+<div id="fileList">Loading...</div>
+</div>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,onValue,set,push,update,remove} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {getAuth,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+/* এই লাইনটি ফাইল অনুযায়ী পরিবর্তন করবে:
+   premium / special / vip
+*/
+const SECTION_ID = "premium";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
+ authDomain:"bangla-ff-admin.firebaseapp.com",
+ databaseURL:"https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"bangla-ff-admin",
+ storageBucket:"bangla-ff-admin.firebasestorage.app",
+ messagingSenderId:"295013484465",
+ appId:"1:295013484465:web:b6bc2a949e239095761f90"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+const auth=getAuth(app);
+
+const settingsRef=ref(db,`panel_sections/${SECTION_ID}/settings`);
+const filesRef=ref(db,`panel_sections/${SECTION_ID}/files`);
+
+onAuthStateChanged(auth,user=>{
+ if(!user) location.href="login.html";
+});
+
+let currentFiles={};
+
+onValue(settingsRef,snap=>{
+ const data=snap.val()||{};
+ document.getElementById("videoEnabled").checked=data.video_enabled===true;
+ document.getElementById("videoUrl").value=data.video_url||"";
+ document.getElementById("rarPassword").value=data.rar_password||"";
+});
+
+onValue(filesRef,snap=>{
+ currentFiles=snap.val()||{};
+ renderFiles();
+});
+
+document.getElementById("saveVideo").onclick=async()=>{
+ try{
+  await update(settingsRef,{
+   video_enabled:document.getElementById("videoEnabled").checked,
+   video_url:document.getElementById("videoUrl").value.trim()
+  });
+  alert("Video settings saved!");
+ }catch(e){alert(e.message)}
+};
+
+document.getElementById("saveRar").onclick=async()=>{
+ try{
+  await update(settingsRef,{
+   rar_password:document.getElementById("rarPassword").value.trim()
+  });
+  alert("RAR password saved!");
+ }catch(e){alert(e.message)}
+};
+
+function clearForm(){
+ document.getElementById("fileId").value="";
+ document.getElementById("fileTitle").value="";
+ document.getElementById("downloadUrl").value="";
+ document.getElementById("username").value="";
+ document.getElementById("password").value="";
+ document.getElementById("formTitle").textContent="Add New File";
+ document.getElementById("saveFile").textContent="Add File";
+ document.getElementById("cancelEdit").style.display="none";
+}
+
+document.getElementById("cancelEdit").onclick=clearForm;
+
+document.getElementById("saveFile").onclick=async()=>{
+ const id=document.getElementById("fileId").value;
+ const title=document.getElementById("fileTitle").value.trim();
+ const download_url=document.getElementById("downloadUrl").value.trim();
+ const username=document.getElementById("username").value.trim();
+ const password=document.getElementById("password").value.trim();
+
+ if(!title||!download_url){
+  alert("File title and download URL are required!");
+  return;
+ }
+
+ const data={title,download_url,username,password};
+
+ try{
+  if(id){
+   await update(ref(db,`panel_sections/${SECTION_ID}/files/${id}`),data);
+   alert("File updated!");
+  }else{
+   await push(filesRef,data);
+   alert("File added!");
+  }
+  clearForm();
+ }catch(e){alert(e.message)}
+};
+
+function safeText(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function renderFiles(){
+ const list=document.getElementById("fileList");
+ list.innerHTML="";
+ const entries=Object.entries(currentFiles);
+
+ if(!entries.length){
+  list.textContent="No files added yet.";
+  return;
+ }
+
+ entries.forEach(([id,file])=>{
+  const div=document.createElement("div");
+  div.className="file";
+  div.innerHTML=`
+   <b>${safeText(file.title||"Untitled File")}</b>
+   <br><small>${safeText(file.download_url||"")}</small><br>
+   <button class="edit" data-edit="${safeText(id)}">Edit</button>
+   <button class="del" data-delete="${safeText(id)}">Delete</button>
+  `;
+  list.appendChild(div);
+ });
+
+ list.querySelectorAll("[data-edit]").forEach(btn=>{
+  btn.onclick=()=>{
+   const file=currentFiles[btn.dataset.edit];
+   document.getElementById("fileId").value=btn.dataset.edit;
+   document.getElementById("fileTitle").value=file.title||"";
+   document.getElementById("downloadUrl").value=file.download_url||"";
+   document.getElementById("username").value=file.username||"";
+   document.getElementById("password").value=file.password||"";
+   document.getElementById("formTitle").textContent="Edit File";
+   document.getElementById("saveFile").textContent="Update File";
+   document.getElementById("cancelEdit").style.display="inline-block";
+   window.scrollTo({top:0,behavior:"smooth"});
+  };
+ });
+
+ list.querySelectorAll("[data-delete]").forEach(btn=>{
+  btn.onclick=async()=>{
+   if(!confirm("Are you sure you want to delete this file?"))return;
+   try{
+    await remove(ref(db,`panel_sections/${SECTION_ID}/files/${btn.dataset.delete}`));
+   }catch(e){alert(e.message)}
+  };
+ });
+}
+</script>
+</body>
+</html>
