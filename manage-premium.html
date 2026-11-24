@@ -13,12 +13,13 @@ h1{color:#d58aff;margin-bottom:20px}
 label{display:block;color:#ccc;margin:12px 0 7px}
 input{width:100%;padding:12px;background:#08040e;border:1px solid #45205d;border-radius:7px;color:white}
 button{padding:11px 16px;border:0;border-radius:7px;cursor:pointer;font-weight:bold;margin:5px 3px 5px 0}
-.save{background:#9d00ff;color:white}.add{background:#ff0066;color:white}
-.edit{background:#4d3b68;color:white}.del{background:#b51e36;color:white}
+.save{background:#9d00ff;color:white}
+.add{background:#ff0066;color:white}
+.edit{background:#4d3b68;color:white}
+.del{background:#b51e36;color:white}
 .file{border:1px solid #39204b;border-radius:8px;padding:13px;margin-top:12px;overflow-wrap:anywhere}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.row input{flex:1;min-width:180px}
 small{color:#aaa}
+.status{display:block;margin-top:12px;color:#d58aff}
 </style>
 </head>
 <body>
@@ -38,6 +39,16 @@ small{color:#aaa}
 <label>RAR Password</label>
 <input id="rarPassword" placeholder="Enter RAR password">
 <button class="save" id="saveRar">Save RAR Password</button>
+</div>
+
+<div class="card">
+<h3>🔒 Premium Access Lock</h3>
+<label>PIN / Password</label>
+<input id="accessPin" type="password" autocomplete="new-password"
+placeholder="Enter a PIN or Password">
+<button class="save" id="saveAccessPin">Save / Change PIN</button>
+<button class="del" id="removeAccessPin">Remove Lock</button>
+<small class="status" id="pinStatus">Loading lock status...</small>
 </div>
 
 <div class="card">
@@ -64,15 +75,12 @@ small{color:#aaa}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getDatabase,ref,onValue,set,push,update,remove} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {getDatabase,ref,onValue,push,update,remove} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import {getAuth,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* এই লাইনটি ফাইল অনুযায়ী পরিবর্তন করবে:
-   premium / special / vip
-*/
-const SECTION_ID = "premium";
+const SECTION_ID="premium";
 
-const firebaseConfig = {
+const firebaseConfig={
  apiKey:"AIzaSyDOFL6dKvw_RfyKMe3QQgvE4lt7Gtc4yaM",
  authDomain:"bangla-ff-admin.firebaseapp.com",
  databaseURL:"https://bangla-ff-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -100,6 +108,9 @@ onValue(settingsRef,snap=>{
  document.getElementById("videoEnabled").checked=data.video_enabled===true;
  document.getElementById("videoUrl").value=data.video_url||"";
  document.getElementById("rarPassword").value=data.rar_password||"";
+ document.getElementById("accessPin").value=data.access_pin||"";
+ document.getElementById("pinStatus").textContent=
+  data.access_pin ? "🔒 Premium Lock is ON" : "🔓 Premium Lock is OFF — Everyone can enter";
 });
 
 onValue(filesRef,snap=>{
@@ -123,6 +134,27 @@ document.getElementById("saveRar").onclick=async()=>{
    rar_password:document.getElementById("rarPassword").value.trim()
   });
   alert("RAR password saved!");
+ }catch(e){alert(e.message)}
+};
+
+document.getElementById("saveAccessPin").onclick=async()=>{
+ const pin=document.getElementById("accessPin").value.trim();
+ if(!pin){
+  alert("PIN খালি আছে। Lock বন্ধ করতে Remove Lock চাপুন।");
+  return;
+ }
+ try{
+  await update(settingsRef,{access_pin:pin});
+  alert("Premium PIN saved successfully!");
+ }catch(e){alert(e.message)}
+};
+
+document.getElementById("removeAccessPin").onclick=async()=>{
+ if(!confirm("Remove Premium Lock? Everyone will be able to enter."))return;
+ try{
+  await update(settingsRef,{access_pin:""});
+  document.getElementById("accessPin").value="";
+  alert("Premium Lock Removed! Everyone can enter now.");
  }catch(e){alert(e.message)}
 };
 
